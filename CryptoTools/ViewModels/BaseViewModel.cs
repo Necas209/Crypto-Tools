@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Cryptotool.ViewModels;
+namespace CryptoTools.ViewModels;
 
 public class BaseViewModel : INotifyPropertyChanged
 {
