@@ -5,9 +5,9 @@ using System.Security.Cryptography;
 
 namespace CryptoTools.Services;
 
-public static class HashingService
+public static class SecureStringExtension
 {
-    private static byte[] HashSecureString(SecureString input, Func<byte[], byte[]> hashFunc)
+    private static byte[] Hash(this SecureString input, Func<byte[], byte[]> hashFunc)
     {
         var bStr = Marshal.SecureStringToBSTR(input);
         var length = Marshal.ReadInt32(bStr, -4);
@@ -30,11 +30,11 @@ public static class HashingService
     public static string HashPassword(SecureString password)
     {
         using var mySha256 = SHA256.Create();
-        var pwHash = HashSecureString(password, mySha256.ComputeHash);
+        var pwHash = password.Hash(mySha256.ComputeHash);
         return Convert.ToHexString(pwHash).ToLower();
     }
 
-    public static bool SecureStringEqual(SecureString secureString1, SecureString secureString2)
+    public static bool EqualsHash(this SecureString secureString1, SecureString secureString2)
     {
         if (secureString1 == null)
             throw new ArgumentNullException(nameof(secureString1));

@@ -4,6 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid />
+        Title="MainWindow" MinHeight="540" MinWidth="830" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid>
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="16"><Bold>CryptoTool</Bold></TextBlock>
+        </Grid>
+        <Grid Margin="0,20,0,0">
+            <TabControl>
+                <TabItem Height="25" IsSelected="True" Header="Zip">
+                    <Frame x:Name="Zip" Source="ZipPage.xaml"></Frame>
+                </TabItem>
+                <TabItem Height="25" Header="Encrypt">
+                    <Frame x:Name="Encrypt" Source="EncryptPage.xaml"></Frame>
+                </TabItem>
+                <TabItem Height="25" Header="Hash">
+                    <Frame x:Name="Hash" Source="HashPage.xaml"></Frame>
+                </TabItem>
+                <TabItem Height="25" Header="Postmark">
+                    <Frame x:Name="Postmark" Source="PostmarkPage.xaml"></Frame>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
 </Window>
