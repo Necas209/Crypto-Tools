@@ -1,10 +1,15 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CryptoTools.Models;
 
 public class HashingAlgorithm
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = "";
+    [Key] public int Id { get; set; }
+
+    [Required] public string Name { get; set; } = "";
+
+    [InverseProperty("HashingAlgorithm")]
+    public ICollection<HashEntry> HashEntries { get; set; } = new HashSet<HashEntry>();
 }
