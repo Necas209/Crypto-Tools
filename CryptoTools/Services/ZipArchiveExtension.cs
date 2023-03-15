@@ -6,20 +6,19 @@ namespace CryptoTools.Services;
 
 public static class ZipArchiveExtension
 {
-    private static void CreateEntryFromAny(this ZipArchive archive, string sourceName, string entryName = "") {
+    private static void CreateEntryFromAny(this ZipArchive archive, string sourceName, string entryName = "")
+    {
         var fileName = Path.GetFileName(sourceName);
-        if (File.GetAttributes(sourceName).HasFlag(FileAttributes.Directory)) {
+        if (File.GetAttributes(sourceName).HasFlag(FileAttributes.Directory))
             archive.CreateEntryFromDirectory(sourceName, Path.Combine(entryName, fileName));
-        } else {
+        else
             archive.CreateEntryFromFile(sourceName, Path.Combine(entryName, fileName), CompressionLevel.Fastest);
-        }
     }
 
-    public static void CreateEntryFromDirectory(this ZipArchive archive, string sourceDirName, string entryName = "") {
+    public static void CreateEntryFromDirectory(this ZipArchive archive, string sourceDirName, string entryName = "")
+    {
         var files = Directory.GetFiles(sourceDirName).Concat(Directory.GetDirectories(sourceDirName)).ToArray();
         archive.CreateEntry(Path.Combine(entryName, Path.GetFileName(sourceDirName)));
-        foreach (var file in files) {
-            archive.CreateEntryFromAny(file, entryName);
-        }
+        foreach (var file in files) archive.CreateEntryFromAny(file, entryName);
     }
 }

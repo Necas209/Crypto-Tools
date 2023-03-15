@@ -27,7 +27,7 @@ public static class SecureStringExtension
         }
     }
 
-    public static string HashPassword(SecureString password)
+    public static string Hash(SecureString password)
     {
         using var mySha256 = SHA256.Create();
         var pwHash = password.Hash(mySha256.ComputeHash);

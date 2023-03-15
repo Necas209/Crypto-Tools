@@ -7,21 +7,23 @@
         Title="MainWindow" MinHeight="540" MinWidth="830" SizeToContent="WidthAndHeight">
     <Grid>
         <Grid>
-            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="16"><Bold>CryptoTool</Bold></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="16">
+                <Bold>CryptoTool</Bold>
+            </TextBlock>
         </Grid>
         <Grid Margin="0,20,0,0">
             <TabControl>
                 <TabItem Height="25" IsSelected="True" Header="Zip">
-                    <Frame x:Name="Zip" Source="ZipPage.xaml"></Frame>
+                    <Frame Source="ZipPage.xaml" />
                 </TabItem>
                 <TabItem Height="25" Header="Encrypt">
-                    <Frame x:Name="Encrypt" Source="EncryptPage.xaml"></Frame>
+                    <Frame Source="EncryptPage.xaml" />
                 </TabItem>
                 <TabItem Height="25" Header="Hash">
-                    <Frame x:Name="Hash" Source="HashPage.xaml"></Frame>
+                    <Frame Source="HashPage.xaml" />
                 </TabItem>
                 <TabItem Height="25" Header="Postmark">
-                    <Frame x:Name="Postmark" Source="PostmarkPage.xaml"></Frame>
+                    <Frame Source="PostmarkPage.xaml" />
                 </TabItem>
             </TabControl>
         </Grid>

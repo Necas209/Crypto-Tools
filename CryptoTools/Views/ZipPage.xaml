@@ -7,24 +7,30 @@
       mc:Ignorable="d"
       Title="Zip" Height="450" Width="800">
     <Page.DataContext>
-        <vm:ZipPageViewModel></vm:ZipPageViewModel>
+        <vm:ZipPageViewModel />
     </Page.DataContext>
     <Grid>
         <DockPanel Margin="10">
             <WrapPanel HorizontalAlignment="Right" DockPanel.Dock="Top" Margin="0,0,0,10">
                 <Button Click="BtnUnzip_OnClick" Margin="0,0,290,0">Unzip</Button>
                 <Button Click="BtnOpenFile_OnClick" Margin="0,0,10,0">Open file</Button>
-                <Button Click="BtnZip_OnClick" Margin="10,0,250,0" IsEnabled="{Binding ArchiveEntries.Count, Converter={StaticResource IntToBoolValueConverter}}">Zip file(s)</Button>
-                <Button Click="BtnRem_OnClick" Margin="0,0,0,0" 
-                        IsEnabled="{Binding SelectedEntries.Count, Converter={StaticResource IntToBoolValueConverter}}">Remove File(s)</Button>
+                <Button Click="BtnZip_OnClick" Margin="10,0,250,0"
+                        IsEnabled="{Binding ArchiveEntries.Count, Converter={StaticResource IntToBoolValueConverter}}">
+                    Zip file(s)
+                </Button>
+                <Button Click="BtnRem_OnClick" Margin="0,0,0,0"
+                        IsEnabled="{Binding SelectedEntries.Count, Converter={StaticResource IntToBoolValueConverter}}">
+                    Remove file(s)
+                </Button>
             </WrapPanel>
             <ListView x:Name="Files" BorderBrush="Black" BorderThickness="1" ItemsSource="{Binding ArchiveEntries}"
                       SelectionChanged="Selector_OnSelectionChanged">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="Path" Width="200" DisplayMemberBinding="{Binding Path }" />
-                            <GridViewColumn Header="Is Directory?" Width="200" DisplayMemberBinding="{Binding IsDirectory }" />
+                        <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding Name}" />
+                        <GridViewColumn Header="Path" Width="200" DisplayMemberBinding="{Binding Path }" />
+                        <GridViewColumn Header="Is Directory?" Width="200"
+                                        DisplayMemberBinding="{Binding IsDirectory }" />
                     </GridView>
                 </ListView.View>
             </ListView>
