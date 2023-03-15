@@ -3,10 +3,16 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:vm="clr-namespace:CryptoTools.ViewModels"
       xmlns:local="clr-namespace:CryptoTools.Views"
       mc:Ignorable="d"
       Title="HashPage" Height="450" Width="800">
+    <Page.DataContext>
+        <vm:HashPageViewModel />
+    </Page.DataContext>
     <Grid>
-        
+        <ComboBox Height="30" Width="200" VerticalAlignment="Top" Margin="0,20,0,0" ItemsSource="{Binding HashingAlgorithms }"></ComboBox>
+        <TextBlock Width="100" Height="100" HorizontalAlignment="Left">ola</TextBlock>
+        <TextBlock Width="100" Height="100" HorizontalAlignment="Left" Margin="120,0,0,0">ola2</TextBlock>
     </Grid>
 </Page>

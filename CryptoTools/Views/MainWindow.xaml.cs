@@ -1,4 +1,5 @@
-﻿namespace CryptoTools.Views;
+﻿
+namespace CryptoTools.Views;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml

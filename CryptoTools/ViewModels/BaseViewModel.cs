@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using CryptoTools.Data;
 
 namespace CryptoTools.ViewModels;
 
 public class BaseViewModel : INotifyPropertyChanged
 {
+    protected readonly CryptoDbContext Context = ((App) Application.Current).Context;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
