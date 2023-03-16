@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
+      xmlns:adorners="http://gu.se/Adorners"
       mc:Ignorable="d"
       Title="HashPage" Height="450" Width="800">
     <Page.DataContext>
@@ -17,10 +18,26 @@
                   SelectedItem="{Binding Algorithm}" />
         <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0"></TextBlock>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,55,0,10">
-            <TextBox Name="TextToHash" Text="{Binding UnhashedText, Mode=TwoWay}" Width="360"
-                     TextChanged="TextToHash_OnTextChanged" TextWrapping="Wrap" BorderBrush="LightSlateGray" Margin="0,0,0,0" />
-            <TextBox Background="Transparent" Width="360" BorderBrush="LightSlateGray" Text="{Binding HashedText}"
-                     IsReadOnly="True" TextWrapping="Wrap" Margin="15,0,0,0" />
+            <StackPanel Orientation="Vertical">
+                <TextBox Name="TextToHash" adorners:Watermark.Text="Write something here"
+                         adorners:Watermark.TextStyle="{StaticResource AdornerTextStyle}" Height="180"
+                         Text="{Binding UnhashedText, Mode=TwoWay}" Width="360"
+                         TextChanged="TextToHash_OnTextChanged" TextWrapping="Wrap" BorderBrush="LightSlateGray"
+                         Margin="0,0,0,10" />
+                <TextBox Background="Transparent" Height="180" Width="360" BorderBrush="LightSlateGray"
+                         Text="{Binding HashedText}"
+                         IsReadOnly="True" TextWrapping="Wrap" Margin="0,0,0,0" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="10,0,0,0">
+                <Border BorderThickness="1" Height="180" Width="360" BorderBrush="LightSlateGray" Margin="0,0,0,10">
+                    <Button Name="FileToHash" AllowDrop="True" Foreground="DimGray" Content="Drop File to Get Hash"
+                            Drop="File_OnDrop" DragEnter="File_OnDragEnter" DragLeave="File_OnDragLeave"
+                            Click="File_OnClick" Background="Transparent" BorderThickness="0" />
+                </Border>
+                <TextBox Background="Transparent" Height="180" Width="360" BorderBrush="LightSlateGray"
+                         Text="{Binding HashedFile}"
+                         IsReadOnly="True" TextWrapping="Wrap" Margin="0,0,0,0" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

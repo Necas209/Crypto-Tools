@@ -56,6 +56,10 @@ public partial class FileIntegrityPage
 
     private void Register_OnDrop(object sender, DragEventArgs e)
     {
+        if (sender is not Button btn) return;
+        btn.Background = new SolidColorBrush(Colors.Transparent);
+        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        
         if (e.Data.GetDataPresent(DataFormats.FileDrop))
         {
             // Note that you can have more than one file.
@@ -100,6 +104,10 @@ public partial class FileIntegrityPage
 
     private void Validation_OnDrop(object sender, DragEventArgs e)
     {
+        if (sender is not Button btn) return;
+        btn.Background = new SolidColorBrush(Colors.Transparent);
+        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+
         if (!e.Data.GetDataPresent(DataFormats.FileDrop))
         {
             ShowMessage("This is not a file!", Colors.Red);
