@@ -27,9 +27,9 @@
                       SelectionChanged="Selector_OnSelectionChanged">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Name" Width="100" DisplayMemberBinding="{Binding Name}" />
-                        <GridViewColumn Header="Path" Width="200" DisplayMemberBinding="{Binding Path }" />
-                        <GridViewColumn Header="Is Directory?" Width="200"
+                        <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Name}" />
+                        <GridViewColumn Header="Path" Width="500" DisplayMemberBinding="{Binding Path }" />
+                        <GridViewColumn Header="Is Directory?" Width="70"
                                         DisplayMemberBinding="{Binding IsDirectory }" />
                     </GridView>
                 </ListView.View>

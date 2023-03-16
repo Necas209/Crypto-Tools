@@ -22,6 +22,9 @@
                 <TabItem Height="25" Header="Hash">
                     <Frame Source="HashPage.xaml" />
                 </TabItem>
+                <TabItem Height="25" Header="Integrity">
+                    <Frame Source="FileIntegrityPage.xaml" />
+                </TabItem>
                 <TabItem Height="25" Header="Postmark">
                     <Frame Source="PostmarkPage.xaml" />
                 </TabItem>

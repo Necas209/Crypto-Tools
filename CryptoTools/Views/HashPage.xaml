@@ -10,9 +10,17 @@
         <vm:HashPageViewModel />
     </Page.DataContext>
     <Grid>
-        <ComboBox Width="200" VerticalAlignment="Top" Margin="0,20,0,0"
+        <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
+                  Margin="0,20,360,0"
                   ItemsSource="{Binding HashingAlgorithms}"
-                  DisplayMemberPath="Name" SelectedValuePath="Id"
-                  SelectedValue="{Binding HashingAlgorithmId}" />
+                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
+                  SelectedItem="{Binding Algorithm}" />
+        <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0"></TextBlock>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,55,0,10">
+            <TextBox Name="TextToHash" Text="{Binding UnhashedText, Mode=TwoWay}" Width="360"
+                     TextChanged="TextToHash_OnTextChanged" BorderBrush="LightSlateGray" Margin="0,0,0,0" />
+            <TextBox Background="Transparent" Width="360" BorderBrush="LightSlateGray" Text="{Binding HashedText}"
+                     IsReadOnly="True" TextWrapping="Wrap" Margin="15,0,0,0" />
+        </StackPanel>
     </Grid>
 </Page>
