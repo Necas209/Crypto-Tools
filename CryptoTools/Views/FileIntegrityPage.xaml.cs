@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using CryptoTools.ViewModels;
@@ -76,12 +77,19 @@ public partial class FileIntegrityPage
 
     private void Register_OnDragEnter(object sender, DragEventArgs e)
     {
-        // Por um hover bonito no botão do Register
+        if (sender is not Button btn) return;
+     
+        btn.Background = new SolidColorBrush(Colors.LightSlateGray);
+        btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
+        
     }
 
     private void Register_OnDragLeave(object sender, DragEventArgs e)
     {
-        // Por o style de volta ao normal do botão do Register
+        if (sender is not Button btn) return;
+     
+        btn.Background = new SolidColorBrush(Colors.Transparent);
+        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
     private void Validation_OnClick(object sender, RoutedEventArgs e)
@@ -127,9 +135,17 @@ public partial class FileIntegrityPage
 
     private void Validation_OnDragEnter(object sender, DragEventArgs e)
     {
+        if (sender is not Button btn) return;
+     
+        btn.Background = new SolidColorBrush(Colors.LightSlateGray);
+        btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
     private void Validation_OnDragLeave(object sender, DragEventArgs e)
     {
+        if (sender is not Button btn) return;
+     
+        btn.Background = new SolidColorBrush(Colors.Transparent);
+        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 }
