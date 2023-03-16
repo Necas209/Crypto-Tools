@@ -34,16 +34,29 @@ public class FileIntegrityPageViewModel : BaseViewModel
 
         var fileName = Path.GetFileName(file);
 
-        var hash = HashingService.GetFileHash(file, Algorithm.Name);
-
-        var fileIntegrity = new HashEntry
+        var hashEntry = Context.HashEntries.FirstOrDefault(x => x.FileName == fileName);
+        
+        if (hashEntry is null)
         {
-            FileName = fileName,
-            Hash = hash,
-            HashingAlgorithmId = Algorithm.Id
-        };
+            var hash = HashingService.GetFileHash(file, Algorithm.Name);
 
-        Context.HashEntries.Add(fileIntegrity);
+            var fileIntegrity = new HashEntry
+            {
+                FileName = fileName,
+                Hash = hash,
+                HashingAlgorithmId = Algorithm.Id
+            };
+
+            Context.HashEntries.Add(fileIntegrity);
+        }
+        else
+        {
+            var hash = HashingService.GetFileHash(file, Algorithm.Name);
+
+            hashEntry.Hash = hash;
+            hashEntry.HashingAlgorithmId = Algorithm.Id;
+            Context.HashEntries.Update(hashEntry);
+        }
 
         return true;
     }
