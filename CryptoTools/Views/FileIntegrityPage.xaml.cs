@@ -10,42 +10,48 @@ namespace CryptoTools.Views;
 
 public partial class FileIntegrityPage
 {
+    private readonly string _dialogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly string _dialogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
     private readonly FileIntegrityPageViewModel _viewModel;
 
     public FileIntegrityPage()
     {
         InitializeComponent();
-
         _viewModel = (FileIntegrityPageViewModel)DataContext;
-
+        _viewModel.DisplayMessage += ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
             _dispatcherTimer.Stop();
         };
-
-        _viewModel.DisplayMessage += ShowMessage;
     }
 
     private void ShowMessage(string message, Color color)
     {
+        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
         Message.Text = message;
         // Change the color of the text
         Message.Foreground = new SolidColorBrush(color);
         // Timer to change the visibility of the text
         Message.Visibility = Visibility.Visible;
-
         _dispatcherTimer.Start();
     }
 
     private void Register_OnClick(object sender, RoutedEventArgs e)
     {
+        var dialog = new OpenFileDialog
+        {
+            Multiselect = true,
+            InitialDirectory = _dialogPath,
+            Filter = "All files (*.*)|*.*"
+        };
+        if (dialog.ShowDialog() != true) return;
+        _viewModel.RegisterFiles(dialog.FileNames);
     }
 
     private void Register_OnDrop(object sender, DragEventArgs e)
@@ -54,24 +60,14 @@ public partial class FileIntegrityPage
         {
             // Note that you can have more than one file.
             var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-
-            if (files is null) return;
-
+            if (files == null || files.Length == 0) return;
             // Register the file
             _viewModel.RegisterFiles(files);
-
-            _dispatcherTimer.Start();
         }
         else
         {
-            if (_dispatcherTimer.IsEnabled)
-            {
-                _dispatcherTimer.Stop();
-            }
-
+            if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
             ShowMessage("This is not a file", Colors.Red);
-
-            _dispatcherTimer.Start();
         }
     }
 
@@ -94,43 +90,33 @@ public partial class FileIntegrityPage
 
     private void Validation_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenFileDialog openFileDialog = new();
-        openFileDialog.Multiselect = true;
-        openFileDialog.Filter = "All files (*.*)|*.*";
-        if (openFileDialog.ShowDialog() == true)
+        var openFileDialog = new OpenFileDialog
         {
-        }
+            Filter = "All files (*.*)|*.*"
+        };
+        if (openFileDialog.ShowDialog() != true) return;
+        _viewModel.ValidateFile(openFileDialog.FileName);
     }
 
     private void Validation_OnDrop(object sender, DragEventArgs e)
     {
-        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
         {
-            // Note that you can have more than one file.
-            var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-
-            if (files is null) return;
-
-            // validate the file
-            _viewModel.ValidateFile(files[0]);
-
-            _dispatcherTimer.Start();
+            ShowMessage("This is not a file!", Colors.Red);
+            return;
         }
-        else
+
+        // Note that you can have more than one file.
+        var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
+        if (files == null || files.Length == 0) return;
+        if (files.Length > 1)
         {
-            if (_dispatcherTimer.IsEnabled)
-            {
-                _dispatcherTimer.Stop();
-            }
-
-            Message.Text = "Não é um arquivo";
-            // Change the color of the text
-            Message.Foreground = new SolidColorBrush(Colors.Red);
-            // Timer to change the visibility of the text
-            Message.Visibility = Visibility.Visible;
-
-            _dispatcherTimer.Start();
+            ShowMessage("You can only validate one file at a time.", Colors.Red);
+            return;
         }
+
+        // validate the file
+        _viewModel.ValidateFile(files[0]);
     }
 
     private void Validation_OnDragEnter(object sender, DragEventArgs e)
