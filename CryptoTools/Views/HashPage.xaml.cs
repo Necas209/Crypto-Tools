@@ -11,18 +11,18 @@ namespace CryptoTools.Views;
 public partial class HashPage
 {
     private readonly HashPageViewModel _viewModel;
-    
+
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
-    
+
     public HashPage()
     {
         InitializeComponent();
-        
+
         _viewModel = (HashPageViewModel)DataContext;
-        
+
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
@@ -51,8 +51,7 @@ public partial class HashPage
     {
         _viewModel?.HashText();
     }
-    
-    
+
     private void File_OnClick(object sender, RoutedEventArgs e)
     {
         var openFileDialog = new OpenFileDialog
@@ -65,11 +64,10 @@ public partial class HashPage
 
     private void File_OnDrop(object sender, DragEventArgs e)
     {
-        
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
-        
+
         if (!e.Data.GetDataPresent(DataFormats.FileDrop))
         {
             ShowMessage("This is not a file!", Colors.Red);
@@ -92,7 +90,7 @@ public partial class HashPage
     private void File_OnDragEnter(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
-     
+
         btn.Background = new SolidColorBrush(Colors.LightSlateGray);
         btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
@@ -100,7 +98,7 @@ public partial class HashPage
     private void File_OnDragLeave(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
-     
+
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
