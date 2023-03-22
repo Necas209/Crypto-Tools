@@ -13,9 +13,9 @@
     <Grid>
         <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
                   Margin="0,20,0,0"
-                  ItemsSource="{Binding EncryptAlgorithms}"
+                  ItemsSource="{Binding EncryptionAlgorithms}"
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
-                  SelectedItem="{Binding Algorithm}" />
+                  SelectedItem="{Binding SelectedAlgorithm}" />
         <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0"></TextBlock>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,55,0,10">
             <StackPanel Orientation="Horizontal">

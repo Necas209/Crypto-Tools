@@ -59,7 +59,7 @@ public partial class EncryptPage : Page
 
         img1.Source = new BitmapImage(new Uri(openFileDialog.FileName));
 
-        var encryptImage = EncryptPageViewModel.EncryptImage(openFileDialog.FileName);
+        var encryptImage = _viewModel.EncryptImage(openFileDialog.FileName);
 
         img2.Source = encryptImage;
     }

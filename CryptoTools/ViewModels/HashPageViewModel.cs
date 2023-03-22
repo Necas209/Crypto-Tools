@@ -10,7 +10,6 @@ public class HashPageViewModel : BaseViewModel
     public HashPageViewModel()
     {
         HashingAlgorithms = Context.HashingAlgorithms.ToList();
-
         Algorithm = HashingAlgorithms.First();
     }
 
