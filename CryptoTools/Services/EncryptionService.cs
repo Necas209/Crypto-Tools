@@ -1,12 +1,12 @@
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Cryptography;
 
+#pragma warning disable SYSLIB0022
+
 namespace CryptoTools.Services;
 
-public class EncryptionService
+public static class EncryptionService
 {
-    [SuppressMessage("Microsoft.Security", "SYSLIB0022", Justification = "Compatibility with legacy systems")]
     private static SymmetricAlgorithm GetAlgorithm(string name)
     {
         return name switch

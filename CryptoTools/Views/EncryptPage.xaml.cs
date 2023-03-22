@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,14 +9,14 @@ using Microsoft.Win32;
 
 namespace CryptoTools.Views;
 
-public partial class EncryptPage : Page
+public partial class EncryptPage
 {
-    private readonly EncryptPageViewModel _viewModel;
-
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
+
+    private readonly EncryptPageViewModel _viewModel;
 
     public EncryptPage()
     {
@@ -82,7 +80,6 @@ public partial class EncryptPage : Page
         if (files.Length > 1)
         {
             ShowMessage("You can only hash one file at a time.", Colors.Red);
-            return;
         }
     }
 
