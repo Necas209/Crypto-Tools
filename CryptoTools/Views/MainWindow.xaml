@@ -8,7 +8,7 @@
     <Grid>
         <Grid>
             <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="16">
-                <Bold>CryptoTool</Bold>
+                <Bold>CryptoTools</Bold>
             </TextBlock>
         </Grid>
         <Grid Margin="0,20,0,0">

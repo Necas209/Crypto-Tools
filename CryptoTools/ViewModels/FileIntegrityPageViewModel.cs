@@ -57,18 +57,12 @@ public class FileIntegrityPageViewModel : BaseViewModel
         if (!allFilesRegistered)
             DisplayMessage?.Invoke("Some files could not be registered!", Colors.Coral);
         else
-            DisplayMessage?.Invoke("All files registered successfully", Colors.Green);
+            DisplayMessage?.Invoke("File(s) registered successfully.", Colors.Green);
         Context.SaveChanges();
     }
 
     public void ValidateFile(string file)
     {
-        if (!File.Exists(file))
-        {
-            DisplayMessage?.Invoke("File does not exist", Colors.Red);
-            return;
-        }
-
         var fileName = Path.GetFileName(file);
         var hashEntry = Context.HashEntries
             .Include(x => x.HashingAlgorithm)
@@ -79,10 +73,10 @@ public class FileIntegrityPageViewModel : BaseViewModel
             return;
         }
 
-        var hash = HashingService.GetFileHash(file, hashEntry.HashingAlgorithm.Name);
+        var hash = HashingService.GetFileHash(file, hashEntry.HashingAlgorithm?.Name ?? string.Empty);
         if (hashEntry.Hash == hash)
-            DisplayMessage?.Invoke("File is valid", Colors.Green);
+            DisplayMessage?.Invoke("File is valid.", Colors.Green);
         else
-            DisplayMessage?.Invoke("File is invalid", Colors.Red);
+            DisplayMessage?.Invoke("File is invalid!", Colors.Red);
     }
 }

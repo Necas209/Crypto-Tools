@@ -9,10 +9,15 @@ namespace CryptoTools.ViewModels;
 public class ZipPageViewModel : BaseViewModel
 {
     public readonly record struct ArchiveEntry(string Name, string Path, bool IsDirectory);
-    
+
     public ObservableCollection<ArchiveEntry> ArchiveEntries { get; set; } = new();
-    public List<ArchiveEntry> SelectedEntries { get => _selectedEntries; set => SetField(ref _selectedEntries, value); }
-    
+
+    public List<ArchiveEntry> SelectedEntries
+    {
+        get => _selectedEntries;
+        set => SetField(ref _selectedEntries, value);
+    }
+
     private List<ArchiveEntry> _selectedEntries = new();
 
     public void RemoveSelectedEntries()
@@ -21,7 +26,7 @@ public class ZipPageViewModel : BaseViewModel
         {
             ArchiveEntries.Remove(entry);
         }
-        
+
         SelectedEntries.Clear();
     }
 
@@ -42,15 +47,14 @@ public class ZipPageViewModel : BaseViewModel
                 foreach (var entry in ArchiveEntries)
                 {
                     if (entry.IsDirectory)
-                        archive.CreateEntryFromDirectory(entry.Path, entry.Name );
-                    else 
+                        archive.CreateEntryFromDirectory(entry.Path, entry.Name);
+                    else
                         archive.CreateEntryFromFile(entry.Path, entry.Name, CompressionLevel.Fastest);
                 }
             }
         }
-        
-        ArchiveEntries.Clear();
 
+        ArchiveEntries.Clear();
     }
 
     public static void DecompressArchive(string dialogFileName)
@@ -61,10 +65,10 @@ public class ZipPageViewModel : BaseViewModel
         {
             var entryPath = Path.Combine(Path.GetDirectoryName(dialogFileName) ?? string.Empty, entry.FullName);
             var directory = Path.GetDirectoryName(entryPath);
-            
+
             if (directory != null && !Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
-            
+
             entry.ExtractToFile(entryPath, true);
         }
     }

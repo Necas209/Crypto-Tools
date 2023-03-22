@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
 using CryptoTools.Models;
 using CryptoTools.Services;
 
@@ -24,6 +23,7 @@ public class HashPageViewModel : BaseViewModel
         get => _hashedText;
         set => SetField(ref _hashedText, value);
     }
+
     private string _hashedFile = string.Empty;
 
     public string HashedFile
