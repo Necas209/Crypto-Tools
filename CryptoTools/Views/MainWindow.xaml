@@ -25,8 +25,11 @@
                 <TabItem Height="25" Header="Integrity">
                     <Frame Source="FileIntegrityPage.xaml" />
                 </TabItem>
-                <TabItem Height="25" Header="Postmark">
-                    <Frame Source="PostmarkPage.xaml" />
+                <TabItem Height="25" Header="Signature">
+                    <Frame Source="SignaturePage.xaml" />
+                </TabItem>
+                <TabItem Height="25" Header="Chat">
+                    <Frame Source="ChatPage.xaml" />
                 </TabItem>
             </TabControl>
         </Grid>
