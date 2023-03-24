@@ -29,7 +29,7 @@
                     <Frame Source="SignaturePage.xaml" />
                 </TabItem>
                 <TabItem Height="25" Header="Chat">
-                    <Frame Source="ChatPage.xaml" />
+                    <Frame Name="ChatPage" Source="ChatPage.xaml" />
                 </TabItem>
             </TabControl>
         </Grid>
