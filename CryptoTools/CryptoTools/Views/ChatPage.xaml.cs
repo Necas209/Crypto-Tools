@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using CryptoTools.ViewModels;
 
 namespace CryptoTools.Views;
@@ -39,5 +40,35 @@ public partial class ChatPage
     private void LoginButton_Click(object sender, RoutedEventArgs e)
     {
         _viewModel.Login(UserNameTextBox.Text, PasswordBox.SecurePassword);
+    }
+
+    private void UserNameTextBox_OnGotFocus(object sender, RoutedEventArgs e)
+    {
+        LoginButton.IsDefault = true;
+    }
+
+    private void UserNameTextBox_OnLostFocus(object sender, RoutedEventArgs e)
+    {
+        LoginButton.IsDefault = false;
+    }
+
+    private void PasswordBox_OnGotFocus(object sender, RoutedEventArgs e)
+    {
+        LoginButton.IsDefault = true;
+    }
+
+    private void PasswordBox_OnLostFocus(object sender, RoutedEventArgs e)
+    {
+        LoginButton.IsDefault = false;
+    }
+
+    private void MessageTextBox_OnGotFocus(object sender, RoutedEventArgs e)
+    {
+        SendButton.IsDefault = true;
+    }
+
+    private void MessageTextBox_OnLostFocus(object sender, RoutedEventArgs e)
+    {
+        SendButton.IsDefault = false;
     }
 }
