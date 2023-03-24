@@ -1,6 +1,16 @@
 using ChatServer;
+using Microsoft.EntityFrameworkCore;
 
+// Configure the host
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.AddConsole();
+
+var connectionString = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
+
+builder.Services.AddDbContext<ChatDbContext>(options =>
+    options.UseMySQL(connectionString!)
+);
 
 var app = builder.Build();
 
@@ -29,6 +39,7 @@ app.Use(async (context, next) =>
 app.MapGet("/login", (string username, string password) =>
 {
     // TODO: Check credentials against a database
+    Console.WriteLine("Login request received");
     if (username == "admin" && password == "admin") return Results.Ok();
 
     return Results.Unauthorized();
