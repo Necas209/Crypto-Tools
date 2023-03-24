@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Cryptography;
 
 namespace CryptoTools.Services;
 
@@ -27,10 +26,10 @@ public static class SecureStringExtension
         }
     }
 
-    public static string Hash(SecureString password)
+    public static string Hash(SecureString password, string algorithm)
     {
-        using var mySha256 = SHA256.Create();
-        var pwHash = password.Hash(mySha256.ComputeHash);
+        using var hashAlgorithm = HashingService.GetHashAlgorithm(algorithm);
+        var pwHash = password.Hash(hashAlgorithm.ComputeHash);
         return Convert.ToHexString(pwHash).ToLower();
     }
 

@@ -6,7 +6,7 @@ namespace CryptoTools.Services;
 
 public static class HashingService
 {
-    private static HashAlgorithm GetHashAlgorithm(string name)
+    public static HashAlgorithm GetHashAlgorithm(string name)
     {
         return name switch
         {
