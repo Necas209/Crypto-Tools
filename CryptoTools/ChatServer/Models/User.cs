@@ -1,13 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-
-namespace ChatServer;
-
-public class ChatDbContext : DbContext
-{
-    
-    public DbSet<User> Users { get; set; } = null!;
-
-}
+namespace ChatServer.Models;
 
 public class User
 {

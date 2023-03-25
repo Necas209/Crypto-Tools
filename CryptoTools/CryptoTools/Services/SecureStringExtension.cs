@@ -26,7 +26,7 @@ public static class SecureStringExtension
         }
     }
 
-    public static string Hash(SecureString password, string algorithm)
+    public static string Hash(this SecureString password, string algorithm)
     {
         using var hashAlgorithm = HashingService.GetHashAlgorithm(algorithm);
         var pwHash = password.Hash(hashAlgorithm.ComputeHash);

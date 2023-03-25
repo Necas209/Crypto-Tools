@@ -17,12 +17,21 @@
         <Border BorderBrush="Gray" Margin="20" BorderThickness="1" Grid.Column="0">
             <StackPanel Orientation="Vertical">
                 <Label Content="Enter your username:" Margin="20 20 20 10" Height="25" />
-                <TextBox x:Name="UserNameTextBox" GotFocus="UserNameTextBox_OnGotFocus" LostFocus="UserNameTextBox_OnLostFocus" Margin="20 0 20 10" Height="25" />
+                <TextBox x:Name="UserNameTextBox" GotFocus="UserNameTextBox_OnGotFocus" Text="{Binding UserName}"
+                         LostFocus="UserNameTextBox_OnLostFocus" Margin="20 0 20 10" Height="25" />
                 <Label Content="Enter your password:" Margin="20 0 20 10" Height="25" />
-                <PasswordBox x:Name="PasswordBox" GotFocus="PasswordBox_OnGotFocus" LostFocus="PasswordBox_OnLostFocus" Margin="20 0 20 10" Height="25" />
-                <Button x:Name="LoginButton" Content="Login" Margin="50 10 50 10" Height="30" Click="LoginButton_Click" />
+                <PasswordBox x:Name="PasswordBox" GotFocus="PasswordBox_OnGotFocus" LostFocus="PasswordBox_OnLostFocus"
+                             Margin="20 0 20 10" Height="25" />
+                <Grid Margin="20 10">
+                    <Button x:Name="LoginButton" Content="Login" Width="100" Margin="0 0 110 0 " Height="30"
+                            Click="LoginButton_Click" />
+                    <Button x:Name="LogoutButton" Content="Logout" Width="100" Margin="110 0 0 0" Height="30"
+                            Click="LogoutButton_Click" IsEnabled="False" />
+                </Grid>
                 <Label Content="Enter your message:" Height="25" Margin="20 0 20 10" />
-                <TextBox x:Name="MessageTextBox" GotFocus="MessageTextBox_OnGotFocus" LostFocus="MessageTextBox_OnLostFocus" TextWrapping="Wrap" Height="100" Margin="20 0 20 10" IsEnabled="False" />
+                <TextBox x:Name="MessageTextBox" GotFocus="MessageTextBox_OnGotFocus"
+                         LostFocus="MessageTextBox_OnLostFocus" TextWrapping="Wrap" Height="100" Margin="20 0 20 10"
+                         IsEnabled="False" />
                 <Button x:Name="SendButton" Content="Send message" Margin="50 5 50 10" Height="30" IsEnabled="False"
                         Click="SendButton_Click" />
             </StackPanel>

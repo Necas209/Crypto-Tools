@@ -1,5 +1,4 @@
 using System.Windows;
-using System.Windows.Controls;
 using CryptoTools.ViewModels;
 
 namespace CryptoTools.Views;
@@ -13,33 +12,39 @@ public partial class ChatPage
         InitializeComponent();
         _viewModel = (ChatPageViewModel)DataContext;
         _viewModel.OnMessageReceived += UpdateChat;
-        _viewModel.EnterChat += AllowMessageSending;
+        _viewModel.EnterChat += UpdateView;
+        _viewModel.LeaveChat += UpdateView;
+        _viewModel.OnError += ShowError;
+    }
+
+    private static void ShowError(string message)
+    {
+        MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     private void SendButton_Click(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(UserNameTextBox.Text) || string.IsNullOrWhiteSpace(MessageTextBox.Text)) return;
-
-        var message = $"{UserNameTextBox.Text}: {MessageTextBox.Text}";
-        _viewModel.SendMessage(message);
-
+        _viewModel.SendMessage(MessageTextBox.Text);
         MessageTextBox.Text = string.Empty;
     }
 
     private void UpdateChat()
     {
-        Dispatcher.Invoke(() => { ChatListBox.ScrollIntoView(ChatListBox.Items[^1]); });
+        Dispatcher.Invoke(() => ChatListBox.ScrollIntoView(ChatListBox.Items[^1]));
     }
 
-    private void AllowMessageSending()
+    private void UpdateView(bool isLoggedIn)
     {
-        MessageTextBox.IsEnabled = true;
-        SendButton.IsEnabled = true;
+        MessageTextBox.IsEnabled = isLoggedIn;
+        SendButton.IsEnabled = isLoggedIn;
+        LoginButton.IsEnabled = !isLoggedIn;
+        LogoutButton.IsEnabled = isLoggedIn;
     }
 
     private void LoginButton_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.Login(UserNameTextBox.Text, PasswordBox.SecurePassword);
+        _viewModel.Login(PasswordBox.SecurePassword);
     }
 
     private void UserNameTextBox_OnGotFocus(object sender, RoutedEventArgs e)
@@ -70,5 +75,10 @@ public partial class ChatPage
     private void MessageTextBox_OnLostFocus(object sender, RoutedEventArgs e)
     {
         SendButton.IsDefault = false;
+    }
+
+    private void LogoutButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.Logout();
     }
 }
