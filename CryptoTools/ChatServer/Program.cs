@@ -1,4 +1,3 @@
-using ChatServer;
 using ChatServer.Data;
 using Microsoft.EntityFrameworkCore;
 
