@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChatServer.Data;
 
-public class ChatDbContext : DbContext
+public class CryptoDbContext : DbContext
 {
-    public ChatDbContext(DbContextOptions<ChatDbContext> options)
+    public CryptoDbContext(DbContextOptions<CryptoDbContext> options)
         : base(options)
     {
     }

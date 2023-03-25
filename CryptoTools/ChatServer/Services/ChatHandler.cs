@@ -10,7 +10,7 @@ public static class ChatHandler
 {
     private static readonly WebSocketManager WebSocketManager = new();
 
-    public static async Task Handle(WebSocket webSocket, ChatDbContext dbContext)
+    public static async Task Handle(WebSocket webSocket, CryptoDbContext dbContext)
     {
         var isFirstMessage = true;
         var webSocketConnection = WebSocketManager.AddWebSocket(webSocket);

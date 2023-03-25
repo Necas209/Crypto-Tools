@@ -8,9 +8,9 @@ namespace ChatServer.Controllers;
 [Route("/")]
 public class HomeController : Controller
 {
-    private readonly ChatDbContext _dbContext;
+    private readonly CryptoDbContext _dbContext;
 
-    public HomeController(ChatDbContext dbContext)
+    public HomeController(CryptoDbContext dbContext)
     {
         _dbContext = dbContext;
     }
