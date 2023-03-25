@@ -15,7 +15,6 @@ namespace CryptoTools.ViewModels;
 
 public class ChatPageViewModel
 {
-    private ClientWebSocket _clientWebSocket = new();
     private int _userId;
     public ObservableCollection<string> ChatMessages { get; } = new();
     public string UserName { get; set; } = string.Empty;
@@ -28,17 +27,17 @@ public class ChatPageViewModel
     private async Task StartWebSocketListenerAsync()
     {
         var serverUri = new Uri("wss://cryptotools.azurewebsites.net/chat");
-        await _clientWebSocket.ConnectAsync(serverUri, CancellationToken.None);
+        await App.ClientWebSocket.ConnectAsync(serverUri, CancellationToken.None);
         // start a new thread to receive messages from the server
         await ReceiveMessages();
     }
 
     private async Task ReceiveMessages()
     {
-        while (_clientWebSocket.State == WebSocketState.Open)
+        while (App.ClientWebSocket.State == WebSocketState.Open)
         {
             var buffer = new ArraySegment<byte>(new byte[4096]);
-            var result = await _clientWebSocket.ReceiveAsync(buffer, CancellationToken.None);
+            var result = await App.ClientWebSocket.ReceiveAsync(buffer, CancellationToken.None);
             var message = Encoding.UTF8.GetString(buffer.Array ?? Array.Empty<byte>(), 0, result.Count);
             // add the received message to the UI
             AddMessage(message);
@@ -61,7 +60,7 @@ public class ChatPageViewModel
             Message = message
         });
         var buffer = Encoding.UTF8.GetBytes(json);
-        await _clientWebSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true,
+        await App.ClientWebSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true,
             CancellationToken.None);
     }
 
@@ -91,9 +90,9 @@ public class ChatPageViewModel
     public async void Logout()
     {
         LeaveChat?.Invoke(false);
-        await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Logout", CancellationToken.None);
-        _clientWebSocket.Dispose();
-        _clientWebSocket = new ClientWebSocket();
+        await App.ClientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Logout", CancellationToken.None);
+        App.ClientWebSocket.Dispose();
+        App.ClientWebSocket = new ClientWebSocket();
         // Reset the UI
         ChatMessages.Clear();
     }

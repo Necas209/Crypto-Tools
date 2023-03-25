@@ -40,7 +40,15 @@
             <StackPanel Orientation="Vertical">
                 <Label Content="Chat:" Height="25" Margin="20" />
                 <ListBox x:Name="ChatListBox" Margin="20 0 20 20" Height="300"
-                         ItemsSource="{Binding ChatMessages}" />
+                         ItemsSource="{Binding ChatMessages}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Height="Auto" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
         </Border>
     </Grid>

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net.WebSockets;
 using CryptoTools.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,4 +22,6 @@ public partial class App
         db.Database.Migrate();
         db.Seed();
     }
+
+    public static ClientWebSocket ClientWebSocket { get; set; } = new();
 }
