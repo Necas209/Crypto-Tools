@@ -1,10 +1,10 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using ChatServer.Data;
-using ChatServer.Models;
+using CryptoServer.Data;
+using CryptoServer.Models;
 
-namespace ChatServer.Services;
+namespace CryptoServer.Services;
 
 public static class ChatHandler
 {

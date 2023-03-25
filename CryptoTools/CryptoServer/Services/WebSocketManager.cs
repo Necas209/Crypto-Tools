@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 
-namespace ChatServer.Services;
+namespace CryptoServer.Services;
 
 public class WebSocketManager
 {

@@ -2,7 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoTools", "CryptoTools\CryptoTools.csproj", "{9AE34339-0053-4681-947A-15A2C9C63050}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatServer", "ChatServer\ChatServer.csproj", "{79675B2A-47F5-4454-B157-0A6B31C46F83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoServer", "CryptoServer\CryptoServer.csproj", "{79675B2A-47F5-4454-B157-0A6B31C46F83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoLib", "CryptoLib\CryptoLib.csproj", "{D2CDE525-0CB0-4742-A4CE-93F194C2BFFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +20,9 @@ Global
 		{79675B2A-47F5-4454-B157-0A6B31C46F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79675B2A-47F5-4454-B157-0A6B31C46F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79675B2A-47F5-4454-B157-0A6B31C46F83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2CDE525-0CB0-4742-A4CE-93F194C2BFFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2CDE525-0CB0-4742-A4CE-93F194C2BFFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2CDE525-0CB0-4742-A4CE-93F194C2BFFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2CDE525-0CB0-4742-A4CE-93F194C2BFFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

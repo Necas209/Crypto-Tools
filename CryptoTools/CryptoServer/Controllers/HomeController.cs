@@ -1,9 +1,9 @@
-using ChatServer.Data;
-using ChatServer.Services;
+using CryptoServer.Data;
+using CryptoServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ChatServer.Controllers;
+namespace CryptoServer.Controllers;
 
 [Route("/")]
 public class HomeController : Controller

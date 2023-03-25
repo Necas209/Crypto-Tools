@@ -1,4 +1,4 @@
-using ChatServer.Data;
+using CryptoServer.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

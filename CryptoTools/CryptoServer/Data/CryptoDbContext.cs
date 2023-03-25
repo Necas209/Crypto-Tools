@@ -1,7 +1,7 @@
-using ChatServer.Models;
+using CryptoServer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ChatServer.Data;
+namespace CryptoServer.Data;
 
 public class CryptoDbContext : DbContext
 {

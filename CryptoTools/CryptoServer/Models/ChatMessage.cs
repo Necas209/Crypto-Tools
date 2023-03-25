@@ -1,4 +1,4 @@
-namespace ChatServer.Models;
+namespace CryptoServer.Models;
 
 public class ChatMessage
 {
