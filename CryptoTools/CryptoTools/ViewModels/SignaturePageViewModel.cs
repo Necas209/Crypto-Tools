@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -13,17 +12,18 @@ public class SignaturePageViewModel
 {
     public delegate void DisplayMessageDelegate(string message, Color color);
 
-    public event DisplayMessageDelegate? DisplayMessage;
+    private static readonly Random Random = new();
 
     private readonly RSA _rsa = RSA.Create();
     private readonly SHA256 _sha256 = SHA256.Create();
-    private static Random random = new();
+
+    public event DisplayMessageDelegate? DisplayMessage;
 
     private static string RandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
+            .Select(s => s[Random.Next(s.Length)]).ToArray());
     }
 
     private static byte[] CombineThreeByteArray(byte[] first, byte[] second, byte[] third)
@@ -37,10 +37,7 @@ public class SignaturePageViewModel
 
     public void SignFiles(IEnumerable<string> dialogFileNames)
     {
-        foreach (var fileName in dialogFileNames)
-        {
-            SignFile(fileName);
-        }
+        foreach (var fileName in dialogFileNames) SignFile(fileName);
     }
 
     private void SignFile(string fileName)
