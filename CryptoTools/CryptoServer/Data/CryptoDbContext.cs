@@ -1,4 +1,4 @@
-using CryptoServer.Models;
+using CryptoLib.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryptoServer.Data;

@@ -1,13 +1,15 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Net.WebSockets;
 using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using CryptoTools.Services;
+using CryptoLib.Extensions;
+using CryptoLib.Models;
 
 namespace CryptoTools.ViewModels;
 
@@ -67,8 +69,12 @@ public class ChatPageViewModel
     {
         using var client = new HttpClient();
         var passwordHash = securePassword.Hash("SHA256");
-        var response = await client.GetAsync(
-            $"https://cryptotools.azurewebsites.net/login?username={UserName}&passwordHash={passwordHash}"
+        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/login",
+            new User
+            {
+                UserName = UserName,
+                PasswordHash = passwordHash
+            }
         );
         if (!response.IsSuccessStatusCode)
         {
@@ -89,6 +95,6 @@ public class ChatPageViewModel
         _clientWebSocket.Dispose();
         _clientWebSocket = new ClientWebSocket();
         // Reset the UI
-        // ChatMessages.Clear();
+        ChatMessages.Clear();
     }
 }

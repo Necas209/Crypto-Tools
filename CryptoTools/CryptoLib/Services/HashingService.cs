@@ -1,8 +1,7 @@
-using System;
-using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
-namespace CryptoTools.Services;
+namespace CryptoLib.Services;
 
 public static class HashingService
 {
@@ -30,7 +29,7 @@ public static class HashingService
     public static string GetHash(string text, string algorithmName)
     {
         using var hashAlgorithm = GetHashAlgorithm(algorithmName);
-        var hash = hashAlgorithm.ComputeHash(System.Text.Encoding.UTF8.GetBytes(text));
+        var hash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(text));
         return BitConverter.ToString(hash).Replace("-", "").ToLower();
     }
 }

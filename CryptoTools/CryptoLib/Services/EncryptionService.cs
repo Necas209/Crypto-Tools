@@ -1,9 +1,8 @@
-using System.IO;
 using System.Security.Cryptography;
 
 #pragma warning disable SYSLIB0022
 
-namespace CryptoTools.Services;
+namespace CryptoLib.Services;
 
 public static class EncryptionService
 {

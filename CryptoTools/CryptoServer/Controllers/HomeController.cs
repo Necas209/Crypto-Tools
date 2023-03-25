@@ -1,3 +1,4 @@
+using CryptoLib.Models;
 using CryptoServer.Data;
 using CryptoServer.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,12 @@ public class HomeController : Controller
         _dbContext = dbContext;
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("/login")]
-    public async Task<IActionResult> Login(string username, string passwordHash)
+    public async Task<IActionResult> Login([FromBody] User user)
     {
         var userId = await _dbContext.Users
-            .Where(u => u.UserName == username && u.PasswordHash == passwordHash)
+            .Where(u => u.UserName == user.UserName && u.PasswordHash == user.PasswordHash)
             .Select(u => u.Id)
             .FirstOrDefaultAsync();
         if (userId == 0) return Unauthorized();

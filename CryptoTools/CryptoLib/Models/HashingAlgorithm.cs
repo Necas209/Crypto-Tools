@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CryptoTools.Models;
+namespace CryptoLib.Models;
 
 public class HashingAlgorithm
 {

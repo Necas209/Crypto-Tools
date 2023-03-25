@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CryptoTools.Models;
+namespace CryptoLib.Models;
 
 public class EncryptionAlgorithm
 {
@@ -9,10 +9,4 @@ public class EncryptionAlgorithm
     [Required] public string Name { get; set; } = string.Empty;
 
     [Required] public EncryptionType EncryptionType { get; set; }
-}
-
-public enum EncryptionType
-{
-  Symmetric,
-  Asymmetric
 }

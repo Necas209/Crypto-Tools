@@ -1,8 +1,8 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using CryptoLib.Models;
 using CryptoServer.Data;
-using CryptoServer.Models;
 
 namespace CryptoServer.Services;
 

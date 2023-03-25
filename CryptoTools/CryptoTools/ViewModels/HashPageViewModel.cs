@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using CryptoTools.Models;
-using CryptoTools.Services;
+using CryptoLib.Models;
+using CryptoLib.Services;
 
 namespace CryptoTools.ViewModels;
 
 public class HashPageViewModel : BaseViewModel
 {
+    private string _hashedFile = string.Empty;
+    private string _hashedText = string.Empty;
+
     public HashPageViewModel()
     {
         HashingAlgorithms = Context.HashingAlgorithms.ToList();
@@ -15,15 +18,12 @@ public class HashPageViewModel : BaseViewModel
 
     public List<HashingAlgorithm> HashingAlgorithms { get; }
     public string UnhashedText { get; set; } = string.Empty;
-    private string _hashedText = string.Empty;
 
     public string HashedText
     {
         get => _hashedText;
         set => SetField(ref _hashedText, value);
     }
-
-    private string _hashedFile = string.Empty;
 
     public string HashedFile
     {

@@ -1,4 +1,4 @@
-namespace CryptoServer.Models;
+namespace CryptoLib.Models;
 
 public class User
 {

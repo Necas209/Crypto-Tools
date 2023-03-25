@@ -6,8 +6,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using CryptoTools.Models;
-using CryptoTools.Services;
+using CryptoLib.Models;
+using CryptoLib.Services;
 
 namespace CryptoTools.ViewModels;
 
@@ -29,10 +29,7 @@ public class EncryptPageViewModel : BaseViewModel
         var stride = (width * writeableBitmap.Format.BitsPerPixel + 7) / 8;
         // Ensure the byte array has the exact length required for the specified width and height
         var requiredLength = stride * height;
-        if (encryptedImageBytes.Length != requiredLength)
-        {
-            Array.Resize(ref encryptedImageBytes, requiredLength);
-        }
+        if (encryptedImageBytes.Length != requiredLength) Array.Resize(ref encryptedImageBytes, requiredLength);
 
         writeableBitmap.WritePixels(new Int32Rect(0, 0, width, height), encryptedImageBytes, stride, 0);
         return writeableBitmap;

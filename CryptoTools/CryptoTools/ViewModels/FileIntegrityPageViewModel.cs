@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
-using CryptoTools.Models;
-using CryptoTools.Services;
+using CryptoLib.Models;
+using CryptoLib.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryptoTools.ViewModels;
