@@ -1,22 +1,15 @@
-﻿using System;
-using System.IO;
-using System.Net.WebSockets;
+﻿using System.IO;
 using CryptoTools.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryptoTools;
 
-/// <summary>
-///     Interaction logic for App.xaml
-/// </summary>
 public partial class App
 {
-    public static Action? ShowLogin { get; set; }
-    public static Action? ShowApp { get; set; }
-
     private App()
     {
         InitializeComponent();
+        // Create local database
         using var db = new CryptoDbContext();
         var directory = Path.GetDirectoryName(CryptoDbContext.DbPath);
         if (directory is not null) Directory.CreateDirectory(directory);
@@ -26,9 +19,4 @@ public partial class App
         db.Database.Migrate();
         db.Seed();
     }
-
-    public static ClientWebSocket ClientWebSocket { get; set; } = new();
-    public static int UserId { get; set; } = 0;
-
-    public static string UserName { get; set; } = string.Empty;
 }

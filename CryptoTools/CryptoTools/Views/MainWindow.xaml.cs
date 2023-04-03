@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using CryptoTools.ViewModels;
 
 namespace CryptoTools.Views;
@@ -14,43 +13,15 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
-
         _viewModel = (MainWindowViewModel)DataContext;
-
         _viewModel.ShowLogin += ShowLogin;
-        App.ShowLogin += LoginFunc;
-        App.ShowApp += AppFunc;
-
-        if (App.UserId == 0)
-        {
-            ShowLogin(true);
-        }
-        else
-        {
-            ShowApp(true);
-        }
     }
 
-    private void LoginFunc()
+    private void ShowLogin()
     {
-        ShowLogin(true);
-    }
-
-    private void AppFunc()
-    {
-        ShowApp(true);
-    }
-
-    private void ShowLogin(bool obj)
-    {
-        MainFrame.Source = new Uri("LoginPage.xaml", UriKind.Relative);
-        LogoutButton.Visibility = Visibility.Hidden;
-    }
-
-    private void ShowApp(bool obj)
-    {
-        MainFrame.Source = new Uri("MainWindowContentPage.xaml", UriKind.Relative);
-        LogoutButton.Visibility = Visibility.Visible;
+        var loginWindow = new LoginWindow();
+        loginWindow.Show();
+        Close();
     }
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)

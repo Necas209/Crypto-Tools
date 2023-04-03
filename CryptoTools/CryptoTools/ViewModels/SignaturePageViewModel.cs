@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Media;
+using CryptoLib.Models;
 
 namespace CryptoTools.ViewModels;
 
@@ -26,49 +29,56 @@ public class SignaturePageViewModel
             .Select(s => s[Random.Next(s.Length)]).ToArray());
     }
 
-    private static byte[] CombineThreeByteArray(byte[] first, byte[] second, byte[] third)
-    {
-        var ret = new byte[first.Length + second.Length + third.Length];
-        Buffer.BlockCopy(first, 0, ret, 0, first.Length);
-        Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
-        Buffer.BlockCopy(third, 0, ret, first.Length + second.Length, third.Length);
-        return ret;
-    }
-
     public void SignFiles(IEnumerable<string> dialogFileNames)
     {
         foreach (var fileName in dialogFileNames) SignFile(fileName);
     }
 
-    private void SignFile(string fileName)
+    private async void SignFile(string fileName)
     {
         var randomString = RandomString(256);
         var randomBytes = Encoding.ASCII.GetBytes(randomString);
-        var file = File.ReadAllBytes(fileName);
+        var file = await File.ReadAllBytesAsync(fileName);
         var hash = _sha256.ComputeHash(randomBytes);
-        var signature = _rsa.SignHash(hash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-        var signatureFileBytes = CombineThreeByteArray(randomBytes, signature, file);
-        var signatureFile = fileName + ".sign";
-        File.WriteAllBytes(signatureFile, signatureFileBytes);
+        using var client = new HttpClient();
+        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/sign",
+            new SignRequest
+            {
+                Data = Encoding.ASCII.GetString(hash)
+            }
+        );
+        var signature = await response.Content.ReadAsByteArrayAsync();
+        var signatureFileBytes = CombineTwoByteArrays(signature, file);
+        var signatureFile = fileName + ".signature";
+        await File.WriteAllBytesAsync(signatureFile, signatureFileBytes);
     }
 
-    public void VerificationSign(string file)
+    private static byte[] CombineTwoByteArrays(byte[] signature, byte[] file)
     {
-        // Verify the signature of the file
-        var signatureFileBytes = File.ReadAllBytes(file);
+        var signatureFileBytes = new byte[signature.Length + file.Length];
+        Buffer.BlockCopy(signature, 0, signatureFileBytes, 0, signature.Length);
+        Buffer.BlockCopy(file, 0, signatureFileBytes, signature.Length, file.Length);
+        return signatureFileBytes;
+    }
 
-        // Get the random string from the signature
-        var randomString = signatureFileBytes.Take(256).ToArray();
-
-        // Get the signature from the signature
-        var signature = signatureFileBytes.Skip(256).Take(256).ToArray();
-        // Get the file from the signature
-        var fileBytes = signatureFileBytes.Skip(256 + signature.Length).ToArray();
-
+    public async void VerificationSign(string file)
+    {
+        await using var fs = new FileStream(file, FileMode.Open);
+        using var br = new BinaryReader(fs);
+        var dataLength = br.ReadInt32();
+        var data = br.ReadBytes(dataLength);
+        var signatureLength = br.ReadInt32();
+        var signature = br.ReadBytes(signatureLength);
+        using var client = new HttpClient();
+        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/verify",
+            new SignRequest
+            {
+                Data = Encoding.ASCII.GetString(data),
+                Signature = Encoding.ASCII.GetString(signature)
+            }
+        );
         // Verify the signature
-        var hash = _sha256.ComputeHash(randomString);
-
-        var isSignatureValid = _rsa.VerifyHash(hash, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var isSignatureValid = await response.Content.ReadFromJsonAsync<bool>();
         if (isSignatureValid)
             DisplayMessage?.Invoke("Signature is valid.", Colors.Green);
         else

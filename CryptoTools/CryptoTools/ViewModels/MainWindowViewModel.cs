@@ -6,13 +6,14 @@ namespace CryptoTools.ViewModels;
 
 public class MainWindowViewModel : BaseViewModel
 {
-    public event Action<bool>? ShowLogin;
+    public Action? ShowLogin { get; set; }
 
     public async void Logout()
     {
-        await App.ClientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Logout", CancellationToken.None);
-        App.ClientWebSocket.Dispose();
-        App.ClientWebSocket = new ClientWebSocket();
-        ShowLogin?.Invoke(false);
+        await ClientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Logout",
+            CancellationToken.None);
+        ClientWebSocket.Dispose();
+        ClientWebSocket = new ClientWebSocket();
+        ShowLogin?.Invoke();
     }
 }

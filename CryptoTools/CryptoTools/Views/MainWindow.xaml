@@ -10,14 +10,30 @@
         <vm:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <Grid>
-            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="16">
-                <Bold>CryptoTools</Bold>
-            </TextBlock>
-            <Button x:Name="LogoutButton" HorizontalAlignment="Right" VerticalAlignment="Top" Content="Logout"
-                    Width="100" Margin="0 10 25 0" Height="30"
-                    Click="LogoutButton_Click" Visibility="Hidden" />
-        </Grid>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" FontSize="16">
+            <Bold>CryptoTools</Bold>
+        </TextBlock>
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Content="Logout" Width="100" Margin="0 10 25 0"
+                Height="30" Click="LogoutButton_Click" />
+        <TabControl Margin="20 50 20 20">
+            <TabItem Height="25" IsSelected="True" Header="Zip">
+                <Frame Source="ZipPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Encrypt">
+                <Frame Source="EncryptPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Hash">
+                <Frame Source="HashPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Integrity">
+                <Frame Source="FileIntegrityPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Signature">
+                <Frame Source="SignaturePage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Chat">
+                <Frame Source="ChatPage.xaml" />
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

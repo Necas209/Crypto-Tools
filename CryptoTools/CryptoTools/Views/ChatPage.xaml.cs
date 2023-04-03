@@ -23,8 +23,8 @@ public partial class ChatPage
 
     private void SendButton_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(App.UserName) || string.IsNullOrWhiteSpace(MessageTextBox.Text)) return;
-        _viewModel.SendMessage(MessageTextBox.Text);
+        if (string.IsNullOrWhiteSpace(MessageTextBox.Text)) return;
+        ChatPageViewModel.SendMessage(MessageTextBox.Text);
         MessageTextBox.Text = string.Empty;
     }
 

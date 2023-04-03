@@ -1,20 +1,25 @@
 using System.Windows;
-using System.Windows.Controls;
 using CryptoTools.ViewModels;
 
 namespace CryptoTools.Views;
 
-public partial class LoginPage
+public partial class LoginWindow
 {
-    private readonly LoginPageViewModel _viewModel;
+    private readonly LoginWindowViewModel _viewModel;
 
-    public LoginPage()
+    public LoginWindow()
     {
         InitializeComponent();
+        _viewModel = (LoginWindowViewModel)DataContext;
+        _viewModel.ShowApp = ShowApp;
+        _viewModel.OnError = ShowError;
+    }
 
-        _viewModel = (LoginPageViewModel)DataContext;
-
-        _viewModel.OnError += ShowError;
+    private void ShowApp()
+    {
+        var mainWindow = new MainWindow();
+        mainWindow.Show();
+        Close();
     }
 
     private static void ShowError(string message)

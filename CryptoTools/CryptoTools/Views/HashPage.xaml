@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
       xmlns:adorners="http://gu.se/Adorners"
-      mc:Ignorable="d"
-      Title="HashPage" Height="450" Width="800">
+      mc:Ignorable="d" Title="HashPage">
     <Page.DataContext>
         <vm:HashPageViewModel />
     </Page.DataContext>
@@ -17,7 +16,7 @@
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
                   SelectedItem="{Binding Algorithm}" />
         <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0"></TextBlock>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,55,0,10">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,55,10,10">
             <StackPanel Orientation="Vertical">
                 <TextBox Name="TextToHash" adorners:Watermark.Text="Write something here"
                          adorners:Watermark.TextStyle="{StaticResource AdornerTextStyle}" Height="180"

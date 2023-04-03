@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
       mc:Ignorable="d"
-      Title="ChatPage" Height="450" Width="800">
+      Title="ChatPage">
     <Page.DataContext>
         <vm:ChatPageViewModel />
     </Page.DataContext>
@@ -18,7 +18,7 @@
             <StackPanel Orientation="Vertical">
                 <Label Content="Enter your message:" Height="25" Margin="20 0 20 10" />
                 <TextBox x:Name="MessageTextBox" GotFocus="MessageTextBox_OnGotFocus"
-                         LostFocus="MessageTextBox_OnLostFocus" TextWrapping="Wrap" Height="310"
+                         LostFocus="MessageTextBox_OnLostFocus" TextWrapping="Wrap" Height="280"
                          Margin="20 0 20 10"
                          IsEnabled="True" />
                 <Button x:Name="SendButton" Content="Send message" Margin="50 5 50 10" Height="30" IsEnabled="True"
