@@ -4,8 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-      mc:Ignorable="d"
-      Title="ChatPage">
+      mc:Ignorable="d" Title="ChatPage">
     <Page.DataContext>
         <vm:ChatPageViewModel />
     </Page.DataContext>

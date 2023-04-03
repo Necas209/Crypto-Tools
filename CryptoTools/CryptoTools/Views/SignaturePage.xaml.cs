@@ -24,7 +24,7 @@ public partial class SignaturePage
         InitializeComponent();
 
         _viewModel = (SignaturePageViewModel)DataContext;
-        _viewModel.DisplayMessage += ShowMessage;
+        _viewModel.DisplayMessage = ShowMessage;
     }
 
     private void ShowMessage(string message, Color color)
@@ -87,17 +87,17 @@ public partial class SignaturePage
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void Verification_OnClick(object sender, RoutedEventArgs e)
+    private void Verify_OnClick(object sender, RoutedEventArgs e)
     {
         var openFileDialog = new OpenFileDialog
         {
             Filter = "All files (*.*)|*.*"
         };
         if (openFileDialog.ShowDialog() != true) return;
-        _viewModel.VerificationSign(openFileDialog.FileName);
+        _viewModel.VerifySignature(openFileDialog.FileName);
     }
 
-    private void Verification_OnDrop(object sender, DragEventArgs e)
+    private void Verify_OnDrop(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
@@ -119,10 +119,10 @@ public partial class SignaturePage
         }
 
         // validate the file
-        _viewModel.VerificationSign(files[0]);
+        _viewModel.VerifySignature(files[0]);
     }
 
-    private void Verification_OnDragEnter(object sender, DragEventArgs e)
+    private void Verify_OnDragEnter(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
 
@@ -130,7 +130,7 @@ public partial class SignaturePage
         btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
-    private void Verification_OnDragLeave(object sender, DragEventArgs e)
+    private void Verifiy_OnDragLeave(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
 

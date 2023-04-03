@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 using CryptoLib.Models;
 using CryptoServer.Data;
 using CryptoServer.Services;
@@ -12,25 +11,41 @@ namespace CryptoServer.Controllers;
 public class HomeController : Controller
 {
     private readonly CryptoDbContext _dbContext;
-    private readonly RSA _rsa;
+    private readonly RSA _rsa = RSA.Create();
+    private readonly RSA _rsa2 = RSA.Create(4096);
 
     public HomeController(CryptoDbContext dbContext)
     {
         _dbContext = dbContext;
-        if (Directory.Exists("keys"))
+        ConfigureRsa();
+    }
+
+    private void ConfigureRsa()
+    {
+        Directory.CreateDirectory("keys");
+        if (Directory.GetFiles("keys").Length == 2)
         {
-            using var sr = new StreamReader("keys\\private.xml");
-            var xml = sr.ReadToEnd();
-            _rsa = RSA.Create();
-            _rsa.FromXmlString(xml);
+            ReadRsaContent(_rsa, "keys\\sign.xml");
+            ReadRsaContent(_rsa2, "keys\\encrypt.xml");
         }
         else
         {
-            _rsa = RSA.Create(4096);
-            Directory.CreateDirectory("keys");
-            using var sw = new StreamWriter("keys\\private.xml");
-            sw.Write(_rsa.ToXmlString(true));
+            SaveRsaContent(_rsa, "keys\\sign.xml");
+            SaveRsaContent(_rsa2, "keys\\encrypt.xml");
         }
+    }
+
+    private static void ReadRsaContent(AsymmetricAlgorithm rsa, string fileName)
+    {
+        using var sr = new StreamReader(fileName);
+        var xml = sr.ReadToEnd();
+        rsa.FromXmlString(xml);
+    }
+
+    private static void SaveRsaContent(AsymmetricAlgorithm rsa, string fileName)
+    {
+        using var sw = new StreamWriter(fileName);
+        sw.Write(rsa.ToXmlString(true));
     }
 
     [HttpPost]
@@ -64,37 +79,38 @@ public class HomeController : Controller
 
     [HttpPost]
     [Route("/sign")]
-    public async Task<IActionResult> Sign([FromBody] SignRequest request)
+    public async Task<IActionResult> Sign([FromBody] SignatureRequest request)
     {
-        var data = Encoding.ASCII.GetBytes(request.Data);
+        var data = Convert.FromBase64String(request.Data);
         var signature = _rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         // Encrypt signature with private key
-        var encryptedSignature = _rsa.Encrypt(signature, RSAEncryptionPadding.Pkcs1);
+        var encryptedSignature = _rsa2.Encrypt(signature, RSAEncryptionPadding.Pkcs1);
         // Encrypt data with private key
-        var encryptedData = _rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1);
+        var encryptedData = _rsa2.Encrypt(data, RSAEncryptionPadding.Pkcs1);
         // Combine encrypted data and encrypted signature
         using var ms = new MemoryStream();
         await using var bw = new BinaryWriter(ms);
-        bw.Write(encryptedData.Length);
         bw.Write(encryptedData);
-        bw.Write(encryptedSignature.Length);
         bw.Write(encryptedSignature);
         var buffer = ms.ToArray();
-        // Return encrypted data and encrypted signature
-        return Ok(buffer);
+        var base64 = Convert.ToBase64String(buffer);
+        return Ok(base64);
     }
 
     [HttpPost]
     [Route("/verify")]
-    public async Task<IActionResult> Verify([FromBody] SignRequest request)
+    public IActionResult Verify([FromBody] SignatureRequest request)
     {
-        var data = Encoding.ASCII.GetBytes(request.Data);
-        var signature = Encoding.ASCII.GetBytes(request.Signature);
+        var buffer = Convert.FromBase64String(request.Data);
+        using var ms = new MemoryStream(buffer);
+        using var br = new BinaryReader(ms);
+        var data = br.ReadBytes(512);
+        var signature = br.ReadBytes(512);
         // Decrypt signature with public key
-        var decryptedSignature = _rsa.Decrypt(signature, RSAEncryptionPadding.Pkcs1);
-        var decryptedData = _rsa.Decrypt(data, RSAEncryptionPadding.Pkcs1);
+        var decryptedSignature = _rsa2.Decrypt(signature, RSAEncryptionPadding.Pkcs1);
+        var decryptedData = _rsa2.Decrypt(data, RSAEncryptionPadding.Pkcs1);
         var isVerified = _rsa.VerifyData(decryptedData, decryptedSignature, HashAlgorithmName.SHA256,
             RSASignaturePadding.Pkcs1);
-        return await Task.FromResult(Ok(isVerified));
+        return Ok(isVerified);
     }
 }

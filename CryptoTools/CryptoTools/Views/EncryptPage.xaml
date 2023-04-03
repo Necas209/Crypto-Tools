@@ -4,10 +4,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-      mc:Ignorable="d"
-      Title="EncryptPage" Height="450" Width="800">
+      mc:Ignorable="d" Title="EncryptPage">
     <Page.DataContext>
-        <vm:EncryptPageViewModel></vm:EncryptPageViewModel>
+        <vm:EncryptPageViewModel />
     </Page.DataContext>
     <Grid>
         <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
@@ -15,7 +14,7 @@
                   ItemsSource="{Binding EncryptionAlgorithms}"
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
                   SelectedItem="{Binding SelectedAlgorithm}" />
-        <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0"></TextBlock>
+        <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0" />
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,55,0,10">
             <StackPanel Orientation="Horizontal">
                 <Border BorderThickness="1" Height="180" Width="774" BorderBrush="LightSlateGray" Margin="0,0,0,10">
@@ -27,10 +26,10 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                 <Border BorderThickness="1" BorderBrush="LightSlateGray">
-                    <Image Name="img1" Height="180" Width="380"></Image>
+                    <Image Name="img1" Height="180" Width="380" />
                 </Border>
                 <Border BorderThickness="1" BorderBrush="LightSlateGray" Margin="10,0,0,0">
-                    <Image Name="img2" Height="180" Width="380"></Image>
+                    <Image Name="img2" Height="180" Width="380" />
                 </Border>
             </StackPanel>
         </StackPanel>
