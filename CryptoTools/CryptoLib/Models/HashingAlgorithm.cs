@@ -9,5 +9,5 @@ public class HashingAlgorithm
 
     [Required] public string Name { get; set; } = string.Empty;
 
-    [InverseProperty("HashingAlgorithm")] public ICollection<HashEntry> HashEntries { get; set; }
+    [InverseProperty("HashingAlgorithm")] public ICollection<HashEntry> HashEntries { get; set; } = null!;
 }

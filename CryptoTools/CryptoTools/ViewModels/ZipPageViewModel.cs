@@ -3,13 +3,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using CryptoLib.Extensions;
-using CryptoLib.Services;
 
 namespace CryptoTools.ViewModels;
 
 public class ZipPageViewModel : BaseViewModel
 {
-    public readonly record struct ArchiveEntry(string Name, string Path, bool IsDirectory);
+    private List<ArchiveEntry> _selectedEntries = new();
 
     public ObservableCollection<ArchiveEntry> ArchiveEntries { get; set; } = new();
 
@@ -19,14 +18,9 @@ public class ZipPageViewModel : BaseViewModel
         set => SetField(ref _selectedEntries, value);
     }
 
-    private List<ArchiveEntry> _selectedEntries = new();
-
     public void RemoveSelectedEntries()
     {
-        foreach (var entry in SelectedEntries)
-        {
-            ArchiveEntries.Remove(entry);
-        }
+        foreach (var entry in SelectedEntries) ArchiveEntries.Remove(entry);
 
         SelectedEntries.Clear();
     }
@@ -34,9 +28,7 @@ public class ZipPageViewModel : BaseViewModel
     public void AddEntries(IEnumerable<string> entries, bool isDirectory = false)
     {
         foreach (var entry in entries)
-        {
             ArchiveEntries.Add(new ArchiveEntry(Path.GetFileName(entry), entry, isDirectory));
-        }
     }
 
     public void CompressEntries(string fileName)
@@ -46,12 +38,10 @@ public class ZipPageViewModel : BaseViewModel
             using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true))
             {
                 foreach (var entry in ArchiveEntries)
-                {
                     if (entry.IsDirectory)
                         archive.CreateEntryFromDirectory(entry.Path, entry.Name);
                     else
                         archive.CreateEntryFromFile(entry.Path, entry.Name, CompressionLevel.Fastest);
-                }
             }
         }
 
@@ -73,4 +63,6 @@ public class ZipPageViewModel : BaseViewModel
             entry.ExtractToFile(entryPath, true);
         }
     }
+
+    public readonly record struct ArchiveEntry(string Name, string Path, bool IsDirectory);
 }

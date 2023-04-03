@@ -77,10 +77,7 @@ public partial class EncryptPage
         // Note that you can have more than one file.
         var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
         if (files == null || files.Length == 0) return;
-        if (files.Length > 1)
-        {
-            ShowMessage("You can only hash one file at a time.", Colors.Red);
-        }
+        if (files.Length > 1) ShowMessage("You can only hash one file at a time.", Colors.Red);
     }
 
     private void DropImage_OnDragEnter(object sender, DragEventArgs e)

@@ -42,7 +42,7 @@ public class CryptoDbContext : DbContext
             new() { Name = "DES", EncryptionType = EncryptionType.Symmetric },
             new() { Name = "TripleDES", EncryptionType = EncryptionType.Symmetric },
             new() { Name = "RC2", EncryptionType = EncryptionType.Symmetric },
-            new() { Name = "Rijndael", EncryptionType = EncryptionType.Symmetric },
+            new() { Name = "Rijndael", EncryptionType = EncryptionType.Symmetric }
         };
         EncryptionAlgorithms.AddRange(asymmetricAlgorithms);
 

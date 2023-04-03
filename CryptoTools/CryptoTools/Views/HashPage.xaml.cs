@@ -10,19 +10,17 @@ namespace CryptoTools.Views;
 
 public partial class HashPage
 {
-    private readonly HashPageViewModel _viewModel;
-
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
 
+    private readonly HashPageViewModel _viewModel;
+
     public HashPage()
     {
         InitializeComponent();
-
         _viewModel = (HashPageViewModel)DataContext;
-
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
@@ -49,6 +47,7 @@ public partial class HashPage
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _viewModel?.HashText();
     }
 
