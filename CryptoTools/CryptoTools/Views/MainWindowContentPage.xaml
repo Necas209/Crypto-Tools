@@ -1,0 +1,31 @@
+<Page x:Class="CryptoTools.Views.MainWindowContentPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:CryptoTools.Views"
+      mc:Ignorable="d"
+      Title="AppPage" Height="450" Width="800">
+    <Grid Margin="0,0, 0,0">
+        <TabControl>
+            <TabItem Height="25" IsSelected="True" Header="Zip">
+                <Frame Source="ZipPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Encrypt">
+                <Frame Source="EncryptPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Hash">
+                <Frame Source="HashPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Integrity">
+                <Frame Source="FileIntegrityPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Signature">
+                <Frame Source="SignaturePage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Chat">
+                <Frame Source="ChatPage.xaml" />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Page>

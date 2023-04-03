@@ -11,17 +11,18 @@ namespace CryptoTools.Views;
 public partial class SignaturePage
 {
     private readonly string _dialogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-    
+
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
 
     private readonly SignaturePageViewModel _viewModel;
+
     public SignaturePage()
     {
         InitializeComponent();
-        
+
         _viewModel = (SignaturePageViewModel)DataContext;
         _viewModel.DisplayMessage += ShowMessage;
     }
@@ -54,7 +55,7 @@ public partial class SignaturePage
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
-        
+
         if (e.Data.GetDataPresent(DataFormats.FileDrop))
         {
             // Note that you can have more than one file.
@@ -73,16 +74,15 @@ public partial class SignaturePage
     private void Sign_OnDragEnter(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
-     
+
         btn.Background = new SolidColorBrush(Colors.LightSlateGray);
         btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
-        
     }
 
     private void Sign_OnDragLeave(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
-     
+
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
@@ -125,7 +125,7 @@ public partial class SignaturePage
     private void Verification_OnDragEnter(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
-     
+
         btn.Background = new SolidColorBrush(Colors.LightSlateGray);
         btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
@@ -133,7 +133,7 @@ public partial class SignaturePage
     private void Verification_OnDragLeave(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
-     
+
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }

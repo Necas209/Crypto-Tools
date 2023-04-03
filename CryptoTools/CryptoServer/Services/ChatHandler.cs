@@ -31,6 +31,7 @@ public static class ChatHandler
                     isFirstMessage = false;
                     await WebSocketManager.BroadcastMessage($"{user.UserName} has joined the chat.");
                 }
+
                 message = $"{user!.UserName}: {chatMessage.Message}";
                 await WebSocketManager.BroadcastMessage(message);
                 buffer = new byte[1024 * 4];

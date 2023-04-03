@@ -24,7 +24,8 @@
             </Border>
             <Border BorderThickness="1" Width="360" BorderBrush="LightSlateGray" Margin="15,0,0,0">
                 <Button Name="Validation" AllowDrop="True" Foreground="DimGray" Content="Drop File to Validate"
-                        Drop="Verification_OnDrop" DragEnter="Verification_OnDragEnter" DragLeave="Verification_OnDragLeave"
+                        Drop="Verification_OnDrop" DragEnter="Verification_OnDragEnter"
+                        DragLeave="Verification_OnDragLeave"
                         Click="Verification_OnClick" Background="Transparent" BorderThickness="0" />
             </Border>
         </StackPanel>
