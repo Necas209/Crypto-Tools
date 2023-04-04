@@ -43,7 +43,9 @@ public static class EncryptionService
         rsa.ImportParameters(rsaParameters);
         // Create instance of the specified algorithm for symmetric encryption of the file.
         var symAlg = GetAlgorithm(algorithmName);
-        var transform = symAlg.CreateEncryptor();
+        // Generate a random key and IV.
+        symAlg.GenerateKey();
+        symAlg.GenerateIV();
         // Use RSACryptoServiceProvider to encrypt the AES key.
         var keyEncrypted = rsa.Encrypt(symAlg.Key, RSAEncryptionPadding.Pkcs1);
         // Create byte arrays to contain the length values of the key, IV and file extension.
@@ -51,7 +53,7 @@ public static class EncryptionService
         var lIv = symAlg.IV.Length;
         var extension = Encoding.UTF8.GetBytes(Path.GetExtension(fileName));
         var lExt = extension.Length;
-        // Change the file's extension to ".enc"
+        // Change the extension of the encrypted file to the original file extension.
         var outFile = Path.ChangeExtension(fileName, ".enc");
         using var outFs = new FileStream(outFile, FileMode.Create);
         using var bw = new BinaryWriter(outFs);
@@ -63,7 +65,7 @@ public static class EncryptionService
         bw.Write(keyEncrypted);
         bw.Write(symAlg.IV);
         bw.Write(extension);
-        using var cs = new CryptoStream(outFs, transform, CryptoStreamMode.Write);
+        using var cs = new CryptoStream(outFs, symAlg.CreateEncryptor(), CryptoStreamMode.Write);
         // By encrypting a chunk at a time, you can save memory and accommodate large files. blockSizeBytes can be any arbitrary size.
         var blockSizeBytes = symAlg.BlockSize / 8;
         var data = new byte[blockSizeBytes];
@@ -80,7 +82,7 @@ public static class EncryptionService
         cs.FlushFinalBlock();
     }
 
-    public static void DecryptFile(string fileName, string algorithmName, RSAParameters rsaParameters)
+    public static bool DecryptFile(string fileName, string algorithmName, RSAParameters rsaParameters)
     {
         // Create instance of RSA for asymmetric decryption of the AES key.
         var rsa = RSA.Create();
@@ -97,23 +99,31 @@ public static class EncryptionService
         var keyEncrypted = br.ReadBytes(lKey);
         var iv = br.ReadBytes(lIv);
         var extension = br.ReadBytes(lExt);
-        // Use RSACryptoServiceProvider to decrypt the AES key.
-        var keyDecrypted = rsa.Decrypt(keyEncrypted, RSAEncryptionPadding.Pkcs1);
-        // Change the file's extension to the original extension.
-        var outFile = Path.ChangeExtension(fileName, Encoding.UTF8.GetString(extension));
-        using var outFs = new FileStream(outFile, FileMode.Create);
-        inFs.Position = lKey + lIv + lExt + 12;
-        using var cs = new CryptoStream(outFs, symAlg.CreateDecryptor(keyDecrypted, iv), CryptoStreamMode.Write);
-        // By decrypting a chunk a time, you can save memory and accommodate large files. blockSizeBytes can be any arbitrary size.
-        var blockSizeBytes = symAlg.BlockSize / 8;
-        var data = new byte[blockSizeBytes];
-        int count;
-        do
+        try
         {
-            count = inFs.Read(data, 0, blockSizeBytes);
-            cs.Write(data, 0, count);
-        } while (count > 0);
+            // Use RSACryptoServiceProvider to decrypt the AES key.
+            var keyDecrypted = rsa.Decrypt(keyEncrypted, RSAEncryptionPadding.Pkcs1);
+            // Change the file's extension to the original extension.
+            var outFile = Path.ChangeExtension(fileName, Encoding.UTF8.GetString(extension));
+            using var outFs = new FileStream(outFile, FileMode.Create);
+            inFs.Position = lKey + lIv + lExt + 12;
+            using var cs = new CryptoStream(outFs, symAlg.CreateDecryptor(keyDecrypted, iv), CryptoStreamMode.Write);
+            // By decrypting a chunk a time, you can save memory and accommodate large files. blockSizeBytes can be any arbitrary size.
+            var blockSizeBytes = symAlg.BlockSize / 8;
+            var data = new byte[blockSizeBytes];
+            int count;
+            do
+            {
+                count = inFs.Read(data, 0, blockSizeBytes);
+                cs.Write(data, 0, count);
+            } while (count > 0);
 
-        cs.FlushFinalBlock();
+            cs.FlushFinalBlock();
+            return true;
+        }
+        catch (CryptographicException)
+        {
+            return false;
+        }
     }
 }

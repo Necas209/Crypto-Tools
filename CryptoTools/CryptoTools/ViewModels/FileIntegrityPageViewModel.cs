@@ -22,7 +22,7 @@ public class FileIntegrityPageViewModel : BaseViewModel
 
     public HashingAlgorithm Algorithm { get; set; }
 
-    public event DisplayMessageDelegate? DisplayMessage;
+    public DisplayMessageDelegate? DisplayMessage;
 
     private bool RegisterFile(string file)
     {

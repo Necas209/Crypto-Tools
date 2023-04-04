@@ -23,7 +23,7 @@ public partial class FileIntegrityPage
     {
         InitializeComponent();
         _viewModel = (FileIntegrityPageViewModel)DataContext;
-        _viewModel.DisplayMessage += ShowMessage;
+        _viewModel.DisplayMessage = ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
