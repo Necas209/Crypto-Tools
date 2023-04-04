@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -15,11 +14,8 @@ public class ImageEncryptionPageViewModel : BaseViewModel
 {
     public ImageEncryptionPageViewModel()
     {
-        EncryptionAlgorithms = Context.EncryptionAlgorithms.ToList();
         SelectedAlgorithm = EncryptionAlgorithms.First();
     }
-
-    public List<EncryptionAlgorithm> EncryptionAlgorithms { get; }
 
     public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 

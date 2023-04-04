@@ -1,19 +1,16 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace CryptoLib.Models;
 
-public sealed class HashEntry
+public class HashEntry
 {
-    [Key] public int Id { get; set; }
+    public int UserId { get; set; }
 
-    [Required] public string Hash { get; set; } = string.Empty;
+    public string Hash { get; set; } = string.Empty;
 
-    [Required] public string FileName { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
 
-    [ForeignKey("HashingAlgorithm")]
-    [Required]
     public int HashingAlgorithmId { get; set; }
 
-    [InverseProperty("HashEntries")] public HashingAlgorithm? HashingAlgorithm { get; set; }
+    public User? User { get; set; }
+
+    public HashingAlgorithm? HashingAlgorithm { get; set; }
 }

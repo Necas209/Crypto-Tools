@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -20,17 +19,14 @@ public class EncryptionPageViewModel : BaseViewModel
 
     public EncryptionPageViewModel()
     {
-        EncryptionAlgorithms = Context.EncryptionAlgorithms.ToList();
-        Algorithm = EncryptionAlgorithms.First();
+        SelectedAlgorithm = EncryptionAlgorithms.First();
         if (File.Exists(_rsaBlobFile))
             ImportParameters();
         else
             ExportParameters();
     }
 
-    public List<EncryptionAlgorithm> EncryptionAlgorithms { get; }
-
-    public EncryptionAlgorithm Algorithm { get; set; }
+    public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 
     private void ImportParameters()
     {
@@ -77,13 +73,13 @@ public class EncryptionPageViewModel : BaseViewModel
 
     public void EncryptFile(string path)
     {
-        EncryptionService.EncryptFile(path, Algorithm.Name, _rsa.ExportParameters(false));
+        EncryptionService.EncryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(false));
         DisplayMessage?.Invoke("File encrypted successfully.", Colors.Green);
     }
 
     public void DecryptFile(string path)
     {
-        var result = EncryptionService.DecryptFile(path, Algorithm.Name, _rsa.ExportParameters(true));
+        var result = EncryptionService.DecryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(true));
         if (result)
             DisplayMessage?.Invoke("File decrypted successfully.", Colors.Green);
         else

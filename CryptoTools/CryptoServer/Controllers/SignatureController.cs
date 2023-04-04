@@ -1,80 +1,33 @@
 using System.Security.Cryptography;
 using CryptoLib.Models;
-using CryptoServer.Data;
 using CryptoServer.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CryptoServer.Controllers;
 
 [Route("/")]
-public class HomeController : Controller
+public class SignatureController : Controller
 {
-    private readonly CryptoDbContext _dbContext;
     private readonly RSA _rsa = RSA.Create();
     private readonly RSA _rsa2 = RSA.Create(4096);
 
-    public HomeController(CryptoDbContext dbContext)
+    public SignatureController()
     {
-        _dbContext = dbContext;
-        ConfigureRsa();
-    }
-
-    private void ConfigureRsa()
-    {
+        // Create keys folder if it doesn't exist
         Directory.CreateDirectory("keys");
+        // Check if keys exist
         if (Directory.GetFiles("keys").Length == 2)
         {
-            ReadRsaContent(_rsa, "keys\\sign.xml");
-            ReadRsaContent(_rsa2, "keys\\encrypt.xml");
+            // Read keys from files
+            SignatureService.ReadRsaContent(_rsa, "keys\\sign.xml");
+            SignatureService.ReadRsaContent(_rsa2, "keys\\encrypt.xml");
         }
         else
         {
-            SaveRsaContent(_rsa, "keys\\sign.xml");
-            SaveRsaContent(_rsa2, "keys\\encrypt.xml");
+            // Create keys and save them to files
+            SignatureService.SaveRsaContent(_rsa, "keys\\sign.xml");
+            SignatureService.SaveRsaContent(_rsa2, "keys\\encrypt.xml");
         }
-    }
-
-    private static void ReadRsaContent(AsymmetricAlgorithm rsa, string fileName)
-    {
-        using var sr = new StreamReader(fileName);
-        var xml = sr.ReadToEnd();
-        rsa.FromXmlString(xml);
-    }
-
-    private static void SaveRsaContent(AsymmetricAlgorithm rsa, string fileName)
-    {
-        using var sw = new StreamWriter(fileName);
-        sw.Write(rsa.ToXmlString(true));
-    }
-
-    [HttpPost]
-    [Route("/login")]
-    public async Task<IActionResult> Login([FromBody] User user)
-    {
-        var userId = await _dbContext.Users
-            .Where(u => u.UserName == user.UserName && u.PasswordHash == user.PasswordHash)
-            .Select(u => u.Id)
-            .FirstOrDefaultAsync();
-        if (userId == 0) return Unauthorized();
-        return Ok(userId);
-    }
-
-    [HttpGet]
-    [Route("/chat")]
-    public async Task<IActionResult> Chat()
-    {
-        if (HttpContext.WebSockets.IsWebSocketRequest)
-        {
-            var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            await ChatHandler.Handle(webSocket, _dbContext);
-        }
-        else
-        {
-            HttpContext.Response.StatusCode = 400;
-        }
-
-        return new EmptyResult();
     }
 
     [HttpPost]

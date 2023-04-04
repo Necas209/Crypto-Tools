@@ -10,8 +10,8 @@ namespace CryptoTools.ViewModels;
 
 public class ChatPageViewModel : BaseViewModel
 {
-    public ObservableCollection<string> ChatMessages { get; } = new();
     public Action? OnMessageReceived;
+    public ObservableCollection<string> ChatMessages { get; } = new();
 
     public async Task ReceiveMessages()
     {

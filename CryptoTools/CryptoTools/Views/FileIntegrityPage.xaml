@@ -12,7 +12,7 @@
         <ComboBox Width="200" VerticalAlignment="Top" Margin="0,20,360,0"
                   ItemsSource="{Binding HashingAlgorithms}"
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="1"
-                  SelectedItem="{Binding Algorithm}" />
+                  SelectedItem="{Binding SelectedAlgorithm}" />
         <TextBlock x:Name="Message" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Center"
                    Margin="360,20,0,0" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,55,0,10">

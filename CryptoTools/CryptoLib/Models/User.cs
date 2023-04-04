@@ -1,10 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CryptoLib.Models;
 
 public class User
 {
-    public int Id { get; set; }
+    [Key] public int Id { get; set; }
 
-    public string UserName { get; set; } = string.Empty;
+    [Required] public string UserName { get; init; } = string.Empty;
 
-    public string PasswordHash { get; set; } = string.Empty;
+    [Required] public string PasswordHash { get; init; } = string.Empty;
 }

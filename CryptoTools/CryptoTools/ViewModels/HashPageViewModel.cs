@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using CryptoLib.Models;
 using CryptoLib.Services;
@@ -12,11 +11,9 @@ public class HashPageViewModel : BaseViewModel
 
     public HashPageViewModel()
     {
-        HashingAlgorithms = Context.HashingAlgorithms.ToList();
-        Algorithm = HashingAlgorithms.First();
+        SelectedAlgorithm = HashingAlgorithms.First();
     }
 
-    public List<HashingAlgorithm> HashingAlgorithms { get; }
     public string UnhashedText { get; set; } = string.Empty;
 
     public string HashedText
@@ -31,7 +28,7 @@ public class HashPageViewModel : BaseViewModel
         set => SetField(ref _hashedFile, value);
     }
 
-    public HashingAlgorithm Algorithm { get; set; }
+    public HashingAlgorithm SelectedAlgorithm { get; set; }
 
 
     public void HashText()
@@ -42,7 +39,7 @@ public class HashPageViewModel : BaseViewModel
             return;
         }
 
-        HashedText = HashingService.GetHash(UnhashedText, Algorithm.Name);
+        HashedText = HashingService.GetHash(UnhashedText, SelectedAlgorithm.Name);
     }
 
     public void HashFile(string file)
@@ -53,6 +50,6 @@ public class HashPageViewModel : BaseViewModel
             return;
         }
 
-        HashedFile = HashingService.GetFileHash(file, Algorithm.Name);
+        HashedFile = HashingService.GetFileHash(file, SelectedAlgorithm.Name);
     }
 }

@@ -47,7 +47,7 @@ public class SignaturePageViewModel
             });
         var signature = await response.Content.ReadAsStringAsync();
         var signatureBytes = Convert.FromBase64String(signature);
-        var signatureFile = fileName + ".signature";
+        var signatureFile = fileName + ".sig";
         await using var fs = new FileStream(signatureFile, FileMode.Create);
         await using var bw = new BinaryWriter(fs);
         bw.Write(signatureBytes);

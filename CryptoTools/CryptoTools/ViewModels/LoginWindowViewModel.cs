@@ -41,6 +41,7 @@ public class LoginWindowViewModel : BaseViewModel
         UserId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
         // Start listening for messages
         await StartWebSocketListenerAsync();
+        await Initialize();
         ShowApp?.Invoke();
     }
 }
