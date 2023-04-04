@@ -23,7 +23,7 @@ public partial class EncryptionPage
     {
         InitializeComponent();
         _viewModel = (EncryptionPageViewModel)DataContext;
-        _viewModel.DisplayMessage += ShowMessage;
+        _viewModel.DisplayMessage = ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;

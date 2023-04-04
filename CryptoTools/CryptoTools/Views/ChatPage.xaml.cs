@@ -11,7 +11,7 @@ public partial class ChatPage
     {
         InitializeComponent();
         _viewModel = (ChatPageViewModel)DataContext;
-        _viewModel.OnMessageReceived += UpdateChat;
+        _viewModel.OnMessageReceived = UpdateChat;
         // start a new thread to receive messages from the server
         StartReceivingMessages();
     }
