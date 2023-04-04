@@ -35,8 +35,7 @@ public class CryptoDbContext : DbContext
             new() { Name = "SHA512" }
         };
         HashingAlgorithms.AddRange(hashingAlgorithms);
-
-        var asymmetricAlgorithms = new List<EncryptionAlgorithm>
+        var symmetricAlgorithms = new List<EncryptionAlgorithm>
         {
             new() { Name = "AES", EncryptionType = EncryptionType.Symmetric },
             new() { Name = "DES", EncryptionType = EncryptionType.Symmetric },
@@ -44,8 +43,7 @@ public class CryptoDbContext : DbContext
             new() { Name = "RC2", EncryptionType = EncryptionType.Symmetric },
             new() { Name = "Rijndael", EncryptionType = EncryptionType.Symmetric }
         };
-        EncryptionAlgorithms.AddRange(asymmetricAlgorithms);
-
+        EncryptionAlgorithms.AddRange(symmetricAlgorithms);
         SaveChanges();
     }
 }

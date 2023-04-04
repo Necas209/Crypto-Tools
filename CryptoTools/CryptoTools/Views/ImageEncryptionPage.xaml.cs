@@ -9,20 +9,20 @@ using Microsoft.Win32;
 
 namespace CryptoTools.Views;
 
-public partial class EncryptPage
+public partial class ImageEncryptionPage
 {
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly EncryptPageViewModel _viewModel;
+    private readonly ImageEncryptionPageViewModel _viewModel;
 
-    public EncryptPage()
+    public ImageEncryptionPage()
     {
         InitializeComponent();
 
-        _viewModel = (EncryptPageViewModel)DataContext;
+        _viewModel = (ImageEncryptionPageViewModel)DataContext;
 
         _dispatcherTimer.Tick += (_, _) =>
         {
@@ -55,11 +55,11 @@ public partial class EncryptPage
         };
         if (openFileDialog.ShowDialog() != true) return;
 
-        img1.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+        Img1.Source = new BitmapImage(new Uri(openFileDialog.FileName));
 
         var encryptImage = _viewModel.EncryptImage(openFileDialog.FileName);
 
-        img2.Source = encryptImage;
+        Img2.Source = encryptImage;
     }
 
     private void DropImage_OnDrop(object sender, DragEventArgs e)

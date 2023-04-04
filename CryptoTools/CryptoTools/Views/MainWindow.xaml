@@ -16,14 +16,17 @@
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Content="Logout" Width="100" Margin="0 10 25 0"
                 Height="30" Click="LogoutButton_Click" />
         <TabControl Margin="20 50 20 20">
-            <TabItem Height="25" IsSelected="True" Header="Zip">
+            <TabItem Height="25" IsSelected="True" Header="Compression">
                 <Frame Source="ZipPage.xaml" />
             </TabItem>
-            <TabItem Height="25" Header="Encrypt">
-                <Frame Source="EncryptPage.xaml" />
-            </TabItem>
-            <TabItem Height="25" Header="Hash">
+            <TabItem Height="25" Header="Hashing">
                 <Frame Source="HashPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Encryption">
+                <Frame Source="ImageEncryptionPage.xaml" />
+            </TabItem>
+            <TabItem Height="25" Header="Privacy">
+                <Frame Source="EncryptionPage.xaml" />
             </TabItem>
             <TabItem Height="25" Header="Integrity">
                 <Frame Source="FileIntegrityPage.xaml" />
@@ -31,7 +34,7 @@
             <TabItem Height="25" Header="Signature">
                 <Frame Source="SignaturePage.xaml" />
             </TabItem>
-            <TabItem Height="25" Header="Chat">
+            <TabItem Height="25" Header="Chatting">
                 <Frame Source="ChatPage.xaml" />
             </TabItem>
         </TabControl>

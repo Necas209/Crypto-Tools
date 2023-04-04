@@ -11,9 +11,9 @@ using CryptoLib.Services;
 
 namespace CryptoTools.ViewModels;
 
-public class EncryptPageViewModel : BaseViewModel
+public class ImageEncryptionPageViewModel : BaseViewModel
 {
-    public EncryptPageViewModel()
+    public ImageEncryptionPageViewModel()
     {
         EncryptionAlgorithms = Context.EncryptionAlgorithms.ToList();
         SelectedAlgorithm = EncryptionAlgorithms.First();
@@ -37,14 +37,13 @@ public class EncryptPageViewModel : BaseViewModel
 
     public WriteableBitmap EncryptImage(string imagePath)
     {
-        // Read the original image bytes
-        var imageBytes = File.ReadAllBytes(imagePath);
+        var bytes = File.ReadAllBytes(imagePath);
         // get the image width and height
         var image = Image.FromFile(imagePath);
         var width = image.Width;
         var height = image.Height;
         // Encrypt the image
-        var encryptedImageBytes = EncryptionService.EncryptData(imageBytes, SelectedAlgorithm.Name);
+        var encryptedImageBytes = EncryptionService.EncryptImage(bytes, SelectedAlgorithm.Name);
         // Convert the encrypted byte array to a BitmapImage
         return EncryptedByteArrayToGrayscaleImage(encryptedImageBytes, width, height);
     }

@@ -1,12 +1,12 @@
-<Page x:Class="CryptoTools.Views.EncryptPage"
+<Page x:Class="CryptoTools.Views.ImageEncryptionPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-      mc:Ignorable="d" Title="EncryptPage">
+      mc:Ignorable="d" Title="ImageEncryptionPage">
     <Page.DataContext>
-        <vm:EncryptPageViewModel />
+        <vm:ImageEncryptionPageViewModel />
     </Page.DataContext>
     <Grid>
         <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
@@ -18,18 +18,18 @@
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,55,0,10">
             <StackPanel Orientation="Horizontal">
                 <Border BorderThickness="1" Height="180" Width="774" BorderBrush="LightSlateGray" Margin="0,0,0,10">
-                    <Button Name="DropImage" AllowDrop="True" Foreground="DimGray" Content="Drop an Image Here"
-                            Drop="DropImage_OnDrop" DragEnter="DropImage_OnDragEnter" DragLeave="DropImage_OnDragLeave"
-                            Click="DropImage_OnClick" Background="Transparent" BorderThickness="0" />
+                    <Button AllowDrop="True" Foreground="DimGray" Content="Drop an Image Here" Background="Transparent"
+                            BorderThickness="0" Drop="DropImage_OnDrop" DragEnter="DropImage_OnDragEnter"
+                            DragLeave="DropImage_OnDragLeave" Click="DropImage_OnClick" />
                 </Border>
 
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                 <Border BorderThickness="1" BorderBrush="LightSlateGray">
-                    <Image Name="img1" Height="180" Width="380" />
+                    <Image Name="Img1" Height="180" Width="380" />
                 </Border>
                 <Border BorderThickness="1" BorderBrush="LightSlateGray" Margin="10,0,0,0">
-                    <Image Name="img2" Height="180" Width="380" />
+                    <Image Name="Img2" Height="180" Width="380" />
                 </Border>
             </StackPanel>
         </StackPanel>
