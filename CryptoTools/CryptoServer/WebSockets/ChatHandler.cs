@@ -28,11 +28,14 @@ public class ChatHandler
         _clientKeys.Add(userName, publicKey);
     }
 
-    public async Task Handle(WebSocket webSocket)
+    public async Task Handle(WebSocket webSocket, string username)
     {
-        var isFirstMessage = true;
-        var sender = _webSocketManager.AddWebSocket(webSocket);
-        await SendWelcomeMessage(sender);
+        var sender = _webSocketManager.AddWebSocket(webSocket, username);
+        // Send the welcome message
+        const string welcomeMessage = "Welcome to the chat room!";
+        await SendUnencryptedMessage(sender, welcomeMessage);
+        // Broadcast the new user's arrival
+        await BroadcastServerMessage(sender, $"{username} joined the chat");
         try
         {
             var buffer = new byte[4096];
@@ -44,17 +47,8 @@ public class ChatHandler
                 // Deserialize the message
                 var chatMessage = JsonSerializer.Deserialize<ChatMessage>(json);
                 if (chatMessage == null) continue;
-                if (isFirstMessage)
-                {
-                    isFirstMessage = false;
-                    // Store the sender's username
-                    sender.UserName = chatMessage.UserName;
-                    await BroadcastServerMessage($"{sender.UserName} joined the chat", sender);
-                    continue;
-                }
 
                 await BroadcastMessage(chatMessage);
-
                 buffer = new byte[4096];
                 result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             }
@@ -67,20 +61,22 @@ public class ChatHandler
         }
         finally
         {
+            // Broadcast the user's departure
+            await BroadcastServerMessage(sender, $"{sender.UserName} left the chat");
+            // Remove the user from the list of connected users
             _webSocketManager.RemoveWebSocket(sender);
-            await BroadcastServerMessage($"{sender.UserName} left the chat", sender);
+            // Remove the user's public key
             _clientKeys.Remove(sender.UserName);
         }
     }
 
-    private async Task BroadcastServerMessage(string message, WebSocketConnection sender)
+    private async Task BroadcastServerMessage(WebSocketConnection sender, string message)
     {
-        foreach (var connection in _webSocketManager.WebSockets)
-            if (connection != sender)
-                await SendUnencryptedMessage(message, connection);
+        foreach (var connection in _webSocketManager.WebSockets.Where(x => x != sender))
+            await SendUnencryptedMessage(connection, message);
     }
 
-    private static async Task SendUnencryptedMessage(string message, WebSocketConnection connection)
+    private static async Task SendUnencryptedMessage(WebSocketConnection connection, string message)
     {
         var chatMessage = new ChatMessage
         {
@@ -97,22 +93,16 @@ public class ChatHandler
         );
     }
 
-    private async Task SendMessage(ChatMessage message, WebSocketConnection connection)
+    private async Task SendMessage(WebSocketConnection connection, ChatMessage message)
     {
         // Decrypt the message with the server's private key
-        var decryptedSymmetricKey = _serverRsa.Decrypt(message.SymmetricKey, RSAEncryptionPadding.OaepSHA256);
-        var decryptedHmacKey = _serverRsa.Decrypt(message.HmacKey, RSAEncryptionPadding.OaepSHA256);
-        // Verify the integrity of the message
-        using var hmac = new HMACSHA256(decryptedHmacKey);
-        var hmacBytes = hmac.ComputeHash(message.Message);
-        if (!hmacBytes.SequenceEqual(message.Hmac))
-            throw new Exception("Message integrity check failed");
+        var symmetricKey = _serverRsa.Decrypt(message.SymmetricKey, RSAEncryptionPadding.OaepSHA256);
+        var hmacKey = _serverRsa.Decrypt(message.HmacKey, RSAEncryptionPadding.OaepSHA256);
         // Encrypt the message with the client's public key
-        var userName = connection.UserName;
-        var userPublicKey = _clientKeys[userName];
+        var userPublicKey = _clientKeys[connection.UserName];
         _clientRsa.ImportRSAPublicKey(userPublicKey, out _);
-        var encryptedSymmetricKey = _clientRsa.Encrypt(decryptedSymmetricKey, RSAEncryptionPadding.OaepSHA256);
-        var encryptedHmacKey = _clientRsa.Encrypt(decryptedHmacKey, RSAEncryptionPadding.OaepSHA256);
+        var encryptedSymmetricKey = _clientRsa.Encrypt(symmetricKey, RSAEncryptionPadding.OaepSHA256);
+        var encryptedHmacKey = _clientRsa.Encrypt(hmacKey, RSAEncryptionPadding.OaepSHA256);
         // Send the message
         var messageToSend = new ChatMessage
         {
@@ -132,15 +122,9 @@ public class ChatHandler
         );
     }
 
-    private static async Task SendWelcomeMessage(WebSocketConnection webSocketConnection)
-    {
-        const string welcomeMessage = "Welcome to the chat room!";
-        await SendUnencryptedMessage(welcomeMessage, webSocketConnection);
-    }
-
     private async Task BroadcastMessage(ChatMessage message)
     {
         foreach (var connection in _webSocketManager.WebSockets)
-            await SendMessage(message, connection);
+            await SendMessage(connection, message);
     }
 }

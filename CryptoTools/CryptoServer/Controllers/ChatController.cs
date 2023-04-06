@@ -31,7 +31,9 @@ public class ChatController : Controller
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
             var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            await _chatHandler.Handle(webSocket);
+            // Get the client's username from the WebSocket opening handshake
+            var username = HttpContext.Request.Headers["X-Username"].ToString();
+            await _chatHandler.Handle(webSocket, username);
         }
         else
         {

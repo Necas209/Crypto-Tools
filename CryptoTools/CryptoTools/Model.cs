@@ -46,19 +46,16 @@ public class Model
             return string.Empty;
         }
 
-        var encryptedMessage = chatMessage.Message;
         // If the message is from the server, it is not encrypted
-        if (chatMessage.UserName == "Server") return Encoding.UTF8.GetString(encryptedMessage);
+        if (chatMessage.UserName == "Server") return Encoding.UTF8.GetString(chatMessage.Message);
         // Decrypt the message with the symmetric key
-        var decryptedKey = _clientRsa.Decrypt(chatMessage.SymmetricKey,
-            RSAEncryptionPadding.OaepSHA256);
-        var decryptedHmacKey = _clientRsa.Decrypt(chatMessage.HmacKey,
-            RSAEncryptionPadding.OaepSHA256);
-        // Verify the HMAC of the encrypted message
-        var hmac = HmacUtils.ComputeHmac(encryptedMessage, decryptedHmacKey);
+        var decryptedKey = _clientRsa.Decrypt(chatMessage.SymmetricKey, RSAEncryptionPadding.OaepSHA256);
+        var hmacKey = _clientRsa.Decrypt(chatMessage.HmacKey, RSAEncryptionPadding.OaepSHA256);
+        // Decrypt the message with the symmetric key
+        var decryptedMessage = AesUtils.Decrypt(chatMessage.Message, decryptedKey);
+        // Verify the HMAC of the decrypted message
+        var hmac = HmacUtils.ComputeHmac(decryptedMessage, hmacKey);
         if (!hmac.SequenceEqual(chatMessage.Hmac)) throw new Exception("HMAC verification failed");
-        // Decrypt the message with the symmetric key
-        var decryptedMessage = AesUtils.Decrypt(encryptedMessage, decryptedKey);
         // Convert the decrypted message to a string and attach the sender's username
         var decryptedMessageString = Encoding.UTF8.GetString(decryptedMessage);
         return $"{chatMessage.UserName}: {decryptedMessageString}";
@@ -66,15 +63,16 @@ public class Model
 
     public async Task SendMessage(string message)
     {
+        var messageBytes = Encoding.UTF8.GetBytes(message);
+        // Compute the HMAC of the message
+        var hmacKey = HmacUtils.GenerateHmacKey();
+        var hmac = HmacUtils.ComputeHmac(messageBytes, hmacKey);
         // Generate an AES symmetric key
         using var aes = Aes.Create();
         aes.GenerateKey();
         var symmetricKey = aes.Key;
         // Encrypt the message with the symmetric key
-        var encryptedMessage = AesUtils.Encrypt(Encoding.UTF8.GetBytes(message), symmetricKey);
-        // Compute the HMAC of the encrypted message
-        var hmacKey = HmacUtils.GenerateHmacKey();
-        var hmac = HmacUtils.ComputeHmac(encryptedMessage, hmacKey);
+        var encryptedMessage = AesUtils.Encrypt(messageBytes, symmetricKey);
         // Encrypt the symmetric key and HMAC key with the server's public key
         var encryptedSymmetricKey = _serverRsa.Encrypt(symmetricKey, RSAEncryptionPadding.OaepSHA256);
         var encryptedHmacKey = _serverRsa.Encrypt(hmacKey, RSAEncryptionPadding.OaepSHA256);
@@ -116,6 +114,7 @@ public class Model
         // Import the server's public key
         _serverRsa.ImportRSAPublicKey(serverKey, out _);
         // Connect to the server using a secure WebSocket
+        _socket.Options.SetRequestHeader("X-Username", UserName);
         var serverUri = new Uri("wss://cryptotools.azurewebsites.net/chat");
         await _socket.ConnectAsync(serverUri, CancellationToken.None);
     }
