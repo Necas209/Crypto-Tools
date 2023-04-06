@@ -1,6 +1,7 @@
+using System.Linq;
 using System.Security.Cryptography;
 
-namespace CryptoLib.Utils;
+namespace CryptoTools.Utils;
 
 public static class AesUtils
 {

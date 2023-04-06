@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 namespace CryptoTools.ViewModels;

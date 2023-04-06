@@ -1,6 +1,5 @@
 using CryptoLib.Models;
 using CryptoServer.Data;
-using CryptoServer.Services;
 using CryptoServer.WebSockets;
 using Microsoft.EntityFrameworkCore;
 

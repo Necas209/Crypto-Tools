@@ -33,31 +33,6 @@ public static class SecureStringExtension
         return Convert.ToHexString(pwHash).ToLower();
     }
 
-    public static bool EqualsHash(this SecureString ss1, SecureString ss2)
-    {
-        if (ss1 == null)
-            throw new ArgumentNullException(nameof(ss1));
-        if (ss2 == null)
-            throw new ArgumentNullException(nameof(ss2));
-        if (ss1.Length != ss2.Length)
-            return false;
-        var ssBStr1Ptr = nint.Zero;
-        var ssBStr2Ptr = nint.Zero;
-        try
-        {
-            ssBStr1Ptr = Marshal.SecureStringToBSTR(ss1);
-            ssBStr2Ptr = Marshal.SecureStringToBSTR(ss2);
-            var str1 = Marshal.PtrToStringBSTR(ssBStr1Ptr);
-            var str2 = Marshal.PtrToStringBSTR(ssBStr2Ptr);
-            return str1.Equals(str2);
-        }
-        finally
-        {
-            if (ssBStr1Ptr != nint.Zero) Marshal.ZeroFreeBSTR(ssBStr1Ptr);
-            if (ssBStr2Ptr != nint.Zero) Marshal.ZeroFreeBSTR(ssBStr2Ptr);
-        }
-    }
-    
     public static bool IsEqualTo(this SecureString ss1, SecureString ss2)
     {
         var bStr1 = IntPtr.Zero;

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace CryptoLib.Utils;
+namespace CryptoTools.Utils;
 
 public static class HmacUtils
 {
@@ -11,7 +11,7 @@ public static class HmacUtils
         rng.GetBytes(key);
         return key;
     }
-    
+
     public static byte[] ComputeHmac(byte[] data, byte[] key)
     {
         using var hmac = new HMACSHA256(key);

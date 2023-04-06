@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CryptoLib.Models;
-using CryptoLib.Utils;
+using CryptoTools.Utils;
 
 namespace CryptoTools;
 

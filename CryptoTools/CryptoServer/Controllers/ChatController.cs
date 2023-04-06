@@ -1,5 +1,4 @@
 using CryptoLib.Models;
-using CryptoServer.Services;
 using CryptoServer.WebSockets;
 using Microsoft.AspNetCore.Mvc;
 
