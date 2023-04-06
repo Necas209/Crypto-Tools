@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using CryptoLib.Models;
+using CryptoServer.Utils;
 
 namespace CryptoServer.WebSockets;
 
@@ -28,9 +29,9 @@ public class ChatHandler
         _clientKeys.Add(userName, publicKey);
     }
 
-    public async Task Handle(WebSocket webSocket, string username)
+    public async Task Handle(WebSocket webSocket, string username, string token)
     {
-        var sender = _webSocketManager.AddWebSocket(webSocket, username);
+        var sender = _webSocketManager.AddWebSocket(webSocket, username, token);
         // Send the welcome message
         const string welcomeMessage = "Welcome to the chat room!";
         await SendUnencryptedMessage(sender, welcomeMessage);
@@ -43,11 +44,20 @@ public class ChatHandler
 
             while (!result.CloseStatus.HasValue)
             {
+                if (!TokenUtils.ValidateAccessToken(sender.Token, sender.UserName))
+                {
+                    // If the access token is invalid or does not belong to the current user, close the WebSocket connection
+                    await webSocket.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "Unauthorized",
+                        CancellationToken.None);
+                    throw new Exception("Access token is invalid");
+                }
+
                 var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 // Deserialize the message
                 var chatMessage = JsonSerializer.Deserialize<ChatMessage>(json);
                 if (chatMessage == null) continue;
-
+                // The server should not trust the client's username but instead, retrieve it from the connection object
+                chatMessage.UserName = sender.UserName;
                 await BroadcastMessage(chatMessage);
                 buffer = new byte[4096];
                 result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);

@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security;
+using System.Text;
 using System.Threading.Tasks;
 using CryptoLib.Extensions;
 using CryptoLib.Models;
@@ -16,24 +17,30 @@ public class LoginViewModel : ViewModelBase
     public async Task Login(string userName, SecureString securePassword)
     {
         using var client = new HttpClient();
-        var passwordHash = securePassword.Hash("SHA256");
-        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/login",
-            new User
+        var userNameBytes = Encoding.UTF8.GetBytes(userName);
+        var plainTextPassword = securePassword.ToPlainText();
+        var passwordBytes = Encoding.UTF8.GetBytes(plainTextPassword);
+        var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/login",
+            new LoginRequest
             {
-                UserName = userName,
-                PasswordHash = passwordHash
+                UserName = Convert.ToBase64String(userNameBytes),
+                Password = Convert.ToBase64String(passwordBytes)
             }
         );
-
         if (!response.IsSuccessStatusCode)
         {
             OnError?.Invoke("Login failed. Server responded with: " + response.StatusCode);
             return;
         }
 
-        var userId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
-        UserId = userId;
-        Model.UserName = userName;
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        if (loginResponse == null)
+        {
+            OnError?.Invoke("Login failed. Server responded with: " + response.StatusCode);
+            return;
+        }
+
+        Model.AccessToken = loginResponse.AccessToken;
         // Open connection to the chat server
         await Model.OpenConnection();
         // Get the encryption and hashing algorithms

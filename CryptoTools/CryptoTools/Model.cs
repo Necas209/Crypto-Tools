@@ -16,11 +16,18 @@ namespace CryptoTools;
 
 public class Model
 {
+#if !DEBUG
+    public const string ServerUrl = "https://localhost:7191";
+    private const string ChatUrl = "wss://localhost:7191/chat";
+#else
+    public const string ServerUrl = "https://cryptotools.azurewebsites.net";
+    private const string ChatUrl = "wss://cryptotools.azurewebsites.net/chat";
+#endif
     private readonly RSA _clientRsa = RSA.Create();
     private readonly RSA _serverRsa = RSA.Create();
     private ClientWebSocket _socket = new();
 
-    public string UserName { get; set; } = string.Empty;
+    public string AccessToken { get; set; } = string.Empty;
 
     public List<EncryptionAlgorithm> EncryptionAlgorithms { get; private set; } = new();
 
@@ -28,24 +35,16 @@ public class Model
 
     public bool IsConnected => _socket.State == WebSocketState.Open;
 
-    public async Task<string> ReceiveMessage()
+    public async Task<string?> ReceiveMessage()
     {
         var buffer = new byte[4096];
         var result = await _socket.ReceiveAsync(buffer, CancellationToken.None);
+        if (result.CloseStatus.HasValue)
+            return result.CloseStatus is not WebSocketCloseStatus.NormalClosure ? null : "Logged out";
         var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
         // Deserialize the message
-        ChatMessage? chatMessage;
-        try
-        {
-            chatMessage = JsonSerializer.Deserialize<ChatMessage>(message);
-            if (chatMessage == null) return string.Empty;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return string.Empty;
-        }
-
+        var chatMessage = JsonSerializer.Deserialize<ChatMessage>(message);
+        if (chatMessage == null) return null;
         // If the message is from the server, it is not encrypted
         if (chatMessage.UserName == "Server") return Encoding.UTF8.GetString(chatMessage.Message);
         // Decrypt the message with the symmetric key
@@ -79,7 +78,6 @@ public class Model
         // Create an ChatMessage instance
         var chatMessage = new ChatMessage
         {
-            UserName = UserName,
             Message = encryptedMessage,
             Hmac = hmac,
             SymmetricKey = encryptedSymmetricKey,
@@ -100,13 +98,14 @@ public class Model
     {
         // Retrieve the server's public key
         using var client = new HttpClient();
-        var request = new ChatRequest
+        var request = new ExchangeRequest
         {
-            UserName = UserName,
             PublicKey = _clientRsa.ExportRSAPublicKey()
         };
+        // Add the token to the request header
+        client.DefaultRequestHeaders.Add("X-Access-Token", AccessToken);
         // Send the request to the server
-        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/keys", request);
+        var response = await client.PostAsJsonAsync($"{ServerUrl}/exchange", request);
         var chatResponse = await response.Content.ReadAsStringAsync();
         if (chatResponse == null) throw new InvalidOperationException("Unable to retrieve server key");
         // Convert the server's public key from Base64 to a byte array
@@ -114,8 +113,8 @@ public class Model
         // Import the server's public key
         _serverRsa.ImportRSAPublicKey(serverKey, out _);
         // Connect to the server using a secure WebSocket
-        _socket.Options.SetRequestHeader("X-Username", UserName);
-        var serverUri = new Uri("wss://cryptotools.azurewebsites.net/chat");
+        _socket.Options.SetRequestHeader("X-Access-Token", AccessToken);
+        var serverUri = new Uri(ChatUrl);
         await _socket.ConnectAsync(serverUri, CancellationToken.None);
     }
 
@@ -131,10 +130,10 @@ public class Model
     {
         using var client = new HttpClient();
         EncryptionAlgorithms =
-            await client.GetFromJsonAsync<List<EncryptionAlgorithm>>("https://cryptotools.azurewebsites.net/encrypt")
+            await client.GetFromJsonAsync<List<EncryptionAlgorithm>>($"{ServerUrl}/encrypt")
             ?? throw new InvalidOperationException("Unable to retrieve encryption algorithms");
         HashingAlgorithms =
-            await client.GetFromJsonAsync<List<HashingAlgorithm>>("https://cryptotools.azurewebsites.net/hash")
+            await client.GetFromJsonAsync<List<HashingAlgorithm>>($"{ServerUrl}/hash")
             ?? throw new InvalidOperationException("Unable to retrieve hashing algorithms");
     }
 }

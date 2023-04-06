@@ -6,6 +6,7 @@ namespace CryptoTools.ViewModels;
 
 public class ChatViewModel : ViewModelBase
 {
+    public Action? OnConnectionClosed;
     public Action? OnMessageReceived;
     public ObservableCollection<string> ChatMessages { get; } = new();
 
@@ -15,11 +16,21 @@ public class ChatViewModel : ViewModelBase
         {
             // receive a message from the server
             var message = await Model.ReceiveMessage();
+            if (message == null)
+            {
+                OnConnectionClosed?.Invoke();
+                break;
+            }
+
+            if (message == "Logged out") return;
+
             // add the received message to the UI
-            if (!string.IsNullOrWhiteSpace(message)) AddMessage(message);
+            AddMessage(message);
             // wait for a short period before polling for more messages
             await Task.Delay(100);
         }
+
+        await Model.CloseConnection();
     }
 
     private void AddMessage(string message)

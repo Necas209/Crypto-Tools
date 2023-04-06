@@ -9,12 +9,13 @@ public class WebSocketManager
 
     public IEnumerable<WebSocketConnection> WebSockets => _webSockets.Values;
 
-    public WebSocketConnection AddWebSocket(WebSocket webSocket, string userName)
+    public WebSocketConnection AddWebSocket(WebSocket webSocket, string userName, string token)
     {
         var webSocketConnection = new WebSocketConnection
         {
             WebSocket = webSocket,
-            UserName = userName
+            UserName = userName,
+            Token = token
         };
 
         _webSockets.TryAdd(userName, webSocketConnection);

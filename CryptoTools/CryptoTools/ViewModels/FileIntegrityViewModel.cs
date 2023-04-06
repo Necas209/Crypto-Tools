@@ -29,15 +29,15 @@ public class FileIntegrityViewModel : ViewModelBase
         if (!File.Exists(file)) return false;
         var fileName = Path.GetFileName(file);
         using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
         var hash = HashingService.GetFileHash(file, SelectedAlgorithm.Name);
         var hashEntry = new HashEntry
         {
-            UserId = UserId,
             FileName = fileName,
             Hash = hash,
             HashingAlgorithmId = SelectedAlgorithm.Id
         };
-        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/hash", hashEntry);
+        var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/hash", hashEntry);
         return response.IsSuccessStatusCode;
     }
 
@@ -56,9 +56,10 @@ public class FileIntegrityViewModel : ViewModelBase
     {
         var fileName = Path.GetFileName(file);
         using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
         var encodedFileName = WebUtility.UrlEncode(fileName);
         var hashEntry = await client.GetFromJsonAsync<HashEntry>(
-            $"https://cryptotools.azurewebsites.net/hash/{UserId}/{encodedFileName}");
+            $"{Model.ServerUrl}/hash/{encodedFileName}");
         if (hashEntry is null)
         {
             DisplayMessage?.Invoke("File could not be found!", Colors.Coral);

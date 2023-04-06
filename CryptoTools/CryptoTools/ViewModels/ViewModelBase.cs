@@ -18,8 +18,6 @@ public class ViewModelBase : INotifyPropertyChanged
         Model = app.Model;
     }
 
-    protected int UserId { get; set; }
-
     public Model Model { get; }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -40,7 +40,7 @@ public class SignatureViewModel
         var fileBytes = await File.ReadAllBytesAsync(fileName);
         var hash = _sha256.ComputeHash(randomBytes);
         using var client = new HttpClient();
-        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/sign",
+        var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/sign",
             new SignatureRequest
             {
                 Data = Convert.ToBase64String(hash)
@@ -60,7 +60,7 @@ public class SignatureViewModel
         using var br = new BinaryReader(fs);
         var signature = br.ReadBytes(1024);
         using var client = new HttpClient();
-        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/verify",
+        var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/verify",
             new SignatureRequest
             {
                 Data = Convert.ToBase64String(signature)

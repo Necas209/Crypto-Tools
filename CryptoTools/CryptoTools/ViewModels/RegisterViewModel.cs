@@ -36,13 +36,13 @@ public class RegisterViewModel : ViewModelBase
             OnError?.Invoke("Passwords do not match.");
             return;
         }
+
         using var client = new HttpClient();
-        var passwordHash = securePassword.Hash("SHA256");
-        var response = await client.PostAsJsonAsync("https://cryptotools.azurewebsites.net/register",
-            new User
+        var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/register",
+            new LoginRequest
             {
                 UserName = UserName,
-                PasswordHash = passwordHash
+                Password = securePassword.ToPlainText()
             }
         );
 

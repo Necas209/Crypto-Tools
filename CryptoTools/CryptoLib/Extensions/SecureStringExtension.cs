@@ -1,36 +1,25 @@
 ﻿using System.Runtime.InteropServices;
 using System.Security;
-using CryptoLib.Services;
 
 namespace CryptoLib.Extensions;
 
 public static class SecureStringExtension
 {
-    private static byte[] Hash(this SecureString ss, Func<byte[], byte[]> hashFunc)
+    public static string ToPlainText(this SecureString secureString)
     {
-        var bStr = Marshal.SecureStringToBSTR(ss);
-        var length = Marshal.ReadInt32(bStr, -4);
-        var bytes = new byte[length];
-
-        var bytesPin = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+        var unmanagedString = IntPtr.Zero;
         try
         {
-            Marshal.Copy(bStr, bytes, 0, length);
-            Marshal.ZeroFreeBSTR(bStr);
-            return hashFunc(bytes);
+            // Convert the SecureString to an unmanaged string
+            unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(secureString);
+            // Convert the unmanaged string to a managed string
+            return Marshal.PtrToStringUni(unmanagedString) ?? string.Empty;
         }
         finally
         {
-            for (var i = 0; i < bytes.Length; i++) bytes[i] = 0;
-            bytesPin.Free();
+            // Free the unmanaged string
+            Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
         }
-    }
-
-    public static string Hash(this SecureString password, string algorithm)
-    {
-        using var hashAlgorithm = HashingService.GetHashAlgorithm(algorithm);
-        var pwHash = password.Hash(hashAlgorithm.ComputeHash);
-        return Convert.ToHexString(pwHash).ToLower();
     }
 
     public static bool IsEqualTo(this SecureString ss1, SecureString ss2)

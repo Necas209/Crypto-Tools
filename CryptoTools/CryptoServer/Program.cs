@@ -1,5 +1,6 @@
 using CryptoLib.Models;
 using CryptoServer.Data;
+using CryptoServer.Utils;
 using CryptoServer.WebSockets;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,18 +26,30 @@ app.MapGet("hash", async (CryptoDbContext context) =>
     return Results.Ok(algorithms);
 });
 
-app.MapGet("hash/{userId:int}/{fileName}", async (CryptoDbContext context, int userId, string fileName) =>
+app.MapGet("hash/{fileName}", async (HttpContext context, CryptoDbContext dbContext, string fileName) =>
 {
-    var entry = await context.HashEntries.FindAsync(userId, fileName);
+    var token = context.Request.Headers["X-Access-Token"].ToString();
+    var userName = TokenUtils.ValidateAccessToken(token);
+    if (userName == null) return Results.Unauthorized();
+    var user = await dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+    if (user == null) return Results.Unauthorized();
+    var userId = user.Id;
+    var entry = await dbContext.HashEntries.FindAsync(userId, fileName);
     return entry == null ? Results.NotFound() : Results.Ok(entry);
 });
 
-app.MapPost("hash", async (CryptoDbContext context, HashEntry entry) =>
+app.MapPost("hash", async (HttpContext context, CryptoDbContext dbContext, HashEntry entry) =>
 {
-    var existing = await context.HashEntries.FindAsync(entry.UserId, entry.FileName);
-    if (existing != null) context.HashEntries.Remove(existing);
-    context.HashEntries.Add(entry);
-    await context.SaveChangesAsync();
+    var token = context.Request.Headers["X-Access-Token"].ToString();
+    var userName = TokenUtils.ValidateAccessToken(token);
+    if (userName == null) return Results.Unauthorized();
+    var user = await dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+    if (user == null) return Results.Unauthorized();
+    entry.UserId = user.Id;
+    var existing = await dbContext.HashEntries.FindAsync(entry.UserId, entry.FileName);
+    if (existing != null) dbContext.HashEntries.Remove(existing);
+    dbContext.HashEntries.Add(entry);
+    await dbContext.SaveChangesAsync();
     return Results.Ok();
 });
 

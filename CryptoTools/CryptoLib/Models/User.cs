@@ -9,4 +9,6 @@ public class User
     [Required] public string UserName { get; init; } = string.Empty;
 
     [Required] public string PasswordHash { get; init; } = string.Empty;
+
+    [Required] public string PasswordSalt { get; init; } = string.Empty;
 }

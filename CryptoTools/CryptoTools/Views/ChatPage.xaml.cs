@@ -12,8 +12,19 @@ public partial class ChatPage
         InitializeComponent();
         _viewModel = (ChatViewModel)DataContext;
         _viewModel.OnMessageReceived = UpdateChat;
+        _viewModel.OnConnectionClosed = OnConnectionClosed;
         // start a new thread to receive messages from the server
         StartReceivingMessages();
+    }
+
+    private static void OnConnectionClosed()
+    {
+        MessageBox.Show("Connection to the chat server was closed.");
+    }
+
+    private void UpdateChat()
+    {
+        Dispatcher.Invoke(() => ChatListBox.ScrollIntoView(ChatListBox.Items[^1]));
     }
 
     private async void StartReceivingMessages()
@@ -26,11 +37,6 @@ public partial class ChatPage
         if (string.IsNullOrWhiteSpace(MessageTextBox.Text)) return;
         _viewModel.SendMessage(MessageTextBox.Text);
         MessageTextBox.Text = string.Empty;
-    }
-
-    private void UpdateChat()
-    {
-        Dispatcher.Invoke(() => ChatListBox.ScrollIntoView(ChatListBox.Items[^1]));
     }
 
     private void MessageTextBox_OnGotFocus(object sender, RoutedEventArgs e)
