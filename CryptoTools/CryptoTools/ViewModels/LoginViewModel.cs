@@ -2,25 +2,18 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security;
-using System.Threading;
 using System.Threading.Tasks;
 using CryptoLib.Extensions;
 using CryptoLib.Models;
 
 namespace CryptoTools.ViewModels;
 
-public class LoginWindowViewModel : BaseViewModel
+public class LoginViewModel : ViewModelBase
 {
     public Action<string>? OnError;
     public Action? ShowApp;
 
-    private static async Task StartWebSocketListenerAsync()
-    {
-        var serverUri = new Uri("wss://cryptotools.azurewebsites.net/chat");
-        await ClientWebSocket.ConnectAsync(serverUri, CancellationToken.None);
-    }
-
-    public async void Login(string userName, SecureString securePassword)
+    public async Task Login(string userName, SecureString securePassword)
     {
         using var client = new HttpClient();
         var passwordHash = securePassword.Hash("SHA256");
@@ -38,10 +31,13 @@ public class LoginWindowViewModel : BaseViewModel
             return;
         }
 
-        UserId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
-        // Start listening for messages
-        await StartWebSocketListenerAsync();
-        await Initialize();
+        var userId = Convert.ToInt32(await response.Content.ReadAsStringAsync());
+        UserId = userId;
+        Model.UserName = userName;
+        // Open connection to the chat server
+        await Model.OpenConnection();
+        // Get the encryption and hashing algorithms
+        await Model.GetAlgorithms();
         ShowApp?.Invoke();
     }
 }

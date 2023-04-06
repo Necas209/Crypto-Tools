@@ -11,15 +11,15 @@ using CryptoLib.Services;
 
 namespace CryptoTools.ViewModels;
 
-public class FileIntegrityPageViewModel : BaseViewModel
+public class FileIntegrityViewModel : ViewModelBase
 {
     public delegate void DisplayMessageDelegate(string message, Color color);
 
     public DisplayMessageDelegate? DisplayMessage;
 
-    public FileIntegrityPageViewModel()
+    public FileIntegrityViewModel()
     {
-        SelectedAlgorithm = HashingAlgorithms.First();
+        SelectedAlgorithm = Model.HashingAlgorithms.First();
     }
 
     public HashingAlgorithm SelectedAlgorithm { get; set; }
@@ -65,7 +65,7 @@ public class FileIntegrityPageViewModel : BaseViewModel
             return;
         }
 
-        var algorithmName = HashingAlgorithms
+        var algorithmName = Model.HashingAlgorithms
             .SingleOrDefault(a => a.Id == hashEntry.HashingAlgorithmId)?.Name;
         var hash = HashingService.GetFileHash(file, algorithmName ?? "SHA256");
         if (hashEntry.Hash == hash)

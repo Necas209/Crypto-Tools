@@ -11,12 +11,12 @@ namespace CryptoTools.Views;
 public partial class ZipPage
 {
     private readonly string _dialogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-    private readonly ZipPageViewModel _viewModel;
+    private readonly ZipViewModel _viewModel;
 
     public ZipPage()
     {
         InitializeComponent();
-        _viewModel = (ZipPageViewModel)DataContext;
+        _viewModel = (ZipViewModel)DataContext;
     }
 
     private void BtnOpenFile_OnClick(object sender, RoutedEventArgs e)
@@ -72,7 +72,7 @@ public partial class ZipPage
         };
 
         if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            ZipPageViewModel.DecompressArchive(dialog.FileName);
+            ZipViewModel.DecompressArchive(dialog.FileName);
     }
 
     private void BtnRem_OnClick(object sender, RoutedEventArgs e)
@@ -83,7 +83,7 @@ public partial class ZipPage
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         _viewModel.SelectedEntries = Files.SelectedItems
-            .Cast<ZipPageViewModel.ArchiveEntry>()
+            .Cast<ZipViewModel.ArchiveEntry>()
             .ToList();
     }
 }

@@ -16,13 +16,13 @@ public partial class ImageEncryptionPage
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly ImageEncryptionPageViewModel _viewModel;
+    private readonly ImageEncryptionViewModel _viewModel;
 
     public ImageEncryptionPage()
     {
         InitializeComponent();
 
-        _viewModel = (ImageEncryptionPageViewModel)DataContext;
+        _viewModel = (ImageEncryptionViewModel)DataContext;
 
         _dispatcherTimer.Tick += (_, _) =>
         {

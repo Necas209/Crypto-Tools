@@ -7,7 +7,7 @@
       mc:Ignorable="d"
       Title="PostmarkPage" Height="450" Width="800">
     <Page.DataContext>
-        <vm:SignaturePageViewModel />
+        <vm:SignatureViewModel />
     </Page.DataContext>
     <Grid>
         <TextBlock x:Name="Message" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Center"

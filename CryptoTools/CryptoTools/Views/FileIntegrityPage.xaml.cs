@@ -17,12 +17,12 @@ public partial class FileIntegrityPage
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly FileIntegrityPageViewModel _viewModel;
+    private readonly FileIntegrityViewModel _viewModel;
 
     public FileIntegrityPage()
     {
         InitializeComponent();
-        _viewModel = (FileIntegrityPageViewModel)DataContext;
+        _viewModel = (FileIntegrityViewModel)DataContext;
         _viewModel.DisplayMessage = ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {

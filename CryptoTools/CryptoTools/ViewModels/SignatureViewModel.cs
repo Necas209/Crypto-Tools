@@ -11,7 +11,7 @@ using CryptoLib.Models;
 
 namespace CryptoTools.ViewModels;
 
-public class SignaturePageViewModel
+public class SignatureViewModel
 {
     public delegate void DisplayMessageDelegate(string message, Color color);
 

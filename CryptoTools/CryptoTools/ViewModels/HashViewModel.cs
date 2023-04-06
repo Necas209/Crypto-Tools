@@ -4,14 +4,14 @@ using CryptoLib.Services;
 
 namespace CryptoTools.ViewModels;
 
-public class HashPageViewModel : BaseViewModel
+public class HashViewModel : ViewModelBase
 {
     private string _hashedFile = string.Empty;
     private string _hashedText = string.Empty;
 
-    public HashPageViewModel()
+    public HashViewModel()
     {
-        SelectedAlgorithm = HashingAlgorithms.First();
+        SelectedAlgorithm = Model.HashingAlgorithms.First();
     }
 
     public string UnhashedText { get; set; } = string.Empty;

@@ -1,5 +1,7 @@
 using CryptoLib.Models;
 using CryptoServer.Data;
+using CryptoServer.Services;
+using CryptoServer.WebSockets;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,7 @@ builder.Services.AddDbContext<CryptoDbContext>(
         Environment.GetEnvironmentVariable("SQLCONNSTR_CryptoDb")
     )
 );
+builder.Services.AddSingleton<ChatHandler>();
 
 var app = builder.Build();
 

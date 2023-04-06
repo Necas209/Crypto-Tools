@@ -6,7 +6,7 @@
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
       mc:Ignorable="d" Title="Zip" Height="450" Width="800">
     <Page.DataContext>
-        <vm:ZipPageViewModel />
+        <vm:ZipViewModel />
     </Page.DataContext>
     <Grid>
         <DockPanel Margin="10">

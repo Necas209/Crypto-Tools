@@ -10,11 +10,11 @@ using CryptoLib.Services;
 
 namespace CryptoTools.ViewModels;
 
-public class ImageEncryptionPageViewModel : BaseViewModel
+public class ImageEncryptionViewModel : ViewModelBase
 {
-    public ImageEncryptionPageViewModel()
+    public ImageEncryptionViewModel()
     {
-        SelectedAlgorithm = EncryptionAlgorithms.First();
+        SelectedAlgorithm = Model.EncryptionAlgorithms.First();
     }
 
     public EncryptionAlgorithm SelectedAlgorithm { get; set; }

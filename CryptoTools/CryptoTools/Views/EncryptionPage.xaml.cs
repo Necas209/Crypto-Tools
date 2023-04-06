@@ -17,12 +17,12 @@ public partial class EncryptionPage
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly EncryptionPageViewModel _viewModel;
+    private readonly EncryptionViewModel _viewModel;
 
     public EncryptionPage()
     {
         InitializeComponent();
-        _viewModel = (EncryptionPageViewModel)DataContext;
+        _viewModel = (EncryptionViewModel)DataContext;
         _viewModel.DisplayMessage = ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {

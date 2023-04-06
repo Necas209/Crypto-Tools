@@ -1,31 +1,28 @@
 using CryptoLib.Models;
-using CryptoServer.Data;
 using CryptoServer.Services;
+using CryptoServer.WebSockets;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CryptoServer.Controllers;
 
 [Route("/")]
 public class ChatController : Controller
 {
-    private readonly CryptoDbContext _dbContext;
+    private readonly ChatHandler _chatHandler;
 
-    public ChatController(CryptoDbContext dbContext)
+    public ChatController(ChatHandler chatHandler)
     {
-        _dbContext = dbContext;
+        _chatHandler = chatHandler;
     }
 
     [HttpPost]
-    [Route("/login")]
-    public async Task<IActionResult> Login([FromBody] User user)
+    [Route("/keys")]
+    public IActionResult ExchangeKeys([FromBody] ChatRequest request)
     {
-        var userId = await _dbContext.Users
-            .Where(u => u.UserName == user.UserName && u.PasswordHash == user.PasswordHash)
-            .Select(u => u.Id)
-            .FirstOrDefaultAsync();
-        if (userId == 0) return Unauthorized();
-        return Ok(userId);
+        _chatHandler.AddUser(request.UserName, request.PublicKey);
+        var serverPublicKey = _chatHandler.GetPublicKey();
+        var base64PublicKey = Convert.ToBase64String(serverPublicKey);
+        return Ok(base64PublicKey);
     }
 
     [HttpGet]
@@ -35,7 +32,7 @@ public class ChatController : Controller
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
             var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            await ChatHandler.Handle(webSocket, _dbContext);
+            await _chatHandler.Handle(webSocket);
         }
         else
         {

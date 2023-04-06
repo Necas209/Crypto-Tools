@@ -6,7 +6,7 @@
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
       mc:Ignorable="d" Title="ChatPage">
     <Page.DataContext>
-        <vm:ChatPageViewModel />
+        <vm:ChatViewModel />
     </Page.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>

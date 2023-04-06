@@ -8,12 +8,12 @@ namespace CryptoTools.Views;
 /// </summary>
 public partial class MainWindow
 {
-    private readonly MainWindowViewModel _viewModel;
+    private readonly MainViewModel _viewModel;
 
     public MainWindow()
     {
         InitializeComponent();
-        _viewModel = (MainWindowViewModel)DataContext;
+        _viewModel = (MainViewModel)DataContext;
         _viewModel.ShowLogin += ShowLogin;
     }
 

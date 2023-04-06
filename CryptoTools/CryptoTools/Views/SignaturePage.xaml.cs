@@ -17,13 +17,13 @@ public partial class SignaturePage
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly SignaturePageViewModel _viewModel;
+    private readonly SignatureViewModel _viewModel;
 
     public SignaturePage()
     {
         InitializeComponent();
 
-        _viewModel = (SignaturePageViewModel)DataContext;
+        _viewModel = (SignatureViewModel)DataContext;
         _viewModel.DisplayMessage = ShowMessage;
     }
 

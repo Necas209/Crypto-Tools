@@ -6,12 +6,12 @@
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
       mc:Ignorable="d" Title="ImageEncryptionPage">
     <Page.DataContext>
-        <vm:ImageEncryptionPageViewModel />
+        <vm:ImageEncryptionViewModel />
     </Page.DataContext>
     <Grid>
         <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
                   Margin="0,20,0,0"
-                  ItemsSource="{Binding EncryptionAlgorithms}"
+                  ItemsSource="{Binding Model.EncryptionAlgorithms}"
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
                   SelectedItem="{Binding SelectedAlgorithm}" />
         <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0" />

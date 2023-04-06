@@ -5,12 +5,12 @@ namespace CryptoTools.Views;
 
 public partial class ChatPage
 {
-    private readonly ChatPageViewModel _viewModel;
+    private readonly ChatViewModel _viewModel;
 
     public ChatPage()
     {
         InitializeComponent();
-        _viewModel = (ChatPageViewModel)DataContext;
+        _viewModel = (ChatViewModel)DataContext;
         _viewModel.OnMessageReceived = UpdateChat;
         // start a new thread to receive messages from the server
         StartReceivingMessages();
@@ -24,7 +24,7 @@ public partial class ChatPage
     private void SendButton_Click(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(MessageTextBox.Text)) return;
-        ChatPageViewModel.SendMessage(MessageTextBox.Text);
+        _viewModel.SendMessage(MessageTextBox.Text);
         MessageTextBox.Text = string.Empty;
     }
 

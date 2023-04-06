@@ -6,7 +6,7 @@ using CryptoLib.Extensions;
 
 namespace CryptoTools.ViewModels;
 
-public class ZipPageViewModel : BaseViewModel
+public class ZipViewModel : ViewModelBase
 {
     private List<ArchiveEntry> _selectedEntries = new();
 

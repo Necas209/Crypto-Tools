@@ -4,9 +4,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-        mc:Ignorable="d" Title="LoginWindow" Width="200" Height="280" ResizeMode="NoResize">
+        mc:Ignorable="d" Title="LoginWindow" Width="200" Height="300" ResizeMode="NoResize">
     <Window.DataContext>
-        <vm:LoginWindowViewModel />
+        <vm:LoginViewModel />
     </Window.DataContext>
     <Grid>
         <StackPanel Orientation="Vertical">
@@ -16,8 +16,13 @@
             <Label Content="Enter your password:" Margin="20 0 20 10" Height="25" />
             <PasswordBox x:Name="PasswordBox" GotFocus="PasswordBox_OnGotFocus" LostFocus="PasswordBox_OnLostFocus"
                          Margin="20 0 20 10" Height="25" />
-            <Button x:Name="LoginButton" Content="Login" Width="100" Margin="0 20 0 20" Height="30"
+            <Button x:Name="LoginButton" Content="Login" Width="100" Margin="0 20 0 10" Height="30"
                     Click="LoginButton_Click" />
+            <!-- I want to make a register button that looks like an HTML anchor tag -->
+            <Button Margin="20 0 20 0" Height="40" Click="RegisterButton_Click" BorderBrush="Transparent"
+                    Background="Transparent">
+                <TextBlock Text="Don't have an account? Register here." TextWrapping="Wrap" TextAlignment="Center" />
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

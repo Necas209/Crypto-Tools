@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
 
-namespace CryptoServer.Services;
+namespace CryptoServer.WebSockets;
 
 public class WebSocketConnection
 {

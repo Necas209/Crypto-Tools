@@ -7,12 +7,12 @@
       xmlns:adorners="http://gu.se/Adorners"
       mc:Ignorable="d" Title="HashPage">
     <Page.DataContext>
-        <vm:HashPageViewModel />
+        <vm:HashViewModel />
     </Page.DataContext>
     <Grid>
         <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
                   Margin="0,20,360,0"
-                  ItemsSource="{Binding HashingAlgorithms}"
+                  ItemsSource="{Binding Model.HashingAlgorithms}"
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
                   SelectedItem="{Binding SelectedAlgorithm}" />
         <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0" />

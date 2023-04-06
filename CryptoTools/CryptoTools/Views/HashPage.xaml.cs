@@ -15,12 +15,12 @@ public partial class HashPage
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly HashPageViewModel _viewModel;
+    private readonly HashViewModel _viewModel;
 
     public HashPage()
     {
         InitializeComponent();
-        _viewModel = (HashPageViewModel)DataContext;
+        _viewModel = (HashViewModel)DataContext;
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
