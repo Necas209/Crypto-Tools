@@ -15,7 +15,9 @@ public static class ZipArchiveExtension
 
     public static void CreateEntryFromDirectory(this ZipArchive archive, string sourceDirName, string entryName = "")
     {
-        var files = Directory.GetFiles(sourceDirName).Concat(Directory.GetDirectories(sourceDirName)).ToArray();
-        foreach (var file in files) archive.CreateEntryFromAny(file, entryName);
+        var files = Directory.GetFiles(sourceDirName);
+        var directories = Directory.GetDirectories(sourceDirName);
+        var allFiles = files.Concat(directories);
+        foreach (var file in allFiles) archive.CreateEntryFromAny(file, entryName);
     }
 }

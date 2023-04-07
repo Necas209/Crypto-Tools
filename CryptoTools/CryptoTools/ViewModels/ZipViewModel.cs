@@ -45,9 +45,9 @@ public class ZipViewModel : ViewModelBase
         });
     }
 
-    public void CompressEntries(string fileName)
+    public void CompressArchive(string path)
     {
-        using var fileStream = File.Create(fileName);
+        using var fileStream = File.Create(path);
         using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create);
         foreach (var entry in ArchiveEntries)
             if (entry.IsDirectory)
@@ -57,19 +57,14 @@ public class ZipViewModel : ViewModelBase
         ArchiveEntries.Clear();
     }
 
-    public static void DecompressArchive(string dialogFileName)
+    public static void DecompressArchive(string path)
     {
-        using var fileStream = File.OpenRead(dialogFileName);
+        using var fileStream = File.OpenRead(path);
         using var archive = new ZipArchive(fileStream, ZipArchiveMode.Read);
-        foreach (var entry in archive.Entries)
-        {
-            var entryPath = Path.Combine(Path.GetDirectoryName(dialogFileName) ?? string.Empty, entry.FullName);
-            var directory = Path.GetDirectoryName(entryPath);
-            if (directory != null && !Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
-
-            entry.ExtractToFile(entryPath, true);
-        }
+        var directory = Path.GetDirectoryName(path) ?? string.Empty;
+        var directoryName = Path.GetFileNameWithoutExtension(path);
+        var archiveDirectory = Path.Combine(directory, directoryName);
+        archive.ExtractToDirectory(archiveDirectory);
     }
 
     public readonly record struct ArchiveEntry(string Name, string Path, bool IsDirectory);

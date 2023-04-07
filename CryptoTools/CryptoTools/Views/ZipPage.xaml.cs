@@ -32,7 +32,7 @@ public partial class ZipPage
         };
 
         if (dialog.ShowDialog() == true)
-            _viewModel.CompressEntries(dialog.FileName);
+            _viewModel.CompressArchive(dialog.FileName);
     }
 
     private void BtnUnzip_OnClick(object sender, RoutedEventArgs e)
