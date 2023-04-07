@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:vm="clr-namespace:CryptoTools.ViewModels"
         mc:Ignorable="d"
-        Title="RegisterWindow" SizeToContent="WidthAndHeight">
+        Title="Register" SizeToContent="WidthAndHeight">
     <Window.DataContext>
         <vm:RegisterViewModel />
     </Window.DataContext>

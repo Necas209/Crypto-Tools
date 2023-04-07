@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:CryptoTools.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" MinHeight="540" MinWidth="830" SizeToContent="WidthAndHeight">
+        Title="CryptoTools" MinHeight="540" MinWidth="830" SizeToContent="WidthAndHeight">
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
