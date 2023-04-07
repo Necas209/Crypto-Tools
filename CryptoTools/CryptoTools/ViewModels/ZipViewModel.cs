@@ -10,7 +10,7 @@ public class ZipViewModel : ViewModelBase
 {
     private List<ArchiveEntry> _selectedEntries = new();
 
-    public ObservableCollection<ArchiveEntry> ArchiveEntries { get; set; } = new();
+    public ObservableCollection<ArchiveEntry> ArchiveEntries { get; } = new();
 
     public List<ArchiveEntry> SelectedEntries
     {
@@ -25,26 +25,35 @@ public class ZipViewModel : ViewModelBase
         SelectedEntries.Clear();
     }
 
-    public void AddEntries(IEnumerable<string> entries, bool isDirectory = false)
+    public void AddFiles(IEnumerable<string> files)
     {
-        foreach (var entry in entries)
-            ArchiveEntries.Add(new ArchiveEntry(Path.GetFileName(entry), entry, isDirectory));
+        foreach (var file in files)
+            ArchiveEntries.Add(new ArchiveEntry
+            {
+                Name = Path.GetFileName(file),
+                Path = file
+            });
+    }
+
+    public void AddDirectory(string directory)
+    {
+        ArchiveEntries.Add(new ArchiveEntry
+        {
+            Name = Path.GetFileName(directory),
+            Path = directory,
+            IsDirectory = true
+        });
     }
 
     public void CompressEntries(string fileName)
     {
-        using (var fileStream = File.Create(fileName))
-        {
-            using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true))
-            {
-                foreach (var entry in ArchiveEntries)
-                    if (entry.IsDirectory)
-                        archive.CreateEntryFromDirectory(entry.Path, entry.Name);
-                    else
-                        archive.CreateEntryFromFile(entry.Path, entry.Name, CompressionLevel.Fastest);
-            }
-        }
-
+        using var fileStream = File.Create(fileName);
+        using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create);
+        foreach (var entry in ArchiveEntries)
+            if (entry.IsDirectory)
+                archive.CreateEntryFromDirectory(entry.Path, entry.Name);
+            else
+                archive.CreateEntryFromFile(entry.Path, entry.Name, CompressionLevel.Optimal);
         ArchiveEntries.Clear();
     }
 
@@ -56,7 +65,6 @@ public class ZipViewModel : ViewModelBase
         {
             var entryPath = Path.Combine(Path.GetDirectoryName(dialogFileName) ?? string.Empty, entry.FullName);
             var directory = Path.GetDirectoryName(entryPath);
-
             if (directory != null && !Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 

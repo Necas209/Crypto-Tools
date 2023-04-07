@@ -11,16 +11,13 @@
     <Grid>
         <DockPanel Margin="10">
             <WrapPanel HorizontalAlignment="Right" DockPanel.Dock="Top" Margin="0,0,0,10">
-                <Button Click="BtnUnzip_OnClick" Margin="0,0,290,0">Unzip</Button>
-                <Button Click="BtnOpenFile_OnClick" Margin="0,0,10,0">Open file</Button>
-                <Button Click="BtnZip_OnClick" Margin="10,0,250,0"
-                        IsEnabled="{Binding ArchiveEntries.Count, Converter={StaticResource IntToBoolValueConverter}}">
-                    Zip file(s)
-                </Button>
-                <Button Click="BtnRem_OnClick" Margin="0,0,0,0"
-                        IsEnabled="{Binding SelectedEntries.Count, Converter={StaticResource IntToBoolValueConverter}}">
-                    Remove file(s)
-                </Button>
+                <Button Click="BtnUnzip_OnClick" Content="Unzip archive" />
+                <Button Click="BtnAddDir_OnClick" Margin="210,0,0,0" Content="Add folder" />
+                <Button Click="BtnAddFile_OnClick" Margin="20,0,0,0" Content="Add file(s)" />
+                <Button Click="BtnRemove_OnClick" Margin="20,0, 200,0" Content="Remove file(s)"
+                        IsEnabled="{Binding SelectedEntries.Count, Converter={StaticResource IntToBoolValueConverter}}" />
+                <Button Click="BtnZip_OnClick" Content="Zip file(s)"
+                        IsEnabled="{Binding ArchiveEntries.Count, Converter={StaticResource IntToBoolValueConverter}}" />
             </WrapPanel>
             <ListView x:Name="Files" BorderBrush="Black" BorderThickness="1" ItemsSource="{Binding ArchiveEntries}"
                       SelectionChanged="Selector_OnSelectionChanged">

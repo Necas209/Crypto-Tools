@@ -10,13 +10,12 @@ public static class ZipArchiveExtension
         if (File.GetAttributes(sourceName).HasFlag(FileAttributes.Directory))
             archive.CreateEntryFromDirectory(sourceName, Path.Combine(entryName, fileName));
         else
-            archive.CreateEntryFromFile(sourceName, Path.Combine(entryName, fileName), CompressionLevel.Fastest);
+            archive.CreateEntryFromFile(sourceName, Path.Combine(entryName, fileName), CompressionLevel.Optimal);
     }
 
     public static void CreateEntryFromDirectory(this ZipArchive archive, string sourceDirName, string entryName = "")
     {
         var files = Directory.GetFiles(sourceDirName).Concat(Directory.GetDirectories(sourceDirName)).ToArray();
-        archive.CreateEntry(Path.Combine(entryName, Path.GetFileName(sourceDirName)));
         foreach (var file in files) archive.CreateEntryFromAny(file, entryName);
     }
 }

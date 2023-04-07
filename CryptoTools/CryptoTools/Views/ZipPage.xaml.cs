@@ -2,15 +2,16 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using CryptoTools.ViewModels;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace CryptoTools.Views;
 
 public partial class ZipPage
 {
-    private readonly string _dialogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    private readonly string _desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     private readonly ZipViewModel _viewModel;
 
     public ZipPage()
@@ -19,34 +20,15 @@ public partial class ZipPage
         _viewModel = (ZipViewModel)DataContext;
     }
 
-    private void BtnOpenFile_OnClick(object sender, RoutedEventArgs e)
-    {
-        var dialog = new CommonOpenFileDialog
-        {
-            Multiselect = true,
-            InitialDirectory = $"{_dialogPath}\\Desktop",
-            EnsureFileExists = true,
-            IsFolderPicker = true
-        };
-
-        if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            _viewModel.AddEntries(dialog.FileNames, true);
-
-        dialog.IsFolderPicker = false;
-        dialog.InitialDirectory = $"{_dialogPath}\\Desktop";
-
-        if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            _viewModel.AddEntries(dialog.FileNames);
-    }
-
     private void BtnZip_OnClick(object sender, RoutedEventArgs e)
     {
         var dialog = new SaveFileDialog
         {
-            InitialDirectory = $"{_dialogPath}\\Desktop",
+            InitialDirectory = _desktopPath,
             Filter = "Zip files (*.zip)|*.zip",
-            FilterIndex = 1,
-            RestoreDirectory = true
+            RestoreDirectory = true,
+            Title = "Select a zip file to create",
+            DefaultExt = "zip"
         };
 
         if (dialog.ShowDialog() == true)
@@ -55,27 +37,20 @@ public partial class ZipPage
 
     private void BtnUnzip_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new CommonOpenFileDialog
+        var dialog = new OpenFileDialog
         {
-            InitialDirectory = $"{_dialogPath}\\Desktop",
+            InitialDirectory = _desktopPath,
+            Filter = "Zip files (*.zip)|*.zip",
             RestoreDirectory = true,
-            IsFolderPicker = false,
-            Multiselect = false,
-            EnsureFileExists = true,
             Title = "Select a zip file to extract",
-            DefaultExtension = "zip",
-            Filters =
-            {
-                new CommonFileDialogFilter("Zip files", "*.zip"),
-                new CommonFileDialogFilter("All files", "*.*")
-            }
+            DefaultExt = "zip"
         };
 
-        if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+        if (dialog.ShowDialog() == true)
             ZipViewModel.DecompressArchive(dialog.FileName);
     }
 
-    private void BtnRem_OnClick(object sender, RoutedEventArgs e)
+    private void BtnRemove_OnClick(object sender, RoutedEventArgs e)
     {
         _viewModel.RemoveSelectedEntries();
     }
@@ -85,5 +60,29 @@ public partial class ZipPage
         _viewModel.SelectedEntries = Files.SelectedItems
             .Cast<ZipViewModel.ArchiveEntry>()
             .ToList();
+    }
+
+    private void BtnAddDir_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new FolderBrowserDialog
+        {
+            InitialDirectory = _desktopPath
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+            _viewModel.AddDirectory(dialog.SelectedPath);
+    }
+
+    private void BtnAddFile_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            InitialDirectory = _desktopPath,
+            Multiselect = true,
+            Filter = "All files (*.*)|*.*"
+        };
+
+        if (dialog.ShowDialog() == true)
+            _viewModel.AddFiles(dialog.FileNames);
     }
 }
