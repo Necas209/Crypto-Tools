@@ -16,13 +16,8 @@ namespace CryptoTools;
 
 public class Model
 {
-#if !DEBUG
-    public const string ServerUrl = "https://localhost:7191";
-    private const string ChatUrl = "wss://localhost:7191/chat";
-#else
     public const string ServerUrl = "https://cryptotools.azurewebsites.net";
     private const string ChatUrl = "wss://cryptotools.azurewebsites.net/chat";
-#endif
     private readonly RSA _clientRsa = RSA.Create();
     private readonly RSA _serverRsa = RSA.Create();
     private ClientWebSocket _socket = new();
