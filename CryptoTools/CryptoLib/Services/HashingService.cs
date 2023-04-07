@@ -5,7 +5,7 @@ namespace CryptoLib.Services;
 
 public static class HashingService
 {
-    public static HashAlgorithm GetHashAlgorithm(string name)
+    private static HashAlgorithm GetHashAlgorithm(string name)
     {
         return name switch
         {
@@ -18,18 +18,22 @@ public static class HashingService
         };
     }
 
-    public static string GetFileHash(string file, string algorithm)
+    public static string ToHexString(byte[] bytes)
+    {
+        return Convert.ToHexString(bytes).ToLower();
+    }
+
+    public static byte[] HashFile(string file, string algorithm)
     {
         using var hashAlgorithm = GetHashAlgorithm(algorithm);
         using var stream = File.OpenRead(file);
-        var hash = hashAlgorithm.ComputeHash(stream);
-        return BitConverter.ToString(hash).Replace("-", "").ToLower();
+        return hashAlgorithm.ComputeHash(stream);
     }
 
-    public static string GetHash(string text, string algorithmName)
+    public static byte[] Hash(string text, string algorithm)
     {
-        using var hashAlgorithm = GetHashAlgorithm(algorithmName);
-        var hash = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(text));
-        return BitConverter.ToString(hash).Replace("-", "").ToLower();
+        using var hashAlgorithm = GetHashAlgorithm(algorithm);
+        var textBytes = Encoding.UTF8.GetBytes(text);
+        return hashAlgorithm.ComputeHash(textBytes);
     }
 }

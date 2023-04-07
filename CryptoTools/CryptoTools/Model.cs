@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -20,7 +21,16 @@ public class Model
     private const string ChatUrl = "wss://cryptotools.azurewebsites.net/chat";
     private readonly RSA _clientRsa = RSA.Create();
     private readonly RSA _serverRsa = RSA.Create();
+
+    public readonly string AppFolder =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CryptoTools");
+
     private ClientWebSocket _socket = new();
+
+    public Model()
+    {
+        Directory.CreateDirectory(AppFolder);
+    }
 
     public string AccessToken { get; set; } = string.Empty;
 

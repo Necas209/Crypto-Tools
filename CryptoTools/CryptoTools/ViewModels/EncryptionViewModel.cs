@@ -19,7 +19,7 @@ public class EncryptionViewModel : ViewModelBase
     public EncryptionViewModel()
     {
         SelectedAlgorithm = Model.EncryptionAlgorithms.First();
-        var rsaBin = Path.Combine(AppFolder, "enc.bin");
+        var rsaBin = Path.Combine(Model.AppFolder, "rsa.bin");
         if (File.Exists(rsaBin))
         {
             var xmlString = Encoding.UTF8.GetString(File.ReadAllBytes(rsaBin));
@@ -27,8 +27,8 @@ public class EncryptionViewModel : ViewModelBase
         }
         else
         {
-            var parameters = _rsa.ExportParameters(true);
-            _rsa.ImportParameters(parameters);
+            var xmlString = _rsa.ToXmlString(true);
+            File.WriteAllBytes(rsaBin, Encoding.UTF8.GetBytes(xmlString));
         }
     }
 

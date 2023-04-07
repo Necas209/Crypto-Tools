@@ -39,7 +39,8 @@ public class HashViewModel : ViewModelBase
             return;
         }
 
-        HashedText = HashingService.GetHash(UnhashedText, SelectedAlgorithm.Name);
+        var hash = HashingService.Hash(UnhashedText, SelectedAlgorithm.Name);
+        HashedText = HashingService.ToHexString(hash);
     }
 
     public void HashFile(string file)
@@ -50,6 +51,7 @@ public class HashViewModel : ViewModelBase
             return;
         }
 
-        HashedFile = HashingService.GetFileHash(file, SelectedAlgorithm.Name);
+        var hash = HashingService.HashFile(file, SelectedAlgorithm.Name);
+        HashedFile = HashingService.ToHexString(hash);
     }
 }
