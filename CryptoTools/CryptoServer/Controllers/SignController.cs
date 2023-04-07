@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using CryptoLib.Models;
-using CryptoLib.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoServer.Controllers;
@@ -45,20 +44,18 @@ public class SignController : Controller
 
     [HttpPost]
     [Route("/sign")]
-    public async Task<IActionResult> SignData([FromBody] SignatureRequest request)
+    public IActionResult SignData([FromBody] SignatureRequest request)
     {
         var data = Convert.FromBase64String(request.Data);
-        var signature = SignatureService.SignData(data, _rsa);
+        var signature = _rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         // Encrypt signature with private key
         var encryptedSignature = _rsa2.Encrypt(signature, RSAEncryptionPadding.Pkcs1);
         // Encrypt data with private key
         var encryptedData = _rsa2.Encrypt(data, RSAEncryptionPadding.Pkcs1);
         // Combine encrypted data and encrypted signature
-        using var ms = new MemoryStream();
-        await using var bw = new BinaryWriter(ms);
-        bw.Write(encryptedData);
-        bw.Write(encryptedSignature);
-        var buffer = ms.ToArray();
+        var buffer = new byte[encryptedData.Length + encryptedSignature.Length];
+        encryptedData.CopyTo(buffer, 0);
+        encryptedSignature.CopyTo(buffer, encryptedData.Length);
         var base64 = Convert.ToBase64String(buffer);
         return Ok(base64);
     }
@@ -68,14 +65,14 @@ public class SignController : Controller
     public IActionResult VerifySignature([FromBody] SignatureRequest request)
     {
         var buffer = Convert.FromBase64String(request.Data);
-        using var ms = new MemoryStream(buffer);
-        using var br = new BinaryReader(ms);
-        var data = br.ReadBytes(512);
-        var signature = br.ReadBytes(512);
+        var data = buffer[..512];
+        var signature = buffer[512..];
         // Decrypt signature with public key
         var decryptedSignature = _rsa2.Decrypt(signature, RSAEncryptionPadding.Pkcs1);
         var decryptedData = _rsa2.Decrypt(data, RSAEncryptionPadding.Pkcs1);
-        var isVerified = SignatureService.VerifySignature(decryptedData, decryptedSignature, _rsa);
+        // Verify signature
+        var isVerified = _rsa.VerifyData(decryptedData, decryptedSignature, HashAlgorithmName.SHA256,
+            RSASignaturePadding.Pkcs1);
         return Ok(isVerified);
     }
 }
