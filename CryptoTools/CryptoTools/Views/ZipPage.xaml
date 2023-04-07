@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
+      xmlns:local="clr-namespace:CryptoTools.Converters"
       mc:Ignorable="d" Title="Zip" Height="450" Width="800">
     <Page.DataContext>
         <vm:ZipViewModel />
@@ -12,10 +13,15 @@
         <DockPanel Margin="10">
             <WrapPanel HorizontalAlignment="Right" DockPanel.Dock="Top" Margin="0,0,0,10">
                 <Button Click="BtnUnzip_OnClick" Content="Unzip archive" />
-                <Button Click="BtnAddDir_OnClick" Margin="210,0,0,0" Content="Add folder" />
+                <CheckBox Content="New folder" IsChecked="{Binding CreateNewFolder}" Margin="10,0,0,0"
+                          VerticalAlignment="Center" />
+                <Button Click="BtnAddDir_OnClick" Margin="100,0,0,0" Content="Add folder" />
                 <Button Click="BtnAddFile_OnClick" Margin="20,0,0,0" Content="Add file(s)" />
-                <Button Click="BtnRemove_OnClick" Margin="20,0, 200,0" Content="Remove file(s)"
+                <Button Click="BtnRemove_OnClick" Margin="20,0, 100,0" Content="Remove file(s)"
                         IsEnabled="{Binding SelectedEntries.Count, Converter={StaticResource IntToBoolValueConverter}}" />
+                <ComboBox ItemsSource="{Binding Source={x:Static local:EnumHelper.CompressionLevelValues}}"
+                          SelectedValue="{Binding CompressionLevel}" DisplayMemberPath="Name"
+                          Width="100" Margin="0,0,10,0" SelectedValuePath="Value" />
                 <Button Click="BtnZip_OnClick" Content="Zip file(s)"
                         IsEnabled="{Binding ArchiveEntries.Count, Converter={StaticResource IntToBoolValueConverter}}" />
             </WrapPanel>

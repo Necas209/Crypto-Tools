@@ -47,7 +47,7 @@ public partial class ZipPage
         };
 
         if (dialog.ShowDialog() == true)
-            ZipViewModel.DecompressArchive(dialog.FileName);
+            _viewModel.DecompressArchive(dialog.FileName);
     }
 
     private void BtnRemove_OnClick(object sender, RoutedEventArgs e)

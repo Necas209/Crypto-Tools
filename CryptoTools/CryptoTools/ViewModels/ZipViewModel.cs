@@ -12,11 +12,15 @@ public class ZipViewModel : ViewModelBase
 
     public ObservableCollection<ArchiveEntry> ArchiveEntries { get; } = new();
 
+    public CompressionLevel CompressionLevel { get; set; } = CompressionLevel.Optimal;
+
     public List<ArchiveEntry> SelectedEntries
     {
         get => _selectedEntries;
         set => SetField(ref _selectedEntries, value);
     }
+
+    public bool CreateNewFolder { get; set; } = true;
 
     public void RemoveSelectedEntries()
     {
@@ -51,20 +55,24 @@ public class ZipViewModel : ViewModelBase
         using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create);
         foreach (var entry in ArchiveEntries)
             if (entry.IsDirectory)
-                archive.CreateEntryFromDirectory(entry.Path, entry.Name);
+                archive.CreateEntryFromDirectory(entry.Path, entry.Name, CompressionLevel);
             else
-                archive.CreateEntryFromFile(entry.Path, entry.Name, CompressionLevel.Optimal);
+                archive.CreateEntryFromFile(entry.Path, entry.Name, CompressionLevel);
         ArchiveEntries.Clear();
     }
 
-    public static void DecompressArchive(string path)
+    public void DecompressArchive(string path)
     {
         using var fileStream = File.OpenRead(path);
         using var archive = new ZipArchive(fileStream, ZipArchiveMode.Read);
         var directory = Path.GetDirectoryName(path) ?? string.Empty;
-        var directoryName = Path.GetFileNameWithoutExtension(path);
-        var archiveDirectory = Path.Combine(directory, directoryName);
-        archive.ExtractToDirectory(archiveDirectory);
+        if (CreateNewFolder)
+        {
+            var name = Path.GetFileNameWithoutExtension(path);
+            directory = Path.Combine(directory, name);
+        }
+
+        archive.ExtractToDirectory(directory);
     }
 
     public readonly record struct ArchiveEntry(string Name, string Path, bool IsDirectory);
