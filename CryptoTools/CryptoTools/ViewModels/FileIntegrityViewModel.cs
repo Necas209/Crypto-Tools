@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using CryptoLib.Models;
-using CryptoLib.Services;
+using CryptoTools.Services;
 
 namespace CryptoTools.ViewModels;
 

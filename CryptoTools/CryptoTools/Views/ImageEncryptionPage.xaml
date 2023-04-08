@@ -9,8 +9,7 @@
         <vm:ImageEncryptionViewModel />
     </Page.DataContext>
     <Grid>
-        <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
-                  Margin="0,20,0,0"
+        <ComboBox Width="200" VerticalAlignment="Top" Margin="0,20,0,0"
                   ItemsSource="{Binding Model.EncryptionAlgorithms}"
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
                   SelectedItem="{Binding SelectedAlgorithm}" />
@@ -26,10 +25,10 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                 <Border BorderThickness="1" BorderBrush="LightSlateGray">
-                    <Image Name="Img1" Height="180" Width="380" />
+                    <Image Name="OriginalImage" Height="180" Width="380" />
                 </Border>
                 <Border BorderThickness="1" BorderBrush="LightSlateGray" Margin="10,0,0,0">
-                    <Image Name="Img2" Height="180" Width="380" />
+                    <Image Name="EncryptedImage" Height="180" Width="380" />
                 </Border>
             </StackPanel>
         </StackPanel>

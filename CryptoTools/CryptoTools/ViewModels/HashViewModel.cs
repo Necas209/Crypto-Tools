@@ -1,6 +1,6 @@
 using System.Linq;
 using CryptoLib.Models;
-using CryptoLib.Services;
+using CryptoTools.Services;
 
 namespace CryptoTools.ViewModels;
 
