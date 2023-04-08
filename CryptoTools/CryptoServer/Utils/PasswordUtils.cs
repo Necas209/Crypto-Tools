@@ -12,11 +12,9 @@ public static class PasswordUtils
         return (hash, salt);
     }
 
-    private static string GenerateSalt()
+    private static string GenerateSalt(int length = 16)
     {
-        var salt = new byte[16];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(salt);
+        var salt = RandomNumberGenerator.GetBytes(length);
         return Convert.ToBase64String(salt);
     }
 
