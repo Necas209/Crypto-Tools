@@ -20,13 +20,13 @@ public static class EncryptionService
         };
     }
 
-    public static byte[] EncryptImage(byte[] bytes, string algorithmName, CipherMode cipherMode = CipherMode.CBC)
+    public static byte[] EncryptImage(byte[] bytes, string algorithmName)
     {
         using var algorithm = GetAlgorithm(algorithmName);
         // Set the encryption key and generate an Initialization Vector
         algorithm.GenerateKey();
         algorithm.GenerateIV();
-        algorithm.Mode = cipherMode;
+        algorithm.Mode = CipherMode.CBC;
         using var ms = new MemoryStream();
         // Create cryptographic stream
         var encryptor = algorithm.CreateEncryptor();
@@ -66,7 +66,8 @@ public static class EncryptionService
         bw.Write(symAlg.IV);
         bw.Write(extension);
         using var cs = new CryptoStream(outFs, symAlg.CreateEncryptor(), CryptoStreamMode.Write);
-        // By encrypting a chunk at a time, you can save memory and accommodate large files. blockSizeBytes can be any arbitrary size.
+        // By encrypting a chunk at a time, you can save memory and accommodate large files.
+        // blockSizeBytes can be any arbitrary size.
         var blockSizeBytes = symAlg.BlockSize / 8;
         var data = new byte[blockSizeBytes];
         using (var inFs = new FileStream(fileName, FileMode.Open))
@@ -108,7 +109,8 @@ public static class EncryptionService
             using var outFs = new FileStream(outFile, FileMode.Create);
             inFs.Position = lKey + lIv + lExt + 12;
             using var cs = new CryptoStream(outFs, symAlg.CreateDecryptor(keyDecrypted, iv), CryptoStreamMode.Write);
-            // By decrypting a chunk a time, you can save memory and accommodate large files. blockSizeBytes can be any arbitrary size.
+            // By decrypting a chunk a time, you can save memory and accommodate large files.
+            // blockSizeBytes can be any arbitrary size.
             var blockSizeBytes = symAlg.BlockSize / 8;
             var data = new byte[blockSizeBytes];
             int count;
