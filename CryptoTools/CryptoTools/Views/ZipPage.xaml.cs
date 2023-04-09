@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using CryptoTools.ViewModels;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
@@ -64,13 +64,14 @@ public partial class ZipPage
 
     private void BtnAddDir_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new FolderBrowserDialog
+        var dialog = new CommonOpenFileDialog
         {
-            InitialDirectory = _desktopPath
+            InitialDirectory = _desktopPath,
+            IsFolderPicker = true
         };
-
-        if (dialog.ShowDialog() == DialogResult.OK)
-            _viewModel.AddDirectory(dialog.SelectedPath);
+        
+        if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            _viewModel.AddDirectory(dialog.FileName);
     }
 
     private void BtnAddFile_OnClick(object sender, RoutedEventArgs e)
