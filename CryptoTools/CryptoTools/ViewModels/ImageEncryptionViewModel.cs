@@ -1,6 +1,5 @@
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using CryptoLib.Models;
@@ -17,7 +16,7 @@ public class ImageEncryptionViewModel : ViewModelBase
 
     public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 
-    public string EncryptImage(string imagePath)
+    public Bitmap EncryptImage(string imagePath)
     {
         using var algorithm = EncryptionUtils.GetAlgorithm(SelectedAlgorithm.Name);
         // Set the encryption key and generate an initialization vector
@@ -39,14 +38,10 @@ public class ImageEncryptionViewModel : ViewModelBase
         using var encryptor = algorithm.CreateEncryptor();
         var encryptedPixelData = encryptor.TransformFinalBlock(pixelData, 0, numBytes);
         // Save the encrypted pixel data as a new image
-        using var encryptedBitmap =
-            new Bitmap(grayscaleBitmap.Width, grayscaleBitmap.Height, PixelFormat.Format8bppIndexed);
+        var encryptedBitmap = new Bitmap(grayscaleBitmap.Width, grayscaleBitmap.Height, PixelFormat.Format8bppIndexed);
         var encryptedBmpData = encryptedBitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
         Marshal.Copy(encryptedPixelData, 0, encryptedBmpData.Scan0, numBytes);
         encryptedBitmap.UnlockBits(encryptedBmpData);
-        // return encryptedBitmap;
-        var encryptedImagePath = Path.ChangeExtension(imagePath, ".enc.bmp");
-        encryptedBitmap.Save(encryptedImagePath, ImageFormat.Bmp);
-        return encryptedImagePath;
+        return encryptedBitmap;
     }
 }

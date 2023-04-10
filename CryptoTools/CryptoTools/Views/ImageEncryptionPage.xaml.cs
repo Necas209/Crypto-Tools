@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -48,10 +47,9 @@ public partial class ImageEncryptionPage
             Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp"
         };
         if (openFileDialog.ShowDialog() != true) return;
-        var encryptedPath = _viewModel.EncryptImage(openFileDialog.FileName);
+        var bitmap = _viewModel.EncryptImage(openFileDialog.FileName);
         OriginalImage.Source = BitmapUtils.ToBitmapImage(openFileDialog.FileName);
-        EncryptedImage.Source = BitmapUtils.ToBitmapImage(encryptedPath);
-        File.Delete(encryptedPath); // Delete the temporary file
+        EncryptedImage.Source = BitmapUtils.ToBitmapImage(bitmap);
     }
 
     private void DropImage_OnDrop(object sender, DragEventArgs e)
@@ -75,10 +73,9 @@ public partial class ImageEncryptionPage
         }
 
         var file = files[0];
-        var encryptedPath = _viewModel.EncryptImage(file);
+        var bitmap = _viewModel.EncryptImage(file);
         OriginalImage.Source = BitmapUtils.ToBitmapImage(file);
-        EncryptedImage.Source = BitmapUtils.ToBitmapImage(encryptedPath);
-        File.Delete(encryptedPath); // Delete the temporary file
+        EncryptedImage.Source = BitmapUtils.ToBitmapImage(bitmap);
     }
 
     private void DropImage_OnDragEnter(object sender, DragEventArgs e)
