@@ -54,11 +54,14 @@ public class ChatHandler
 
                 var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 // Deserialize the message
-                var chatMessage = JsonSerializer.Deserialize<ChatMessage>(json);
-                if (chatMessage == null) continue;
+                var message = JsonSerializer.Deserialize<ChatMessage>(json);
+                if (message == null) continue;
                 // The server should not trust the client's username but instead, retrieve it from the connection object
-                chatMessage.UserName = sender.UserName;
-                await BroadcastMessage(chatMessage);
+                message.UserName = sender.UserName;
+                // Decrypt the message with the server's private key
+                message.SymmetricKey = _serverRsa.Decrypt(message.SymmetricKey, RSAEncryptionPadding.OaepSHA256);
+                message.HmacKey = _serverRsa.Decrypt(message.HmacKey, RSAEncryptionPadding.OaepSHA256);
+                await BroadcastMessage(message);
                 buffer = new byte[4096];
                 result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             }
@@ -105,14 +108,11 @@ public class ChatHandler
 
     private async Task SendMessage(WebSocketConnection connection, ChatMessage message)
     {
-        // Decrypt the message with the server's private key
-        var symmetricKey = _serverRsa.Decrypt(message.SymmetricKey, RSAEncryptionPadding.OaepSHA256);
-        var hmacKey = _serverRsa.Decrypt(message.HmacKey, RSAEncryptionPadding.OaepSHA256);
         // Encrypt the message with the client's public key
         var userPublicKey = _clientKeys[connection.UserName];
         _clientRsa.ImportRSAPublicKey(userPublicKey, out _);
-        var encryptedSymmetricKey = _clientRsa.Encrypt(symmetricKey, RSAEncryptionPadding.OaepSHA256);
-        var encryptedHmacKey = _clientRsa.Encrypt(hmacKey, RSAEncryptionPadding.OaepSHA256);
+        var encryptedSymmetricKey = _clientRsa.Encrypt(message.SymmetricKey, RSAEncryptionPadding.OaepSHA256);
+        var encryptedHmacKey = _clientRsa.Encrypt(message.HmacKey, RSAEncryptionPadding.OaepSHA256);
         // Send the message
         var messageToSend = new ChatMessage
         {

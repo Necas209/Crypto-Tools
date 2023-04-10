@@ -22,8 +22,10 @@ public class Model
     private readonly RSA _clientRsa = RSA.Create();
     private readonly RSA _serverRsa = RSA.Create();
 
-    public readonly string AppFolder =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CryptoTools");
+    public readonly string AppFolder = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "CryptoTools"
+    );
 
     private ClientWebSocket _socket = new();
 
