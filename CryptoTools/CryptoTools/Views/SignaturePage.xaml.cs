@@ -38,19 +38,18 @@ public partial class SignaturePage
         _dispatcherTimer.Start();
     }
 
-    private void Sign_OnClick(object sender, RoutedEventArgs e)
+    private async void Sign_OnClick(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog
         {
-            Multiselect = true,
             InitialDirectory = _dialogPath,
             Filter = "All files (*.*)|*.*"
         };
         if (dialog.ShowDialog() != true) return;
-        _viewModel.SignFiles(dialog.FileNames);
+        await _viewModel.SignFile(dialog.FileName);
     }
 
-    private void Sign_OnDrop(object sender, DragEventArgs e)
+    private async void Sign_OnDrop(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
@@ -60,9 +59,9 @@ public partial class SignaturePage
         {
             // Note that you can have more than one file.
             var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-            if (files == null || files.Length == 0) return;
+            if (files is not { Length: 1 }) return;
             // Register the file
-            _viewModel.SignFiles(files);
+            await _viewModel.SignFile(files[0]);
         }
         else
         {
@@ -87,17 +86,17 @@ public partial class SignaturePage
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void Verify_OnClick(object sender, RoutedEventArgs e)
+    private async void Verify_OnClick(object sender, RoutedEventArgs e)
     {
         var openFileDialog = new OpenFileDialog
         {
             Filter = "All files (*.*)|*.*"
         };
         if (openFileDialog.ShowDialog() != true) return;
-        _viewModel.VerifySignature(openFileDialog.FileName);
+        await _viewModel.VerifySignature(openFileDialog.FileName);
     }
 
-    private void Verify_OnDrop(object sender, DragEventArgs e)
+    private async void Verify_OnDrop(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
@@ -119,7 +118,7 @@ public partial class SignaturePage
         }
 
         // validate the file
-        _viewModel.VerifySignature(files[0]);
+        await _viewModel.VerifySignature(files[0]);
     }
 
     private void Verify_OnDragEnter(object sender, DragEventArgs e)
@@ -130,7 +129,7 @@ public partial class SignaturePage
         btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
-    private void Verifiy_OnDragLeave(object sender, DragEventArgs e)
+    private void Verify_OnDragLeave(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
 

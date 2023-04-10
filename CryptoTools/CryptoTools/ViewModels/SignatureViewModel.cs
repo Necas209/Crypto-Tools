@@ -1,76 +1,59 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using CryptoLib.Models;
 
 namespace CryptoTools.ViewModels;
 
-public class SignatureViewModel
+public class SignatureViewModel : ViewModelBase
 {
     public delegate void DisplayMessageDelegate(string message, Color color);
 
-    private static readonly Random Random = new();
     private readonly SHA256 _sha256 = SHA256.Create();
 
     public DisplayMessageDelegate? DisplayMessage;
 
-    private static string RandomString(int length)
+    public async Task SignFile(string fileName)
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[Random.Next(s.Length)]).ToArray());
-    }
-
-    public void SignFiles(IEnumerable<string> dialogFileNames)
-    {
-        foreach (var fileName in dialogFileNames) SignFile(fileName);
-        DisplayMessage?.Invoke("Files signed.", Colors.Green);
-    }
-
-    private async void SignFile(string fileName)
-    {
-        var randomString = RandomString(256);
-        var randomBytes = Encoding.ASCII.GetBytes(randomString);
-        var fileBytes = await File.ReadAllBytesAsync(fileName);
-        var hash = _sha256.ComputeHash(randomBytes);
+        await using var fs = new FileStream(fileName, FileMode.Open);
+        var hash = await _sha256.ComputeHashAsync(fs);
         using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
         var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/sign",
             new SignatureRequest
             {
-                Data = Convert.ToBase64String(hash)
+                Hash = Convert.ToBase64String(hash)
             });
         var signature = await response.Content.ReadAsStringAsync();
         var signatureBytes = Convert.FromBase64String(signature);
-        var signatureFile = fileName + ".sig";
-        await using var fs = new FileStream(signatureFile, FileMode.Create);
-        await using var bw = new BinaryWriter(fs);
-        bw.Write(signatureBytes);
-        bw.Write(fileBytes);
+        await using var outFs = new FileStream(fileName + ".sign", FileMode.Create);
+        await outFs.WriteAsync(signatureBytes);
     }
 
-    public async void VerifySignature(string file)
+    public async Task VerifySignature(string fileName)
     {
-        await using var fs = new FileStream(file, FileMode.Open);
-        using var br = new BinaryReader(fs);
-        var signature = br.ReadBytes(1024);
+        await using var fs = new FileStream(fileName, FileMode.Open);
+        var hash = await _sha256.ComputeHashAsync(fs);
+        var signature = await File.ReadAllBytesAsync(fileName + ".sign");
         using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
         var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/verify",
-            new SignatureRequest
+            new VerifyRequest
             {
-                Data = Convert.ToBase64String(signature)
-            }
-        );
-        // Verify the signature
-        var isSignatureValid = Convert.ToBoolean(await response.Content.ReadAsStringAsync());
-        if (isSignatureValid)
-            DisplayMessage?.Invoke("Signature is valid.", Colors.Green);
-        else
-            DisplayMessage?.Invoke("Signature is invalid.", Colors.Coral);
+                Hash = Convert.ToBase64String(hash),
+                Signature = Convert.ToBase64String(signature)
+            });
+        if (!response.IsSuccessStatusCode)
+        {
+            var message = await response.Content.ReadAsStringAsync();
+            DisplayMessage?.Invoke(message, Colors.Coral);
+            return;
+        }
+
+        DisplayMessage?.Invoke("Signature is valid.", Colors.Green);
     }
 }

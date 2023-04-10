@@ -20,7 +20,7 @@
             </Border>
             <Border BorderThickness="1" Width="360" BorderBrush="LightSlateGray" Margin="15,0,0,0">
                 <Button AllowDrop="True" Foreground="DimGray" Content="Drop File to Validate" Drop="Verify_OnDrop"
-                        DragEnter="Verify_OnDragEnter" DragLeave="Verifiy_OnDragLeave" Click="Verify_OnClick"
+                        DragEnter="Verify_OnDragEnter" DragLeave="Verify_OnDragLeave" Click="Verify_OnClick"
                         Background="Transparent" BorderThickness="0" />
             </Border>
         </StackPanel>
