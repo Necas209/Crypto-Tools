@@ -36,12 +36,12 @@ public class ImageEncryptionViewModel : ViewModelBase
         grayscale.CopyPixels(pixelData, stride, 0);
         // Encrypt the pixel data
         using var encryptor = algorithm.CreateEncryptor();
-        encryptor.TransformBlock(pixelData, 0, pixelData.Length, pixelData, 0);
+        var encryptedPixelData = encryptor.TransformFinalBlock(pixelData, 0, pixelData.Length);
         // Save the encrypted pixel data as a new image
         var encryptedBitmap = new Bitmap(grayscale.PixelWidth, grayscale.PixelHeight, PixelFormat.Format8bppIndexed);
         var rect = new Rectangle(0, 0, grayscale.PixelWidth, grayscale.PixelHeight);
         var encryptedBmpData = encryptedBitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
-        Marshal.Copy(pixelData[..numBytes], 0, encryptedBmpData.Scan0, pixelData.Length);
+        Marshal.Copy(encryptedPixelData, 0, encryptedBmpData.Scan0, numBytes);
         encryptedBitmap.UnlockBits(encryptedBmpData);
         return encryptedBitmap;
     }
