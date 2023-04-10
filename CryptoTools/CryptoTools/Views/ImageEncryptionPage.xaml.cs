@@ -3,8 +3,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using CryptoTools.Utils;
 using CryptoTools.ViewModels;
 using Microsoft.Win32;
 
@@ -48,9 +48,10 @@ public partial class ImageEncryptionPage
             Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp"
         };
         if (openFileDialog.ShowDialog() != true) return;
-        var encryptedImagePath = _viewModel.EncryptImage(openFileDialog.FileName);
-        OriginalImage.Source = LoadBitmapImage(openFileDialog.FileName);
-        EncryptedImage.Source = LoadBitmapImage(encryptedImagePath);
+        var encryptedPath = _viewModel.EncryptImage(openFileDialog.FileName);
+        OriginalImage.Source = BitmapUtils.ToBitmapImage(openFileDialog.FileName);
+        EncryptedImage.Source = BitmapUtils.ToBitmapImage(encryptedPath);
+        File.Delete(encryptedPath); // Delete the temporary file
     }
 
     private void DropImage_OnDrop(object sender, DragEventArgs e)
@@ -74,9 +75,10 @@ public partial class ImageEncryptionPage
         }
 
         var file = files[0];
-        var encryptedImagePath = _viewModel.EncryptImage(file);
-        OriginalImage.Source = LoadBitmapImage(file);
-        EncryptedImage.Source = LoadBitmapImage(encryptedImagePath);
+        var encryptedPath = _viewModel.EncryptImage(file);
+        OriginalImage.Source = BitmapUtils.ToBitmapImage(file);
+        EncryptedImage.Source = BitmapUtils.ToBitmapImage(encryptedPath);
+        File.Delete(encryptedPath); // Delete the temporary file
     }
 
     private void DropImage_OnDragEnter(object sender, DragEventArgs e)
@@ -93,17 +95,5 @@ public partial class ImageEncryptionPage
 
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
-    }
-
-    private static BitmapImage LoadBitmapImage(string fileName)
-    {
-        using var stream = new FileStream(fileName, FileMode.Open);
-        var bitmapImage = new BitmapImage();
-        bitmapImage.BeginInit();
-        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-        bitmapImage.StreamSource = stream;
-        bitmapImage.EndInit();
-        bitmapImage.Freeze(); // just in case you want to load the image in another thread
-        return bitmapImage;
     }
 }
