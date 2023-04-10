@@ -5,11 +5,5 @@
              StartupUri="/Views/LoginWindow.xaml">
     <Application.Resources>
         <converters:IntToBoolValueConverter x:Key="IntToBoolValueConverter" />
-        <Style x:Key="AdornerTextStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontStyle" Value="Italic" />
-            <Setter Property="Opacity" Value="0.6" />
-        </Style>
     </Application.Resources>
 </Application>

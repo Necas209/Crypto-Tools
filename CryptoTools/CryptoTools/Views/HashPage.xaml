@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-      xmlns:adorners="http://gu.se/Adorners"
+      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" Title="HashPage">
     <Page.DataContext>
         <vm:HashViewModel />
@@ -18,14 +18,12 @@
         <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,55,10,10">
             <StackPanel Orientation="Vertical">
-                <TextBox Name="TextToHash" adorners:Watermark.Text="Write something here"
-                         adorners:Watermark.TextStyle="{StaticResource AdornerTextStyle}" Height="180"
-                         Text="{Binding UnhashedText, Mode=TwoWay}" Width="360"
-                         TextChanged="TextToHash_OnTextChanged" TextWrapping="Wrap" BorderBrush="LightSlateGray"
-                         Margin="0,0,0,10" />
-                <TextBox Background="Transparent" Height="180" Width="360" BorderBrush="LightSlateGray"
-                         Text="{Binding HashedText}"
-                         IsReadOnly="True" TextWrapping="Wrap" Margin="0,0,0,0" />
+                <xctk:WatermarkTextBox Margin="0,0,0,10" Width="360" Height="180" BorderBrush="LightSlateGray"
+                                       Watermark="Enter your text here" TextChanged="TextToHash_OnTextChanged"
+                                       Text="{Binding UnhashedText, Mode=TwoWay}" TextWrapping="Wrap" />
+                <TextBox Margin="0,0,0,0" Background="Transparent" Height="180" Width="360"
+                         BorderBrush="LightSlateGray" IsReadOnly="True" Text="{Binding HashedText}"
+                         TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="10,0,0,0">
                 <Border BorderThickness="1" Height="180" Width="360" BorderBrush="LightSlateGray" Margin="0,0,0,10">
