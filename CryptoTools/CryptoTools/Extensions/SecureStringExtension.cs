@@ -1,7 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Security;
 
-namespace CryptoLib.Extensions;
+namespace CryptoTools.Extensions;
 
 public static class SecureStringExtension
 {

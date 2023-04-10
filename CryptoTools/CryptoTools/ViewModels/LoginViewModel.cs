@@ -4,8 +4,8 @@ using System.Net.Http.Json;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using CryptoLib.Extensions;
 using CryptoLib.Models;
+using CryptoTools.Extensions;
 
 namespace CryptoTools.ViewModels;
 

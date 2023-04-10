@@ -2,9 +2,9 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CryptoTools.Services;
+namespace CryptoTools.Utils;
 
-public static class EncryptionService
+public static class EncryptionUtils
 {
     public static SymmetricAlgorithm GetAlgorithm(string name)
     {

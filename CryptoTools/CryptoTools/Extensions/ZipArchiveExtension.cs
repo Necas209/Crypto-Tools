@@ -1,6 +1,8 @@
+using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
-namespace CryptoLib.Extensions;
+namespace CryptoTools.Extensions;
 
 public static class ZipArchiveExtension
 {

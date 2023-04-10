@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Media;
 using CryptoLib.Models;
-using CryptoTools.Services;
+using CryptoTools.Utils;
 
 namespace CryptoTools.ViewModels;
 
@@ -36,13 +36,13 @@ public class EncryptionViewModel : ViewModelBase
 
     public void EncryptFile(string path)
     {
-        EncryptionService.EncryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(false));
+        EncryptionUtils.EncryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(false));
         DisplayMessage?.Invoke("File encrypted successfully.", Colors.Green);
     }
 
     public void DecryptFile(string path)
     {
-        var result = EncryptionService.DecryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(true));
+        var result = EncryptionUtils.DecryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(true));
         if (result)
             DisplayMessage?.Invoke("File decrypted successfully.", Colors.Green);
         else

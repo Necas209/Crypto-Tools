@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using CryptoLib.Models;
-using CryptoTools.Services;
+using CryptoTools.Utils;
 
 namespace CryptoTools.ViewModels;
 
@@ -30,11 +30,11 @@ public class FileIntegrityViewModel : ViewModelBase
         var fileName = Path.GetFileName(file);
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
-        var hash = HashingService.HashFile(file, SelectedAlgorithm.Name);
+        var hash = HashingUtils.HashFile(file, SelectedAlgorithm.Name);
         var hashEntry = new HashEntry
         {
             FileName = fileName,
-            Hash = HashingService.ToHexString(hash),
+            Hash = HashingUtils.ToHexString(hash),
             HashingAlgorithmId = SelectedAlgorithm.Id
         };
         var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/hash", hashEntry);
@@ -68,8 +68,8 @@ public class FileIntegrityViewModel : ViewModelBase
 
         var algorithmName = Model.HashingAlgorithms
             .SingleOrDefault(a => a.Id == hashEntry.HashingAlgorithmId)?.Name;
-        var hash = HashingService.HashFile(file, algorithmName ?? "SHA256");
-        var hexHash = HashingService.ToHexString(hash);
+        var hash = HashingUtils.HashFile(file, algorithmName ?? "SHA256");
+        var hexHash = HashingUtils.ToHexString(hash);
         if (hashEntry.Hash == hexHash)
             DisplayMessage?.Invoke("File is valid.", Colors.Green);
         else

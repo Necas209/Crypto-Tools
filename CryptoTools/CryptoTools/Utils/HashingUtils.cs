@@ -3,9 +3,9 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CryptoTools.Services;
+namespace CryptoTools.Utils;
 
-public static class HashingService
+public static class HashingUtils
 {
     private static HashAlgorithm GetHashAlgorithm(string name)
     {

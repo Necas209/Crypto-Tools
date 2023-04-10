@@ -1,6 +1,6 @@
 using System.Linq;
 using CryptoLib.Models;
-using CryptoTools.Services;
+using CryptoTools.Utils;
 
 namespace CryptoTools.ViewModels;
 
@@ -39,8 +39,8 @@ public class HashViewModel : ViewModelBase
             return;
         }
 
-        var hash = HashingService.Hash(UnhashedText, SelectedAlgorithm.Name);
-        HashedText = HashingService.ToHexString(hash);
+        var hash = HashingUtils.Hash(UnhashedText, SelectedAlgorithm.Name);
+        HashedText = HashingUtils.ToHexString(hash);
     }
 
     public void HashFile(string file)
@@ -51,7 +51,7 @@ public class HashViewModel : ViewModelBase
             return;
         }
 
-        var hash = HashingService.HashFile(file, SelectedAlgorithm.Name);
-        HashedFile = HashingService.ToHexString(hash);
+        var hash = HashingUtils.HashFile(file, SelectedAlgorithm.Name);
+        HashedFile = HashingUtils.ToHexString(hash);
     }
 }
