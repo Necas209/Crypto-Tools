@@ -18,7 +18,7 @@ namespace CryptoTools;
 public class Model
 {
     public const string ServerUrl = "https://cryptotools.azurewebsites.net";
-    private const string ChatUrl = "wss://cryptotools.azurewebsites.net/chat";
+    private static readonly Uri ChatUri = new("wss://cryptotools.azurewebsites.net/chat");
     private readonly RSA _clientRsa = RSA.Create();
     private readonly RSA _serverRsa = RSA.Create();
 
@@ -103,24 +103,22 @@ public class Model
     {
         // Retrieve the server's public key
         using var client = new HttpClient();
-        var request = new ExchangeRequest
-        {
-            PublicKey = _clientRsa.ExportRSAPublicKey()
-        };
         // Add the token to the request header
         client.DefaultRequestHeaders.Add("X-Access-Token", AccessToken);
         // Send the request to the server
-        var response = await client.PostAsJsonAsync($"{ServerUrl}/exchange", request);
-        var chatResponse = await response.Content.ReadAsStringAsync();
-        if (chatResponse == null) throw new InvalidOperationException("Unable to retrieve server key");
+        var response = await client.PostAsJsonAsync($"{ServerUrl}/exchange", new ExchangeRequest
+        {
+            PublicKey = _clientRsa.ExportRSAPublicKey()
+        });
+        var content = await response.Content.ReadAsStringAsync();
+        if (content == null) throw new InvalidOperationException("Unable to retrieve server key");
         // Convert the server's public key from Base64 to a byte array
-        var serverKey = Convert.FromBase64String(chatResponse);
+        var serverKey = Convert.FromBase64String(content);
         // Import the server's public key
         _serverRsa.ImportRSAPublicKey(serverKey, out _);
         // Connect to the server using a secure WebSocket
         _socket.Options.SetRequestHeader("X-Access-Token", AccessToken);
-        var serverUri = new Uri(ChatUrl);
-        await _socket.ConnectAsync(serverUri, CancellationToken.None);
+        await _socket.ConnectAsync(ChatUri, CancellationToken.None);
     }
 
     public async Task CloseConnection()

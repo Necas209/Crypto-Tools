@@ -1,4 +1,3 @@
-using System.Text;
 using CryptoLib.Models;
 using CryptoServer.Data;
 using CryptoServer.Utils;
@@ -24,13 +23,11 @@ public class UserController : Controller
     [Route("/login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var userName = Encoding.UTF8.GetString(Convert.FromBase64String(request.UserName));
-        var password = Encoding.UTF8.GetString(Convert.FromBase64String(request.Password));
         var user = await _context.Users
-            .Where(x => x.UserName == userName)
+            .Where(x => x.UserName == request.UserName)
             .SingleOrDefaultAsync();
         if (user == null) return NotFound();
-        var hash = PasswordUtils.GenerateHash(password, user.PasswordSalt);
+        var hash = PasswordUtils.GenerateHash(request.Password, user.PasswordSalt);
         if (user.PasswordHash != hash) return Unauthorized();
         if (_chatHandler.UserIsOn(user.UserName)) return Conflict();
         // Generate a random access token
