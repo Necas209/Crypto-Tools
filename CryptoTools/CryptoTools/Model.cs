@@ -60,7 +60,7 @@ public class Model
         // Decrypt the message with the symmetric key
         var decryptedMessage = AesUtils.Decrypt(chatMessage.Message, decryptedKey);
         // Verify the HMAC of the decrypted message
-        var hmac = HmacUtils.ComputeHmac(decryptedMessage, hmacKey);
+        var hmac = HMACSHA256.HashData(hmacKey, decryptedMessage);
         if (!hmac.SequenceEqual(chatMessage.Hmac)) throw new Exception("HMAC verification failed");
         // Convert the decrypted message to a string and attach the sender's username
         var decryptedMessageString = Encoding.UTF8.GetString(decryptedMessage);
@@ -71,8 +71,8 @@ public class Model
     {
         var messageBytes = Encoding.UTF8.GetBytes(message);
         // Compute the HMAC of the message
-        var hmacKey = HmacUtils.GenerateHmacKey();
-        var hmac = HmacUtils.ComputeHmac(messageBytes, hmacKey);
+        var hmacKey = RandomNumberGenerator.GetBytes(32);
+        var hmac = HMACSHA256.HashData(hmacKey, messageBytes);
         // Generate an AES symmetric key
         using var aes = Aes.Create();
         aes.GenerateKey();
