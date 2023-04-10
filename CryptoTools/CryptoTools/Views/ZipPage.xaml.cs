@@ -3,9 +3,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using CryptoTools.ViewModels;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
-using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace CryptoTools.Views;
 
@@ -69,8 +68,9 @@ public partial class ZipPage
             InitialDirectory = _desktopPath,
             IsFolderPicker = true
         };
-        
-        if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+
+        if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
+        if (!string.IsNullOrEmpty(dialog.FileName))
             _viewModel.AddDirectory(dialog.FileName);
     }
 

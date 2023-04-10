@@ -9,33 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Page Update="Views\MainWindow.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
-        <Page Update="Views\EncryptionPage.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Gu.Wpf.Adorners" Version="2.1.1" />
         <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-        <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
-        <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
+        <PackageReference Include="WindowsAPICodePackShell" Version="7.0.4" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\CryptoLib\CryptoLib.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="System.Windows.Forms">
-        <HintPath>..\..\..\..\..\.dotnet\shared\Microsoft.WindowsDesktop.App\7.0.3\System.Windows.Forms.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
 </Project>
