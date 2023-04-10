@@ -42,10 +42,14 @@ public class EncryptionViewModel : ViewModelBase
 
     public void DecryptFile(string path)
     {
-        var result = EncryptionUtils.DecryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(true));
-        if (result)
+        try
+        {
+            EncryptionUtils.DecryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(true));
             DisplayMessage?.Invoke("File decrypted successfully.", Colors.Green);
-        else
+        }
+        catch (CryptographicException)
+        {
             DisplayMessage?.Invoke("File decryption failed.", Colors.Red);
+        }
     }
 }
