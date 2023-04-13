@@ -25,7 +25,7 @@ The solution contains 3 projects:
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
-  - [Building](#building)
+    - [Building](#building)
   - [Usage](#usage)
     - [Compression and Decompression](#compression-and-decompression)
     - [Hashing](#hashing)
@@ -58,7 +58,7 @@ These instructions will get you a copy of the project up and running on your loc
 4. A "Login" window will appear. The user can either login or register a new account
 5. After logging in, the main window will appear
 
-## Building
+### Building
 
 1. Clone the repository
 2. Open the solution in Visual Studio 2022 or later, JetBrains Rider, or Visual Studio Code
