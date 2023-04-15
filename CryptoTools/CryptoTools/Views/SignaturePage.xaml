@@ -3,12 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-      mc:Ignorable="d"
-      Title="PostmarkPage" Height="450" Width="800">
-    <Page.DataContext>
-        <vm:SignatureViewModel />
-    </Page.DataContext>
+      mc:Ignorable="d" Height="450" Width="800">
     <Grid>
         <TextBlock x:Name="Message" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Center"
                    Margin="360,20,0,0" />

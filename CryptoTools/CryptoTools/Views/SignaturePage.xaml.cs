@@ -1,31 +1,33 @@
 using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Threading;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI;
 using CryptoTools.ViewModels;
-using Microsoft.Win32;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
 public partial class SignaturePage
 {
-    private readonly string _dialogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    private readonly App _app = (App)Application.Current;
 
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly SignatureViewModel _viewModel;
-
     public SignaturePage()
     {
         InitializeComponent();
-
-        _viewModel = (SignatureViewModel)DataContext;
-        _viewModel.DisplayMessage = ShowMessage;
+        ViewModel.DisplayMessage = ShowMessage;
     }
+
+    private SignatureViewModel ViewModel { get; } = new();
 
     private void ShowMessage(string message, Color color)
     {
@@ -40,13 +42,15 @@ public partial class SignaturePage
 
     private async void Sign_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            InitialDirectory = _dialogPath,
-            Filter = "All files (*.*)|*.*"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { "*" }
         };
-        if (dialog.ShowDialog() != true) return;
-        await _viewModel.SignFile(dialog.FileName);
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        var file = await picker.PickSingleFileAsync();
+        if (file == null) return;
+        await ViewModel.SignFile(file.Path);
     }
 
     private async void Sign_OnDrop(object sender, DragEventArgs e)
@@ -55,19 +59,20 @@ public partial class SignaturePage
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
-        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
+        var items = await e.DataView.GetStorageItemsAsync();
+        switch (items.Count)
         {
-            // Note that you can have more than one file.
-            var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-            if (files is not { Length: 1 }) return;
-            // Register the file
-            await _viewModel.SignFile(files[0]);
+            case 0:
+                return;
+            case > 1:
+                ShowMessage("You can only sign one file at a time.", Colors.Red);
+                return;
         }
-        else
-        {
-            if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
-            ShowMessage("This is not a file", Colors.Red);
-        }
+
+        var file = items[0] as StorageFile;
+        if (file == null) return;
+        await ViewModel.SignFile(file.Path);
     }
 
     private void Sign_OnDragEnter(object sender, DragEventArgs e)
@@ -88,12 +93,14 @@ public partial class SignaturePage
 
     private async void Verify_OnClick(object sender, RoutedEventArgs e)
     {
-        var openFileDialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            Filter = "All files (*.*)|*.*"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { "*" }
         };
-        if (openFileDialog.ShowDialog() != true) return;
-        await _viewModel.VerifySignature(openFileDialog.FileName);
+        var file = await picker.PickSingleFileAsync();
+        if (file == null) return;
+        await ViewModel.VerifySignature(file.Path);
     }
 
     private async void Verify_OnDrop(object sender, DragEventArgs e)
@@ -102,23 +109,20 @@ public partial class SignaturePage
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
+        var items = await e.DataView.GetStorageItemsAsync();
+        switch (items.Count)
         {
-            ShowMessage("This is not a file!", Colors.Red);
-            return;
+            case 0:
+                return;
+            case > 1:
+                ShowMessage("You can only validate one file at a time.", Colors.Red);
+                return;
         }
 
-        // Note that you can have more than one file.
-        var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-        if (files == null || files.Length == 0) return;
-        if (files.Length > 1)
-        {
-            ShowMessage("You can only validate one file at a time.", Colors.Red);
-            return;
-        }
-
-        // validate the file
-        await _viewModel.VerifySignature(files[0]);
+        var file = items[0] as StorageFile;
+        if (file == null) return;
+        await ViewModel.VerifySignature(file.Path);
     }
 
     private void Verify_OnDragEnter(object sender, DragEventArgs e)

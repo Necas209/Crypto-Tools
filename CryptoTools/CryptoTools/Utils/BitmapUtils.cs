@@ -1,35 +1,38 @@
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace CryptoTools.Utils;
 
 public static class BitmapUtils
 {
-    public static BitmapImage ToBitmapImage(string fileName)
+    public static async Task<BitmapImage> ToBitmapImageAsync(StorageFile file)
     {
-        using var stream = new FileStream(fileName, FileMode.Open);
-        var bitmapImage = new BitmapImage();
-        bitmapImage.BeginInit();
-        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-        bitmapImage.StreamSource = stream;
-        bitmapImage.EndInit();
-        bitmapImage.Freeze(); // just in case you want to load the image in another thread
+        using var stream = await file.OpenReadAsync();
+        var bitmapImage = new BitmapImage
+        {
+            DecodePixelHeight = 0, // set to 0 to automatically decode the image at its original size
+            DecodePixelWidth = 0 // set to 0 to automatically decode the image at its original size
+        };
+        await bitmapImage.SetSourceAsync(stream);
         return bitmapImage;
     }
 
-    public static BitmapImage ToBitmapImage(Bitmap bitmap, ImageFormat imageFormat)
+    public static async Task<BitmapImage> ToBitmapImageAsync(Bitmap bitmap, ImageFormat imageFormat)
     {
-        using var stream = new MemoryStream();
-        bitmap.Save(stream, imageFormat);
-        stream.Position = 0;
-        var bitmapImage = new BitmapImage();
-        bitmapImage.BeginInit();
-        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-        bitmapImage.StreamSource = stream;
-        bitmapImage.EndInit();
-        bitmapImage.Freeze(); // just in case you want to load the image in another thread
+        using var stream = new InMemoryRandomAccessStream();
+        bitmap.Save(stream.AsStream(), imageFormat);
+        var bitmapImage = new BitmapImage
+        {
+            DecodePixelHeight = 0, // set to 0 to automatically decode the image at its original size
+            DecodePixelWidth = 0 // set to 0 to automatically decode the image at its original size
+        };
+        await bitmapImage.SetSourceAsync(stream);
         return bitmapImage;
     }
 

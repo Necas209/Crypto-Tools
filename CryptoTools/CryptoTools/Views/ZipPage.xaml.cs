@@ -1,89 +1,94 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
+using Windows.Storage.Pickers;
+using CryptoTools.Models;
 using CryptoTools.ViewModels;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
 public partial class ZipPage
 {
-    private readonly string _desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-    private readonly ZipViewModel _viewModel;
+    private readonly App _app = (App)Application.Current;
 
     public ZipPage()
     {
         InitializeComponent();
-        _viewModel = (ZipViewModel)DataContext;
     }
 
-    private void BtnZip_OnClick(object sender, RoutedEventArgs e)
-    {
-        var dialog = new SaveFileDialog
-        {
-            InitialDirectory = _desktopPath,
-            Filter = "Zip files (*.zip)|*.zip",
-            RestoreDirectory = true,
-            Title = "Select a zip file to create",
-            DefaultExt = "zip"
-        };
+    public ZipViewModel ViewModel { get; } = new();
 
-        if (dialog.ShowDialog() == true)
-            _viewModel.CompressArchive(dialog.FileName);
+    private async void BtnZip_OnClick(object sender, RoutedEventArgs e)
+    {
+        var picker = new FileSavePicker
+        {
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            SuggestedFileName = "Archive",
+            DefaultFileExtension = ".zip",
+            FileTypeChoices =
+            {
+                { "Zip files", new List<string> { ".zip" } }
+            }
+        };
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        var result = await picker.PickSaveFileAsync();
+        if (result == null) return;
+        ViewModel.CompressArchive(result.Path);
     }
 
-    private void BtnUnzip_OnClick(object sender, RoutedEventArgs e)
+    private async void BtnUnzip_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            InitialDirectory = _desktopPath,
-            Filter = "Zip files (*.zip)|*.zip",
-            RestoreDirectory = true,
-            Title = "Select a zip file to extract",
-            DefaultExt = "zip"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { ".zip" }
         };
-
-        if (dialog.ShowDialog() == true)
-            _viewModel.DecompressArchive(dialog.FileName);
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        var result = await picker.PickSingleFileAsync();
+        if (result == null) return;
+        ViewModel.DecompressArchive(result.Path);
     }
 
     private void BtnRemove_OnClick(object sender, RoutedEventArgs e)
     {
-        _viewModel.RemoveSelectedEntries();
+        ViewModel.RemoveSelectedEntries();
     }
 
-    private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void BtnAddDir_OnClick(object sender, RoutedEventArgs e)
     {
-        _viewModel.SelectedEntries = Files.SelectedItems
-            .Cast<ZipViewModel.ArchiveEntry>()
-            .ToList();
-    }
-
-    private void BtnAddDir_OnClick(object sender, RoutedEventArgs e)
-    {
-        var dialog = new CommonOpenFileDialog
+        var picker = new FolderPicker
         {
-            InitialDirectory = _desktopPath,
-            IsFolderPicker = true
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            ViewMode = PickerViewMode.List,
+            FileTypeFilter = { "*" }
         };
-
-        if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
-        if (!string.IsNullOrEmpty(dialog.FileName))
-            _viewModel.AddDirectory(dialog.FileName);
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        var folder = await picker.PickSingleFolderAsync();
+        if (folder == null) return;
+        ViewModel.AddDirectory(folder.Path);
     }
 
-    private void BtnAddFile_OnClick(object sender, RoutedEventArgs e)
+    private async void BtnAddFile_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            InitialDirectory = _desktopPath,
-            Multiselect = true,
-            Filter = "All files (*.*)|*.*"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { "*" }
         };
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        var files = await picker.PickMultipleFilesAsync();
+        if (files.Count == 0) return;
+        ViewModel.AddFiles(files);
+    }
 
-        if (dialog.ShowDialog() == true)
-            _viewModel.AddFiles(dialog.FileNames);
+    private void ListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0) return;
+        var added = e.AddedItems.Cast<ArchiveEntry>();
+        var removed = e.RemovedItems.Cast<ArchiveEntry>();
+        ViewModel.UpdateSelectedEntries(added, removed);
     }
 }

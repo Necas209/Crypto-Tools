@@ -1,61 +1,53 @@
-using System.Windows;
+using System;
+using Windows.Graphics;
 using CryptoTools.ViewModels;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace CryptoTools.Views;
 
 public partial class LoginWindow
 {
-    private readonly LoginViewModel _viewModel;
+    private readonly App _app = (App)Application.Current;
 
     public LoginWindow()
     {
         InitializeComponent();
-        _viewModel = (LoginViewModel)DataContext;
-        _viewModel.ShowApp = ShowApp;
-        _viewModel.OnError = ShowError;
+        AppWindow.ResizeClient(new SizeInt32(300, 400));
+        ViewModel.ShowApp = ShowApp;
+        ViewModel.OnError = ShowError;
     }
+
+    public LoginViewModel ViewModel { get; } = new();
 
     private void ShowApp()
     {
         var mainWindow = new MainWindow();
-        mainWindow.Show();
+        _app.MainWindow = mainWindow;
+        mainWindow.Activate();
         Close();
     }
 
-    private static void ShowError(string message)
+    private static async void ShowError(string message)
     {
-        MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        var dialog = new ContentDialog
+        {
+            Title = "Error",
+            Content = message,
+            CloseButtonText = "Ok"
+        };
+        await dialog.ShowAsync();
     }
 
     private async void LoginButton_Click(object sender, RoutedEventArgs e)
     {
-        await _viewModel.Login(UserNameTextBox.Text, PasswordBox.SecurePassword);
-    }
-
-    private void UserNameTextBox_OnGotFocus(object sender, RoutedEventArgs e)
-    {
-        LoginButton.IsDefault = true;
-    }
-
-    private void UserNameTextBox_OnLostFocus(object sender, RoutedEventArgs e)
-    {
-        LoginButton.IsDefault = false;
-    }
-
-    private void PasswordBox_OnGotFocus(object sender, RoutedEventArgs e)
-    {
-        LoginButton.IsDefault = true;
-    }
-
-    private void PasswordBox_OnLostFocus(object sender, RoutedEventArgs e)
-    {
-        LoginButton.IsDefault = false;
+        await ViewModel.Login();
     }
 
     private void RegisterButton_Click(object sender, RoutedEventArgs e)
     {
         var registerWindow = new RegisterWindow();
-        registerWindow.Show();
+        registerWindow.Activate();
         Close();
     }
 }

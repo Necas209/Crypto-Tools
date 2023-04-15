@@ -1,10 +1,12 @@
 using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Threading;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage.Pickers;
+using Windows.UI;
 using CryptoTools.ViewModels;
-using Microsoft.Win32;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace CryptoTools.Views;
 
@@ -15,18 +17,17 @@ public partial class HashPage
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly HashViewModel _viewModel;
-
     public HashPage()
     {
         InitializeComponent();
-        _viewModel = (HashViewModel)DataContext;
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
             _dispatcherTimer.Stop();
         };
     }
+
+    public HashViewModel ViewModel { get; } = new();
 
     private void ShowMessage(string message, Color color)
     {
@@ -41,49 +42,46 @@ public partial class HashPage
 
     private void TextToHash_OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        _viewModel.UnhashedText = ((TextBox)sender).Text;
-        _viewModel.HashText();
+        ViewModel.PlainText = ((TextBox)sender).Text;
+        ViewModel.HashText();
     }
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        _viewModel?.HashText();
+        ViewModel?.HashText();
     }
 
-    private void File_OnClick(object sender, RoutedEventArgs e)
+    private async void File_OnClick(object sender, RoutedEventArgs e)
     {
-        var openFileDialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            Filter = "All files (*.*)|*.*"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { "*" }
         };
-        if (openFileDialog.ShowDialog() != true) return;
-        _viewModel.HashFile(openFileDialog.FileName);
+        var file = await picker.PickSingleFileAsync();
+        if (file == null) return;
+        ViewModel.HashFile(file.Path);
     }
 
-    private void File_OnDrop(object sender, DragEventArgs e)
+    private async void File_OnDrop(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
+        var items = await e.DataView.GetStorageItemsAsync();
+        switch (items.Count)
         {
-            ShowMessage("This is not a file!", Colors.Red);
-            return;
+            case 0:
+                return;
+            case > 1:
+                ShowMessage("You can only hash one file at a time.", Colors.Red);
+                return;
         }
 
-        // Note that you can have more than one file.
-        var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-        if (files == null || files.Length == 0) return;
-        if (files.Length > 1)
-        {
-            ShowMessage("You can only hash one file at a time.", Colors.Red);
-            return;
-        }
-
-        // Hash the file
-        _viewModel.HashFile(files[0]);
+        ViewModel.HashFile(items[0].Path);
     }
 
     private void File_OnDragEnter(object sender, DragEventArgs e)

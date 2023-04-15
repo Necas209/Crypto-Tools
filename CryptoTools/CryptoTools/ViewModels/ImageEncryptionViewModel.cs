@@ -10,7 +10,8 @@ namespace CryptoTools.ViewModels;
 
 public class ImageEncryptionViewModel : ViewModelBase
 {
-    public EncryptionAlgorithm SelectedAlgorithm { get; set; } = null!;
+    public List<EncryptionAlgorithm> Algorithms => Model.EncryptionAlgorithms;
+    public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 
     public Dictionary<string, CipherMode> CipherModes { get; } = new()
     {

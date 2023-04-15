@@ -5,9 +5,12 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using System.Windows.Media;
+using Windows.Storage;
+using Windows.UI;
 using CryptoLib.Models;
+using CryptoTools.Models;
 using CryptoTools.Utils;
+using Microsoft.UI;
 
 namespace CryptoTools.ViewModels;
 
@@ -15,12 +18,14 @@ public class FileIntegrityViewModel : ViewModelBase
 {
     public delegate void DisplayMessageDelegate(string message, Color color);
 
-    public DisplayMessageDelegate? DisplayMessage;
+    public DisplayMessageDelegate DisplayMessage;
 
     public FileIntegrityViewModel()
     {
         SelectedAlgorithm = Model.HashingAlgorithms.First();
     }
+
+    public List<HashingAlgorithm> Algorithms => Model.HashingAlgorithms;
 
     public HashingAlgorithm SelectedAlgorithm { get; set; }
 
@@ -41,15 +46,13 @@ public class FileIntegrityViewModel : ViewModelBase
         return response.IsSuccessStatusCode;
     }
 
-    public async void RegisterFiles(IEnumerable<string> files)
+    public async void RegisterFiles(IEnumerable<StorageFile> files)
     {
-        var allFilesRegistered = true;
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (var file in files) allFilesRegistered &= await RegisterFile(file);
-        if (!allFilesRegistered)
-            DisplayMessage?.Invoke("Some files could not be registered!", Colors.Coral);
-        else
+        var registered = await Task.WhenAll(files.Select(f => RegisterFile(f.Path)));
+        if (registered.All(r => r))
             DisplayMessage?.Invoke("File(s) registered successfully.", Colors.Green);
+        else
+            DisplayMessage?.Invoke("Some files could not be registered!", Colors.Coral);
     }
 
     public async void ValidateFile(string file)

@@ -6,8 +6,8 @@ namespace CryptoTools.ViewModels;
 
 public class ChatViewModel : ViewModelBase
 {
-    public Action? OnConnectionClosed;
-    public Action? OnMessageReceived;
+    public Action OnConnectionClosed;
+    public Action OnMessageReceived;
     public ObservableCollection<string> ChatMessages { get; } = new();
 
     public async Task ReceiveMessages()

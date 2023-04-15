@@ -1,23 +1,26 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Security;
 using System.Threading.Tasks;
-using System.Windows;
 using CryptoLib.Models;
-using CryptoTools.Extensions;
+using CryptoTools.Models;
 
 namespace CryptoTools.ViewModels;
 
 public class RegisterViewModel : ViewModelBase
 {
-    public Action<string>? OnError;
-    public Action? ShowLogin;
+    public Action<string> OnError;
+    public Action RegisterSuccess;
+    public Action ShowLogin;
 
     public string UserName { get; set; } = string.Empty;
 
+    public string Password { get; set; } = string.Empty;
 
-    public async Task Register(SecureString securePassword, SecureString confirmPassword)
+    public string ConfirmPassword { get; set; } = string.Empty;
+
+
+    public async Task Register()
     {
         if (UserName.Length < 5)
         {
@@ -25,13 +28,13 @@ public class RegisterViewModel : ViewModelBase
             return;
         }
 
-        if (securePassword.Length < 8)
+        if (Password.Length < 8)
         {
             OnError?.Invoke("Password must be at least 8 characters long.");
             return;
         }
 
-        if (securePassword.IsEqualTo(confirmPassword) == false)
+        if (Password == ConfirmPassword)
         {
             OnError?.Invoke("Passwords do not match.");
             return;
@@ -42,7 +45,7 @@ public class RegisterViewModel : ViewModelBase
             new LoginRequest
             {
                 UserName = UserName,
-                Password = securePassword.ToPlainText()
+                Password = Password
             }
         );
 
@@ -52,8 +55,7 @@ public class RegisterViewModel : ViewModelBase
             return;
         }
 
-        MessageBox.Show("Registration successful. You can now log in.", "Success", MessageBoxButton.OK,
-            MessageBoxImage.Information);
+        RegisterSuccess?.Invoke();
         ShowLogin?.Invoke();
     }
 }

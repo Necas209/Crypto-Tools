@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using CryptoLib.Models;
 using CryptoTools.Utils;
 
-namespace CryptoTools;
+namespace CryptoTools.Models;
 
 public class Model
 {
@@ -42,7 +42,7 @@ public class Model
 
     public bool IsConnected => _socket.State == WebSocketState.Open;
 
-    public async Task<string?> ReceiveMessage()
+    public async Task<string> ReceiveMessage()
     {
         var buffer = new byte[4096];
         var result = await _socket.ReceiveAsync(buffer, CancellationToken.None);

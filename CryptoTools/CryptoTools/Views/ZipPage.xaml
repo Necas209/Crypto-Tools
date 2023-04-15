@@ -3,39 +3,56 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-      xmlns:local="clr-namespace:CryptoTools.Converters"
-      mc:Ignorable="d" Title="Zip" Height="450" Width="800">
-    <Page.DataContext>
-        <vm:ZipViewModel />
-    </Page.DataContext>
+      xmlns:converters="using:CryptoTools.Converters"
+      xmlns:models="using:CryptoTools.Models"
+      mc:Ignorable="d" Height="450" Width="800">
+    <Page.Resources>
+        <converters:CountToBooleanConverter x:Key="CountToBooleanConverter" />
+    </Page.Resources>
     <Grid>
-        <DockPanel Margin="10">
-            <WrapPanel HorizontalAlignment="Right" DockPanel.Dock="Top" Margin="0,0,0,10">
-                <Button Click="BtnUnzip_OnClick" Content="Unzip archive" />
-                <CheckBox Content="New folder" IsChecked="{Binding CreateNewFolder}" Margin="10,0,0,0"
-                          VerticalAlignment="Center" />
-                <Button Click="BtnAddDir_OnClick" Margin="100,0,0,0" Content="Add folder" />
-                <Button Click="BtnAddFile_OnClick" Margin="20,0,0,0" Content="Add file(s)" />
-                <Button Click="BtnRemove_OnClick" Margin="20,0, 100,0" Content="Remove file(s)"
-                        IsEnabled="{Binding SelectedEntries.Count, Converter={StaticResource IntToBoolValueConverter}}" />
-                <ComboBox ItemsSource="{Binding Source={x:Static local:EnumHelper.CompressionLevelValues}}"
-                          SelectedValue="{Binding CompressionLevel}" DisplayMemberPath="Name"
-                          Width="100" Margin="0,0,10,0" SelectedValuePath="Value" />
-                <Button Click="BtnZip_OnClick" Content="Zip file(s)"
-                        IsEnabled="{Binding ArchiveEntries.Count, Converter={StaticResource IntToBoolValueConverter}}" />
-            </WrapPanel>
-            <ListView x:Name="Files" BorderBrush="Black" BorderThickness="1" ItemsSource="{Binding ArchiveEntries}"
-                      SelectionChanged="Selector_OnSelectionChanged">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Name}" />
-                        <GridViewColumn Header="Path" Width="500" DisplayMemberBinding="{Binding Path }" />
-                        <GridViewColumn Header="Is Directory?" Width="70"
-                                        DisplayMemberBinding="{Binding IsDirectory }" />
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </DockPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
+            <Button Click="BtnUnzip_OnClick" Content="Unzip archive" />
+            <CheckBox Content="New folder" IsChecked="{x:Bind ViewModel.CreateNewFolder, Mode=TwoWay}"
+                      Margin="10,0,0,0"
+                      VerticalAlignment="Center" />
+            <Button Click="BtnAddDir_OnClick" Margin="100,0,0,0" Content="Add folder" />
+            <Button Click="BtnAddFile_OnClick" Margin="20,0,0,0" Content="Add file(s)" />
+            <Button Click="BtnRemove_OnClick" Margin="20,0, 100,0" Content="Remove file(s)"
+                    IsEnabled="{x:Bind Entries.SelectedItems.Count, Mode=OneWay, Converter={StaticResource CountToBooleanConverter}}" />
+            <ComboBox ItemsSource="{x:Bind ViewModel.CompressionLevels}"
+                      SelectedValue="{x:Bind ViewModel.CompressionLevel, Mode=TwoWay}" DisplayMemberPath="Key"
+                      Width="100" Margin="0,0,10,0" SelectedValuePath="Value" />
+            <Button Click="BtnZip_OnClick" Content="Zip file(s)"
+                    IsEnabled="{x:Bind Entries.Items.Count, Converter={StaticResource CountToBooleanConverter}}" />
+        </StackPanel>
+        <ListView BorderBrush="Black" BorderThickness="1" ItemsSource="{x:Bind ViewModel.ArchiveEntries}"
+                  x:Name="Entries" SelectionMode="Multiple" SelectionChanged="ListView_OnSelectionChanged">
+            <ListView.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="500" />
+                        <ColumnDefinition Width="70" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Name" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="0" />
+                    <TextBlock Text="Path" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="1" />
+                    <TextBlock Text="Is directory" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="2" />
+                </Grid>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:ArchiveEntry">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="500" />
+                            <ColumnDefinition Width="70" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Name}" Margin="5,0,0,0" Grid.Column="0" />
+                        <TextBlock Text="{x:Bind Path}" Margin="5,0,0,0" Grid.Column="1" />
+                        <TextBlock Text="{x:Bind IsDirectory}" Margin="5,0,0,0" Grid.Column="2" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Page>

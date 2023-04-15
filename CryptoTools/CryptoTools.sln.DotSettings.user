@@ -4,4 +4,5 @@
   &lt;Assembly Path="C:\Users\diogo\.dotnet\shared\Microsoft.NETCore.App\7.0.3\System.IO.Compression.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\diogo\.dotnet\packs\Microsoft.WindowsDesktop.App.Ref\7.0.3\ref\net7.0\System.Drawing.Common.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\diogo\.dotnet\packs\Microsoft.WindowsDesktop.App.Ref\7.0.3\ref\net7.0\System.Windows.Forms.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Users\diogo\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.28\lib\net6.0\Microsoft.Windows.SDK.NET.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>

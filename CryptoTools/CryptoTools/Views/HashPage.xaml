@@ -3,26 +3,21 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:vm="clr-namespace:CryptoTools.ViewModels"
-      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-      mc:Ignorable="d" Title="HashPage">
-    <Page.DataContext>
-        <vm:HashViewModel />
-    </Page.DataContext>
+      mc:Ignorable="d">
     <Grid>
         <ComboBox Width="200" SelectionChanged="Selector_OnSelectionChanged" VerticalAlignment="Top"
                   Margin="0,20,360,0"
-                  ItemsSource="{Binding Model.HashingAlgorithms}"
+                  ItemsSource="{x:Bind ViewModel.Algorithms, Mode=OneWay}"
                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
-                  SelectedItem="{Binding SelectedAlgorithm}" />
+                  SelectedItem="{x:Bind ViewModel.SelectedAlgorithm, Mode=TwoWay}" />
         <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,55,10,10">
             <StackPanel Orientation="Vertical">
-                <xctk:WatermarkTextBox Margin="0,0,0,10" Width="360" Height="180" BorderBrush="LightSlateGray"
-                                       Watermark="Enter your text here" TextChanged="TextToHash_OnTextChanged"
-                                       Text="{Binding UnhashedText, Mode=TwoWay}" TextWrapping="Wrap" />
+                <TextBox Margin="0,0,0,10" Width="360" Height="180" BorderBrush="LightSlateGray"
+                         PlaceholderText="Enter your text here" TextChanged="TextToHash_OnTextChanged"
+                         Text="{x:Bind ViewModel.PlainText, Mode=TwoWay}" TextWrapping="Wrap" />
                 <TextBox Margin="0,0,0,0" Background="Transparent" Height="180" Width="360"
-                         BorderBrush="LightSlateGray" IsReadOnly="True" Text="{Binding HashedText}"
+                         BorderBrush="LightSlateGray" IsReadOnly="True" Text="{x:Bind ViewModel.HashedText}"
                          TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="10,0,0,0">
@@ -32,7 +27,7 @@
                             Background="Transparent" BorderThickness="0" />
                 </Border>
                 <TextBox Background="Transparent" Height="180" Width="360" BorderBrush="LightSlateGray"
-                         Text="{Binding HashedFile}"
+                         Text="{x:Bind ViewModel.HashedFile}"
                          IsReadOnly="True" TextWrapping="Wrap" Margin="0,0,0,0" />
             </StackPanel>
         </StackPanel>
