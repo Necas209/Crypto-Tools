@@ -13,6 +13,12 @@ public class ImageEncryptionViewModel : ViewModelBase
     public List<EncryptionAlgorithm> Algorithms => Model.EncryptionAlgorithms;
     public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 
+    public ImageEncryptionViewModel()
+    {
+        SelectedAlgorithm = Algorithms[0];
+        SelectedCipherMode = CipherMode.CBC;
+    }
+    
     public Dictionary<string, CipherMode> CipherModes { get; } = new()
     {
         { "CBC", CipherMode.CBC },

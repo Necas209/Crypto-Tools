@@ -57,10 +57,10 @@ public partial class ImageEncryptionPage
         var file = await picker.PickSingleFileAsync();
         if (file is null) return;
         // Get the image format
-        OriginalImage.Source = await BitmapUtils.ToBitmapImageAsync(file);
+        OriginalImage.Source = await BitmapUtils.ToBitmapImage(file);
         using var bitmap = ViewModel.EncryptImage(file.Path);
         var format = BitmapUtils.GetImageFormat(file.Path);
-        EncryptedImage.Source = await BitmapUtils.ToBitmapImageAsync(bitmap, format);
+        EncryptedImage.Source = await BitmapUtils.ToBitmapImage(bitmap, format);
     }
 
     private async void DropImage_OnDrop(object sender, DragEventArgs e)
@@ -85,10 +85,10 @@ public partial class ImageEncryptionPage
         }
 
         if (items[0] is not StorageFile file) return;
-        OriginalImage.Source = await BitmapUtils.ToBitmapImageAsync(file);
+        OriginalImage.Source = await BitmapUtils.ToBitmapImage(file);
         using var bitmap = ViewModel.EncryptImage(file.Path);
         var format = BitmapUtils.GetImageFormat(file.Path);
-        EncryptedImage.Source = await BitmapUtils.ToBitmapImageAsync(bitmap, format);
+        EncryptedImage.Source = await BitmapUtils.ToBitmapImage(bitmap, format);
     }
 
     private void DropImage_OnDragEnter(object sender, DragEventArgs e)

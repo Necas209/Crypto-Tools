@@ -11,7 +11,7 @@ namespace CryptoTools.Utils;
 
 public static class BitmapUtils
 {
-    public static async Task<BitmapImage> ToBitmapImageAsync(StorageFile file)
+    public static async Task<BitmapImage> ToBitmapImage(StorageFile file)
     {
         using var stream = await file.OpenReadAsync();
         var bitmapImage = new BitmapImage
@@ -23,7 +23,7 @@ public static class BitmapUtils
         return bitmapImage;
     }
 
-    public static async Task<BitmapImage> ToBitmapImageAsync(Bitmap bitmap, ImageFormat imageFormat)
+    public static async Task<BitmapImage> ToBitmapImage(Bitmap bitmap, ImageFormat imageFormat)
     {
         using var stream = new InMemoryRandomAccessStream();
         bitmap.Save(stream.AsStream(), imageFormat);
