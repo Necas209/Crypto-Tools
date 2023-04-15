@@ -47,9 +47,12 @@ public partial class ImageEncryptionPage
             Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp"
         };
         if (openFileDialog.ShowDialog() != true) return;
-        var bitmap = _viewModel.EncryptImage(openFileDialog.FileName);
-        OriginalImage.Source = BitmapUtils.ToBitmapImage(openFileDialog.FileName);
-        EncryptedImage.Source = BitmapUtils.ToBitmapImage(bitmap);
+        var file = openFileDialog.FileName;
+        // Get the image format
+        OriginalImage.Source = BitmapUtils.ToBitmapImage(file);
+        using var bitmap = _viewModel.EncryptImage(file);
+        var format = BitmapUtils.GetImageFormat(file);
+        EncryptedImage.Source = BitmapUtils.ToBitmapImage(bitmap, format);
     }
 
     private void DropImage_OnDrop(object sender, DragEventArgs e)
@@ -73,9 +76,10 @@ public partial class ImageEncryptionPage
         }
 
         var file = files[0];
-        var bitmap = _viewModel.EncryptImage(file);
         OriginalImage.Source = BitmapUtils.ToBitmapImage(file);
-        EncryptedImage.Source = BitmapUtils.ToBitmapImage(bitmap);
+        using var bitmap = _viewModel.EncryptImage(file);
+        var format = BitmapUtils.GetImageFormat(file);
+        EncryptedImage.Source = BitmapUtils.ToBitmapImage(bitmap, format);
     }
 
     private void DropImage_OnDragEnter(object sender, DragEventArgs e)

@@ -1,19 +1,12 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace CryptoTools.Utils;
 
 public static class BitmapUtils
 {
-    public static FormatConvertedBitmap ToGrayscale(string fileName)
-    {
-        var bitmapImage = ToBitmapImage(fileName);
-        return new FormatConvertedBitmap(bitmapImage, PixelFormats.Gray8, null, 0);
-    }
-    
     public static BitmapImage ToBitmapImage(string fileName)
     {
         using var stream = new FileStream(fileName, FileMode.Open);
@@ -26,10 +19,10 @@ public static class BitmapUtils
         return bitmapImage;
     }
 
-    public static BitmapImage ToBitmapImage(Bitmap bitmap)
+    public static BitmapImage ToBitmapImage(Bitmap bitmap, ImageFormat imageFormat)
     {
         using var stream = new MemoryStream();
-        bitmap.Save(stream, ImageFormat.Bmp);
+        bitmap.Save(stream, imageFormat);
         stream.Position = 0;
         var bitmapImage = new BitmapImage();
         bitmapImage.BeginInit();
@@ -38,5 +31,11 @@ public static class BitmapUtils
         bitmapImage.EndInit();
         bitmapImage.Freeze(); // just in case you want to load the image in another thread
         return bitmapImage;
+    }
+
+    public static ImageFormat GetImageFormat(string file)
+    {
+        using var image = Image.FromFile(file);
+        return image.RawFormat;
     }
 }

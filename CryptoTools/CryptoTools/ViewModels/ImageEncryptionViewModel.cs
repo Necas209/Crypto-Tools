@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using CryptoLib.Models;
 using CryptoTools.Utils;
 
@@ -9,33 +10,41 @@ namespace CryptoTools.ViewModels;
 
 public class ImageEncryptionViewModel : ViewModelBase
 {
-    public ImageEncryptionViewModel()
-    {
-        SelectedAlgorithm = Model.EncryptionAlgorithms.First();
-    }
+    public EncryptionAlgorithm SelectedAlgorithm { get; set; } = null!;
 
-    public EncryptionAlgorithm SelectedAlgorithm { get; set; }
+    public Dictionary<string, CipherMode> CipherModes { get; } = new()
+    {
+        { "CBC", CipherMode.CBC },
+        { "CFB", CipherMode.CFB },
+        { "CTS", CipherMode.CTS },
+        { "ECB", CipherMode.ECB },
+        { "OFB", CipherMode.OFB }
+    };
+
+    public CipherMode SelectedCipherMode { get; set; }
 
     public Bitmap EncryptImage(string imagePath)
     {
         using var algorithm = EncryptionUtils.GetAlgorithm(SelectedAlgorithm.Name);
-        // Set the encryption key and generate an initialization vector
         algorithm.GenerateKey();
         algorithm.GenerateIV();
-        // Convert the image to grayscale
-        var grayscale = BitmapUtils.ToGrayscale(imagePath);
-        // Extract the pixel data from the grayscale image
-        var pixelData = new byte[grayscale.PixelWidth * grayscale.PixelHeight];
-        grayscale.CopyPixels(pixelData, grayscale.PixelWidth, 0);
+        algorithm.Mode = SelectedCipherMode;
+        var bmp = new Bitmap(imagePath);
+        // Extract the pixel data from the bitmap
+        var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+        var bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+        // Calculate the number of bytes needed for the pixelData array
+        var bytesPerPixel = Image.GetPixelFormatSize(bmp.PixelFormat) / 8;
+        var dataSize = bmp.Width * bmp.Height * bytesPerPixel;
+        // Copy the pixel data into the pixelData array
+        var pixelData = new byte[dataSize];
+        Marshal.Copy(bmpData.Scan0, pixelData, 0, dataSize);
         // Encrypt the pixel data
         using var encryptor = algorithm.CreateEncryptor();
-        var encryptedPixelData = encryptor.TransformFinalBlock(pixelData, 0, pixelData.Length);
-        // Save the encrypted pixel data as a new image
-        var encryptedBitmap = new Bitmap(grayscale.PixelWidth, grayscale.PixelHeight, PixelFormat.Format8bppIndexed);
-        var rect = new Rectangle(0, 0, grayscale.PixelWidth, grayscale.PixelHeight);
-        var encryptedBmpData = encryptedBitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
-        Marshal.Copy(encryptedPixelData, 0, encryptedBmpData.Scan0, pixelData.Length);
-        encryptedBitmap.UnlockBits(encryptedBmpData);
-        return encryptedBitmap;
+        var encryptedPixelData = encryptor.TransformFinalBlock(pixelData, 0, dataSize);
+        // Copy the encrypted pixel data back into the bitmap
+        Marshal.Copy(encryptedPixelData, 0, bmpData.Scan0, dataSize);
+        bmp.UnlockBits(bmpData);
+        return bmp;
     }
 }

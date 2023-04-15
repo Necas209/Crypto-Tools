@@ -9,28 +9,39 @@
         <vm:ImageEncryptionViewModel />
     </Page.DataContext>
     <Grid>
-        <ComboBox Width="200" VerticalAlignment="Top" Margin="0,20,0,0"
-                  ItemsSource="{Binding Model.EncryptionAlgorithms}"
-                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="1"
-                  SelectedItem="{Binding SelectedAlgorithm}" />
-        <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="360,20,0,0" />
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,55,0,10">
-            <StackPanel Orientation="Horizontal">
-                <Border BorderThickness="1" Height="180" Width="774" BorderBrush="LightSlateGray" Margin="0,0,0,10">
-                    <Button AllowDrop="True" Foreground="DimGray" Content="Drop an Image Here" Background="Transparent"
-                            BorderThickness="0" Drop="DropImage_OnDrop" DragEnter="DropImage_OnDragEnter"
-                            DragLeave="DropImage_OnDragLeave" Click="DropImage_OnClick" />
-                </Border>
-
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                <Border BorderThickness="1" BorderBrush="LightSlateGray">
-                    <Image Name="OriginalImage" Height="180" Width="380" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="LightSlateGray" Margin="10,0,0,0">
-                    <Image Name="EncryptedImage" Height="180" Width="380" />
-                </Border>
-            </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="10 10 10 0">
+            <ComboBox Width="200" VerticalAlignment="Top"
+                      ItemsSource="{Binding Model.EncryptionAlgorithms}"
+                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="0"
+                      SelectedItem="{Binding SelectedAlgorithm}" />
+            <ComboBox Width="100" VerticalAlignment="Top" Margin="20,0,0,0"
+                      ItemsSource="{Binding CipherModes}"
+                      DisplayMemberPath="Key" SelectedIndex="0"
+                      SelectedValue="{Binding SelectedCipherMode}" SelectedValuePath="Value" />
+            <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Right" />
         </StackPanel>
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="1" Height="180"
+                BorderBrush="LightSlateGray" Margin="10,10,10,0">
+            <Button AllowDrop="True" Foreground="DimGray" Content="Drop an Image Here" Background="Transparent"
+                    BorderThickness="0" Drop="DropImage_OnDrop" DragEnter="DropImage_OnDragEnter"
+                    DragLeave="DropImage_OnDragLeave" Click="DropImage_OnClick" />
+        </Border>
+        <Border Grid.Row="2" Grid.Column="0" BorderThickness="1" BorderBrush="LightSlateGray" Margin="10, 10, 0, 10"
+                Height="180" Width="380">
+            <Image Name="OriginalImage" />
+        </Border>
+        <Border Grid.Row="2" Grid.Column="1" BorderThickness="1" BorderBrush="LightSlateGray" Margin="10,10,10,10"
+                Height="180" Width="380">
+            <Image Name="EncryptedImage" />
+        </Border>
     </Grid>
 </Page>
