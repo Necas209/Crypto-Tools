@@ -1,8 +1,9 @@
 using System;
 using Windows.Graphics;
+using Windows.UI.Popups;
 using CryptoTools.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
@@ -19,14 +20,11 @@ public partial class RegisterWindow
 
     public RegisterViewModel ViewModel { get; } = new();
 
-    private static async void RegisterSuccess()
+    private async void RegisterSuccess()
     {
-        var dialog = new ContentDialog
-        {
-            Title = "Registration successful",
-            Content = "You can now log in with your new account.",
-            CloseButtonText = "OK"
-        };
+        var dialog = new MessageDialog("You can now log in with your new account.", "Registration successful");
+        var hwnd = WindowNative.GetWindowHandle(this);
+        InitializeWithWindow.Initialize(dialog, hwnd);
         await dialog.ShowAsync();
     }
 
@@ -35,14 +33,11 @@ public partial class RegisterWindow
         await ViewModel.Register();
     }
 
-    private static async void ShowError(string message)
+    private async void ShowError(string message)
     {
-        var dialog = new ContentDialog
-        {
-            Title = "Registration failed",
-            Content = message,
-            CloseButtonText = "OK"
-        };
+        var dialog = new MessageDialog(message, "Registration failed");
+        var hwnd = WindowNative.GetWindowHandle(this);
+        InitializeWithWindow.Initialize(dialog, hwnd);
         await dialog.ShowAsync();
     }
 

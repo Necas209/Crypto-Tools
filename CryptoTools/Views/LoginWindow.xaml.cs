@@ -1,8 +1,9 @@
 using System;
 using Windows.Graphics;
+using Windows.UI.Popups;
 using CryptoTools.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
@@ -28,14 +29,11 @@ public partial class LoginWindow
         Close();
     }
 
-    private static async void ShowError(string message)
+    private async void ShowError(string message)
     {
-        var dialog = new ContentDialog
-        {
-            Title = "Error",
-            Content = message,
-            CloseButtonText = "Ok"
-        };
+        var dialog = new MessageDialog(message, "Error");
+        var hwnd = WindowNative.GetWindowHandle(this);
+        InitializeWithWindow.Initialize(dialog, hwnd);
         await dialog.ShowAsync();
     }
 
