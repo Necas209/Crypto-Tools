@@ -7,11 +7,14 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
 public partial class HashPage
 {
+    private readonly App _app = (App)Application.Current;
+
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
@@ -59,6 +62,7 @@ public partial class HashPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
         var file = await picker.PickSingleFileAsync();
         if (file == null) return;
         ViewModel.HashFile(file.Path);

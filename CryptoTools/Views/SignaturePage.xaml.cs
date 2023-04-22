@@ -98,6 +98,7 @@ public partial class SignaturePage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
         var file = await picker.PickSingleFileAsync();
         if (file == null) return;
         await ViewModel.VerifySignature(file.Path);

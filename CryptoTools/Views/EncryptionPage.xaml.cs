@@ -102,6 +102,7 @@ public partial class EncryptionPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { ".enc" }
         };
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
         var file = await picker.PickSingleFileAsync();
         if (file is null) return;
         ViewModel.DecryptFile(file.Path);
