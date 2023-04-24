@@ -107,7 +107,7 @@ public partial class HashPage
         }
         else
         {
-            ShowMessage("Please drop only one file", Colors.Red);
+            ShowMessage("Please drop only one file!", Colors.Red);
         }
 
         deferral.Complete();
