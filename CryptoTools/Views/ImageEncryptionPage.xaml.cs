@@ -45,7 +45,7 @@ public partial class ImageEncryptionPage
         _dispatcherTimer.Start();
     }
 
-    private async void DropImage_OnClick(object sender, RoutedEventArgs e)
+    private async void BtImage_OnClick(object sender, RoutedEventArgs e)
     {
         var picker = new FileOpenPicker
         {
@@ -58,12 +58,10 @@ public partial class ImageEncryptionPage
         if (file is null) return;
         // Get the image format
         OriginalImage.Source = await BitmapUtils.ToBitmapImage(file);
-        using var bitmap = ViewModel.EncryptImage(file.Path);
-        var format = BitmapUtils.GetImageFormat(file.Path);
-        EncryptedImage.Source = await BitmapUtils.ToBitmapImage(bitmap, format);
+        await ViewModel.EncryptImage(file.Path);
     }
 
-    private async void DropImage_OnDrop(object sender, DragEventArgs e)
+    private async void BtImage_OnDrop(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
@@ -86,12 +84,10 @@ public partial class ImageEncryptionPage
 
         if (items[0] is not StorageFile file) return;
         OriginalImage.Source = await BitmapUtils.ToBitmapImage(file);
-        using var bitmap = ViewModel.EncryptImage(file.Path);
-        var format = BitmapUtils.GetImageFormat(file.Path);
-        EncryptedImage.Source = await BitmapUtils.ToBitmapImage(bitmap, format);
+        await ViewModel.EncryptImage(file.Path);
     }
 
-    private void DropImage_OnDragEnter(object sender, DragEventArgs e)
+    private void BtImage_OnDragEnter(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
 
@@ -99,7 +95,7 @@ public partial class ImageEncryptionPage
         btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
-    private void DropImage_OnDragLeave(object sender, DragEventArgs e)
+    private void BtImage_OnDragLeave(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
 

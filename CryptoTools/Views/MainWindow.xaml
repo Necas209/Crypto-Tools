@@ -6,31 +6,33 @@
         xmlns:views="using:CryptoTools.Views"
         mc:Ignorable="d" Title="CryptoTools">
     <Grid>
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" FontSize="16">
-            <Bold>CryptoTools</Bold>
-        </TextBlock>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Content="Logout" Width="100" Margin="0 10 25 0"
-                Height="30" Click="LogoutButton_Click" />
-        <TabView Margin="20 50 20 20">
-            <TabViewItem Height="25" IsSelected="True" Header="Compression">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Margin="10 10 10 0" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
+        <Button Grid.Row="0" Margin="10 10 10 0" HorizontalAlignment="Right" Content="Logout" Width="100"
+                Click="LogoutButton_Click" />
+        <TabView Grid.Row="1" Margin="10 10 10 10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabViewItem IsSelected="True" Header="Compression">
                 <Frame SourcePageType="views:ZipPage" />
             </TabViewItem>
-            <TabViewItem Height="25" Header="Hashing">
+            <TabViewItem Header="Hashing">
                 <Frame SourcePageType="views:HashPage" />
             </TabViewItem>
-            <TabViewItem Height="25" Header="Encryption">
+            <TabViewItem Header="Encryption">
                 <Frame SourcePageType="views:ImageEncryptionPage" />
             </TabViewItem>
-            <TabViewItem Height="25" Header="Privacy">
+            <TabViewItem Header="Privacy">
                 <Frame SourcePageType="views:EncryptionPage" />
             </TabViewItem>
-            <TabViewItem Height="25" Header="Integrity">
+            <TabViewItem Header="Integrity">
                 <Frame SourcePageType="views:FileIntegrityPage" />
             </TabViewItem>
-            <TabViewItem Height="25" Header="Signature">
+            <TabViewItem Header="Signature">
                 <Frame SourcePageType="views:SignaturePage" />
             </TabViewItem>
-            <TabViewItem Height="25" Header="Chatting">
+            <TabViewItem Header="Chatting">
                 <Frame SourcePageType="views:ChatPage" />
             </TabViewItem>
         </TabView>
