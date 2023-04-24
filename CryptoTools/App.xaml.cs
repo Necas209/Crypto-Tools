@@ -19,9 +19,20 @@ public partial class App
 
     public IntPtr Hwnd => WindowNative.GetWindowHandle(MainWindow);
 
-    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
-        var loginWindow = new LoginWindow();
-        loginWindow.Activate();
+        if (!await Model.LoadToken())
+        {
+            var loginWindow = new LoginWindow();
+            loginWindow.Activate();
+            return;
+        }
+
+        // Open connection to the chat server
+        await Model.OpenConnection();
+        // Get the encryption and hashing algorithms
+        await Model.GetAlgorithms();
+        MainWindow = new MainWindow();
+        MainWindow.Activate();
     }
 }

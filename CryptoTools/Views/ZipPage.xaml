@@ -27,18 +27,20 @@
         </StackPanel>
         <ListView BorderBrush="Black" BorderThickness="1" ItemsSource="{x:Bind ViewModel.ArchiveEntries}"
                   x:Name="Entries" SelectionMode="Multiple" SelectionChanged="ListView_OnSelectionChanged">
-            <ListView.Header>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200" />
-                        <ColumnDefinition Width="500" />
-                        <ColumnDefinition Width="70" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Name" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="0" />
-                    <TextBlock Text="Path" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="1" />
-                    <TextBlock Text="Is directory" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="2" />
-                </Grid>
-            </ListView.Header>
+            <ListView.HeaderTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="500" />
+                            <ColumnDefinition Width="70" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Name" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="0" />
+                        <TextBlock Text="Path" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="1" />
+                        <TextBlock Text="Is directory" FontWeight="Bold" Margin="5,0,0,0" Grid.Column="2" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.HeaderTemplate>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:ArchiveEntry">
                     <Grid>

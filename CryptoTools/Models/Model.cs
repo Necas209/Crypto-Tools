@@ -141,4 +141,17 @@ public class Model
             await client.GetFromJsonAsync<List<HashingAlgorithm>>($"{ServerUrl}/hash")
             ?? throw new InvalidOperationException("Unable to retrieve hashing algorithms");
     }
+
+    public async Task SaveToken()
+    {
+        await File.WriteAllTextAsync(Path.Combine(AppFolder, "token.txt"), AccessToken);
+    }
+
+    public async Task<bool> LoadToken()
+    {
+        var tokenPath = Path.Combine(AppFolder, "token.txt");
+        if (!File.Exists(tokenPath)) return false;
+        AccessToken = await File.ReadAllTextAsync(tokenPath);
+        return true;
+    }
 }

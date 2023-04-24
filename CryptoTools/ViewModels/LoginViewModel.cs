@@ -38,6 +38,14 @@ public class LoginViewModel : ViewModelBase
         }
 
         Model.AccessToken = loginResponse.AccessToken;
+        // Save the token to the local storage
+        await Model.SaveToken();
+        // Open the app
+        await OpenApp();
+    }
+
+    private async Task OpenApp()
+    {
         // Open connection to the chat server
         await Model.OpenConnection();
         // Get the encryption and hashing algorithms
