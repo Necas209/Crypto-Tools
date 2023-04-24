@@ -1,9 +1,11 @@
 using System;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI;
 using CryptoTools.ViewModels;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -15,18 +17,17 @@ public partial class HashPage
 {
     private readonly App _app = (App)Application.Current;
 
-    private readonly DispatcherTimer _dispatcherTimer = new()
-    {
-        Interval = new TimeSpan(0, 0, 5)
-    };
+    private readonly DispatcherQueueTimer _timer;
 
     public HashPage()
     {
         InitializeComponent();
-        _dispatcherTimer.Tick += (_, _) =>
+        _timer = DispatcherQueue.CreateTimer();
+        _timer.Interval = TimeSpan.FromSeconds(5);
+        _timer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
-            _dispatcherTimer.Stop();
+            _timer.Stop();
         };
     }
 
@@ -34,13 +35,13 @@ public partial class HashPage
 
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
+        if (_timer.IsRunning) _timer.Stop();
         Message.Text = message;
         // Change the color of the text
         Message.Foreground = new SolidColorBrush(color);
         // Timer to change the visibility of the text
         Message.Visibility = Visibility.Visible;
-        _dispatcherTimer.Start();
+        _timer.Start();
     }
 
     private void TextToHash_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -51,7 +52,6 @@ public partial class HashPage
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         ViewModel?.HashText();
     }
 
@@ -68,26 +68,6 @@ public partial class HashPage
         ViewModel.HashFile(file.Path);
     }
 
-    private async void File_OnDrop(object sender, DragEventArgs e)
-    {
-        if (sender is not Button btn) return;
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
-
-        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
-        var items = await e.DataView.GetStorageItemsAsync();
-        switch (items.Count)
-        {
-            case 0:
-                return;
-            case > 1:
-                ShowMessage("You can only hash one file at a time.", Colors.Red);
-                return;
-        }
-
-        ViewModel.HashFile(items[0].Path);
-    }
-
     private void File_OnDragEnter(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
@@ -102,5 +82,34 @@ public partial class HashPage
 
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+    }
+
+    private void File_OnDragOver(object sender, DragEventArgs e)
+    {
+        e.AcceptedOperation = DataPackageOperation.Copy;
+    }
+
+    private async void File_OnDrop(object sender, DragEventArgs e)
+    {
+        if (sender is not Button btn) return;
+
+        btn.Background = new SolidColorBrush(Colors.Transparent);
+        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+
+        var deferral = e.GetDeferral();
+        var dataPackageView = e.DataView;
+        if (!dataPackageView.Contains(StandardDataFormats.StorageItems)) return;
+
+        var items = await dataPackageView.GetStorageItemsAsync();
+        if (items.Count == 1)
+        {
+            if (items[0] is StorageFile file) ViewModel.HashFile(file.Path);
+        }
+        else
+        {
+            ShowMessage("Please drop only one file", Colors.Red);
+        }
+
+        deferral.Complete();
     }
 }

@@ -20,13 +20,13 @@ public class HashViewModel : ViewModelBase
     public string HashedText
     {
         get => _hashedText;
-        private set => SetField(ref _hashedText, value);
+        set => SetField(ref _hashedText, value);
     }
 
     public string HashedFile
     {
         get => _hashedFile;
-        private set => SetField(ref _hashedFile, value);
+        set => SetField(ref _hashedFile, value);
     }
 
     public List<HashingAlgorithm> Algorithms => Model.HashingAlgorithms;

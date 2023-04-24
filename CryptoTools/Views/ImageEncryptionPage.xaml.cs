@@ -66,12 +66,6 @@ public partial class ImageEncryptionPage
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
-        if (e.DataView.Contains(StandardDataFormats.Bitmap))
-        {
-            ShowMessage("This is not an image!", Colors.Red);
-            return;
-        }
-
         var items = await e.DataView.GetStorageItemsAsync();
         switch (items.Count)
         {
@@ -83,6 +77,12 @@ public partial class ImageEncryptionPage
         }
 
         if (items[0] is not StorageFile file) return;
+        if (file.FileType is not (".png" or ".jpeg" or ".jpg" or ".bmp"))
+        {
+            ShowMessage("This is not an image!", Colors.Red);
+            return;
+        }
+
         OriginalImage.Source = await BitmapUtils.ToBitmapImage(file);
         await ViewModel.EncryptImage(file.Path);
     }
@@ -101,5 +101,10 @@ public partial class ImageEncryptionPage
 
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+    }
+
+    private void BtImage_OnDragOver(object sender, DragEventArgs e)
+    {
+        e.AcceptedOperation = DataPackageOperation.Copy;
     }
 }
