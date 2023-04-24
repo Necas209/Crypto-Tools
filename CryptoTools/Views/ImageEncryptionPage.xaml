@@ -20,7 +20,7 @@
                       DisplayMemberPath="Name" SelectedValuePath="Id" SelectedIndex="0"
                       SelectedItem="{x:Bind ViewModel.SelectedAlgorithm, Mode=TwoWay}" />
             <ComboBox Width="100" VerticalAlignment="Top" Margin="20,0,0,0"
-                      ItemsSource="{x:Bind ViewModel.CipherModes}" DisplayMemberPath="Key" SelectedIndex="0"
+                      ItemsSource="{x:Bind ViewModel.CipherModes}" DisplayMemberPath="Key" SelectedIndex="3"
                       SelectedValue="{x:Bind ViewModel.SelectedCipherMode, Mode=TwoWay}" SelectedValuePath="Value" />
             <TextBlock x:Name="Message" VerticalAlignment="Top" HorizontalAlignment="Right" />
         </StackPanel>
@@ -36,7 +36,7 @@
         </Border>
         <Border Grid.Row="2" Grid.Column="1" BorderThickness="1" BorderBrush="LightSlateGray" Margin="10,10,10,0"
                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <Image x:Name="EncryptedImage" Source="{x:Bind ViewModel.EncryptedImage, Mode=TwoWay}" />
+            <Image Source="{x:Bind ViewModel.EncryptedImage, Mode=TwoWay}" />
         </Border>
     </Grid>
 </Page>
