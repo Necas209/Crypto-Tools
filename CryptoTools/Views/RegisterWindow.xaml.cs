@@ -1,34 +1,50 @@
-using System.Windows;
+using System;
+using Windows.Graphics;
+using Windows.UI.Popups;
 using CryptoTools.ViewModels;
+using Microsoft.UI.Xaml;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
 public partial class RegisterWindow
 {
-    private readonly RegisterViewModel _viewModel;
-
     public RegisterWindow()
     {
         InitializeComponent();
-        _viewModel = (RegisterViewModel)DataContext;
-        _viewModel.OnError = ShowError;
-        _viewModel.ShowLogin = ShowLogin;
+        AppWindow.ResizeClient(new SizeInt32(300, 400));
+        ViewModel.OnError = ShowError;
+        ViewModel.ShowLogin = ShowLogin;
+        ViewModel.RegisterSuccess = RegisterSuccess;
+    }
+
+    public RegisterViewModel ViewModel { get; } = new();
+
+    private async void RegisterSuccess()
+    {
+        var dialog = new MessageDialog("You can now log in with your new account.", "Registration successful");
+        var hwnd = WindowNative.GetWindowHandle(this);
+        InitializeWithWindow.Initialize(dialog, hwnd);
+        await dialog.ShowAsync();
     }
 
     private async void RegisterButton_Click(object sender, RoutedEventArgs e)
     {
-        await _viewModel.Register(PasswordBox.SecurePassword, ConfirmPasswordBox.SecurePassword);
+        await ViewModel.Register();
     }
 
-    private static void ShowError(string message)
+    private async void ShowError(string message)
     {
-        MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        var dialog = new MessageDialog(message, "Registration failed");
+        var hwnd = WindowNative.GetWindowHandle(this);
+        InitializeWithWindow.Initialize(dialog, hwnd);
+        await dialog.ShowAsync();
     }
 
     private void ShowLogin()
     {
         var loginWindow = new LoginWindow();
-        loginWindow.Show();
+        loginWindow.Activate();
         Close();
     }
 }

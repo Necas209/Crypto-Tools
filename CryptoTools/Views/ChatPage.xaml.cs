@@ -1,51 +1,47 @@
-using System.Windows;
+using System;
+using Windows.UI.Popups;
 using CryptoTools.ViewModels;
+using Microsoft.UI.Xaml;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
 public partial class ChatPage
 {
-    private readonly ChatViewModel _viewModel;
-
     public ChatPage()
     {
         InitializeComponent();
-        _viewModel = (ChatViewModel)DataContext;
-        _viewModel.OnMessageReceived = UpdateChat;
-        _viewModel.OnConnectionClosed = OnConnectionClosed;
+        ViewModel.OnMessageReceived = UpdateChat;
+        ViewModel.OnConnectionClosed = OnConnectionClosed;
         // start a new thread to receive messages from the server
         StartReceivingMessages();
     }
 
-    private static void OnConnectionClosed()
+    public ChatViewModel ViewModel { get; } = new();
+
+    private async void OnConnectionClosed()
     {
-        MessageBox.Show("Connection to the chat server was closed.");
+        var dialog = new MessageDialog("The connection to the chat server was closed.", "Connection closed");
+        var hwnd = WindowNative.GetWindowHandle(this);
+        InitializeWithWindow.Initialize(dialog, hwnd);
+        await dialog.ShowAsync();
     }
 
     private void UpdateChat()
     {
-        Dispatcher.Invoke(() => ChatListBox.ScrollIntoView(ChatListBox.Items[^1]));
+        if (ChatListBox.Items.Count > 0)
+            DispatcherQueue.TryEnqueue(() => { ChatListBox.ScrollIntoView(ChatListBox.Items[^1]); });
     }
 
     private async void StartReceivingMessages()
     {
-        await _viewModel.ReceiveMessages();
+        await ViewModel.ReceiveMessages();
     }
 
     private void SendButton_Click(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(MessageTextBox.Text)) return;
-        _viewModel.SendMessage(MessageTextBox.Text);
+        ViewModel.SendMessage(MessageTextBox.Text);
         MessageTextBox.Text = string.Empty;
-    }
-
-    private void MessageTextBox_OnGotFocus(object sender, RoutedEventArgs e)
-    {
-        SendButton.IsDefault = true;
-    }
-
-    private void MessageTextBox_OnLostFocus(object sender, RoutedEventArgs e)
-    {
-        SendButton.IsDefault = false;
     }
 }

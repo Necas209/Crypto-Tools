@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using CryptoLib.Models;
 using CryptoTools.Utils;
@@ -14,7 +15,7 @@ public class HashViewModel : ViewModelBase
         SelectedAlgorithm = Model.HashingAlgorithms.First();
     }
 
-    public string UnhashedText { get; set; } = string.Empty;
+    public string PlainText { get; set; } = string.Empty;
 
     public string HashedText
     {
@@ -28,18 +29,20 @@ public class HashViewModel : ViewModelBase
         set => SetField(ref _hashedFile, value);
     }
 
+    public List<HashingAlgorithm> Algorithms => Model.HashingAlgorithms;
+
     public HashingAlgorithm SelectedAlgorithm { get; set; }
 
 
     public void HashText()
     {
-        if (string.IsNullOrEmpty(UnhashedText))
+        if (string.IsNullOrEmpty(PlainText))
         {
             HashedText = string.Empty;
             return;
         }
 
-        var hash = HashingUtils.Hash(UnhashedText, SelectedAlgorithm.Name);
+        var hash = HashingUtils.Hash(PlainText, SelectedAlgorithm.Name);
         HashedText = HashingUtils.ToHexString(hash);
     }
 

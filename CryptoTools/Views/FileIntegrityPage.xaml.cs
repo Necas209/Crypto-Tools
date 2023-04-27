@@ -1,35 +1,39 @@
 using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Threading;
+using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI;
 using CryptoTools.ViewModels;
-using Microsoft.Win32;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
 public partial class FileIntegrityPage
 {
-    private readonly string _dialogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    private readonly App _app = (App)Application.Current;
 
     private readonly DispatcherTimer _dispatcherTimer = new()
     {
         Interval = new TimeSpan(0, 0, 5)
     };
 
-    private readonly FileIntegrityViewModel _viewModel;
-
     public FileIntegrityPage()
     {
         InitializeComponent();
-        _viewModel = (FileIntegrityViewModel)DataContext;
-        _viewModel.DisplayMessage = ShowMessage;
+        ViewModel.DisplayMessage = ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
             _dispatcherTimer.Stop();
         };
     }
+
+    public FileIntegrityViewModel ViewModel { get; } = new();
 
     private void ShowMessage(string message, Color color)
     {
@@ -42,31 +46,35 @@ public partial class FileIntegrityPage
         _dispatcherTimer.Start();
     }
 
-    private void Register_OnClick(object sender, RoutedEventArgs e)
+    private async void Register_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            Multiselect = true,
-            InitialDirectory = _dialogPath,
-            Filter = "All files (*.*)|*.*"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { "*" }
         };
-        if (dialog.ShowDialog() != true) return;
-        _viewModel.RegisterFiles(dialog.FileNames);
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        var files = await picker.PickMultipleFilesAsync();
+        if (files.Count == 0) return;
+        // Register the files
+        ViewModel.RegisterFiles(files);
     }
 
-    private void Register_OnDrop(object sender, DragEventArgs e)
+    private async void Register_OnDrop(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
-        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
         {
-            // Note that you can have more than one file.
-            var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-            if (files == null || files.Length == 0) return;
-            // Register the file
-            _viewModel.RegisterFiles(files);
+            var items = await e.DataView.GetStorageItemsAsync();
+            if (items.Count == 0) return;
+            // Register the files
+            var files = items
+                .Where(item => item.IsOfType(StorageItemTypes.File))
+                .Cast<StorageFile>();
+            ViewModel.RegisterFiles(files);
         }
         else
         {
@@ -91,39 +99,42 @@ public partial class FileIntegrityPage
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void Validation_OnClick(object sender, RoutedEventArgs e)
+    private async void Validation_OnClick(object sender, RoutedEventArgs e)
     {
-        var openFileDialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            Filter = "All files (*.*)|*.*"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { "*" }
         };
-        if (openFileDialog.ShowDialog() != true) return;
-        _viewModel.ValidateFile(openFileDialog.FileName);
+        var file = await picker.PickSingleFileAsync();
+        if (file == null) return;
+        // validate the file
+        ViewModel.ValidateFile(file.Path);
     }
 
-    private void Validation_OnDrop(object sender, DragEventArgs e)
+    private async void Validation_OnDrop(object sender, DragEventArgs e)
     {
         if (sender is not Button btn) return;
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems))
         {
             ShowMessage("This is not a file!", Colors.Red);
             return;
         }
 
-        // Note that you can have more than one file.
-        var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-        if (files == null || files.Length == 0) return;
-        if (files.Length > 1)
+        var files = await e.DataView.GetStorageItemsAsync();
+        switch (files.Count)
         {
-            ShowMessage("You can only validate one file at a time.", Colors.Red);
-            return;
+            case 0 or > 1:
+                ShowMessage("You can only validate one file at a time.", Colors.Red);
+                return;
+            default:
+                // validate the file
+                ViewModel.ValidateFile(files[0].Path);
+                break;
         }
-
-        // validate the file
-        _viewModel.ValidateFile(files[0]);
     }
 
     private void Validation_OnDragEnter(object sender, DragEventArgs e)

@@ -1,5 +1,6 @@
-﻿using System.Windows;
+﻿using Windows.Graphics;
 using CryptoTools.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace CryptoTools.Views;
 
@@ -8,24 +9,24 @@ namespace CryptoTools.Views;
 /// </summary>
 public partial class MainWindow
 {
-    private readonly MainViewModel _viewModel;
-
     public MainWindow()
     {
         InitializeComponent();
-        _viewModel = (MainViewModel)DataContext;
-        _viewModel.ShowLogin += ShowLogin;
+        AppWindow.ResizeClient(new SizeInt32(1100, 750));
+        ViewModel.ShowLogin += ShowLogin;
     }
+
+    private MainViewModel ViewModel { get; } = new();
 
     private void ShowLogin()
     {
         var loginWindow = new LoginWindow();
-        loginWindow.Show();
+        loginWindow.Activate();
         Close();
     }
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.Logout();
+        ViewModel.Logout();
     }
 }

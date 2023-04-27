@@ -4,7 +4,7 @@ namespace CryptoTools.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public Action? ShowLogin { get; set; }
+    public Action ShowLogin { get; set; }
 
     public async void Logout()
     {

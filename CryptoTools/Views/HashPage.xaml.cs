@@ -1,89 +1,71 @@
 using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Threading;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI;
 using CryptoTools.ViewModels;
-using Microsoft.Win32;
+using Microsoft.UI;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using WinRT.Interop;
 
 namespace CryptoTools.Views;
 
 public partial class HashPage
 {
-    private readonly DispatcherTimer _dispatcherTimer = new()
-    {
-        Interval = new TimeSpan(0, 0, 5)
-    };
+    private readonly App _app = (App)Application.Current;
 
-    private readonly HashViewModel _viewModel;
+    private readonly DispatcherQueueTimer _timer;
 
     public HashPage()
     {
         InitializeComponent();
-        _viewModel = (HashViewModel)DataContext;
-        _dispatcherTimer.Tick += (_, _) =>
+        _timer = DispatcherQueue.CreateTimer();
+        _timer.Interval = TimeSpan.FromSeconds(5);
+        _timer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
-            _dispatcherTimer.Stop();
+            _timer.Stop();
         };
     }
 
+    public HashViewModel ViewModel { get; } = new();
+
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
+        if (_timer.IsRunning) _timer.Stop();
         Message.Text = message;
         // Change the color of the text
         Message.Foreground = new SolidColorBrush(color);
         // Timer to change the visibility of the text
         Message.Visibility = Visibility.Visible;
-        _dispatcherTimer.Start();
+        _timer.Start();
     }
 
     private void TextToHash_OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        _viewModel.UnhashedText = ((TextBox)sender).Text;
-        _viewModel.HashText();
+        ViewModel.PlainText = ((TextBox)sender).Text;
+        ViewModel.HashText();
     }
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        _viewModel?.HashText();
+        ViewModel?.HashText();
     }
 
-    private void File_OnClick(object sender, RoutedEventArgs e)
+    private async void File_OnClick(object sender, RoutedEventArgs e)
     {
-        var openFileDialog = new OpenFileDialog
+        var picker = new FileOpenPicker
         {
-            Filter = "All files (*.*)|*.*"
+            SuggestedStartLocation = PickerLocationId.Desktop,
+            FileTypeFilter = { "*" }
         };
-        if (openFileDialog.ShowDialog() != true) return;
-        _viewModel.HashFile(openFileDialog.FileName);
-    }
-
-    private void File_OnDrop(object sender, DragEventArgs e)
-    {
-        if (sender is not Button btn) return;
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
-
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
-        {
-            ShowMessage("This is not a file!", Colors.Red);
-            return;
-        }
-
-        // Note that you can have more than one file.
-        var files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
-        if (files == null || files.Length == 0) return;
-        if (files.Length > 1)
-        {
-            ShowMessage("You can only hash one file at a time.", Colors.Red);
-            return;
-        }
-
-        // Hash the file
-        _viewModel.HashFile(files[0]);
+        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        var file = await picker.PickSingleFileAsync();
+        if (file == null) return;
+        ViewModel.HashFile(file.Path);
     }
 
     private void File_OnDragEnter(object sender, DragEventArgs e)
@@ -100,5 +82,34 @@ public partial class HashPage
 
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+    }
+
+    private void File_OnDragOver(object sender, DragEventArgs e)
+    {
+        e.AcceptedOperation = DataPackageOperation.Copy;
+    }
+
+    private async void File_OnDrop(object sender, DragEventArgs e)
+    {
+        if (sender is not Button btn) return;
+
+        btn.Background = new SolidColorBrush(Colors.Transparent);
+        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+
+        var deferral = e.GetDeferral();
+        var dataPackageView = e.DataView;
+        if (!dataPackageView.Contains(StandardDataFormats.StorageItems)) return;
+
+        var items = await dataPackageView.GetStorageItemsAsync();
+        if (items.Count == 1)
+        {
+            if (items[0] is StorageFile file) ViewModel.HashFile(file.Path);
+        }
+        else
+        {
+            ShowMessage("Please drop only one file!", Colors.Red);
+        }
+
+        deferral.Complete();
     }
 }

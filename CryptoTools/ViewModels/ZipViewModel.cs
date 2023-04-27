@@ -2,40 +2,42 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
+using Windows.Storage;
 using CryptoTools.Extensions;
+using CryptoTools.Models;
 
 namespace CryptoTools.ViewModels;
 
 public class ZipViewModel : ViewModelBase
 {
-    private List<ArchiveEntry> _selectedEntries = new();
-
+    private readonly List<ArchiveEntry> _selectedEntries = new();
     public ObservableCollection<ArchiveEntry> ArchiveEntries { get; } = new();
 
-    public CompressionLevel CompressionLevel { get; set; } = CompressionLevel.Optimal;
-
-    public List<ArchiveEntry> SelectedEntries
+    public Dictionary<string, CompressionLevel> CompressionLevels { get; } = new()
     {
-        get => _selectedEntries;
-        set => SetField(ref _selectedEntries, value);
-    }
+        { "No compression", CompressionLevel.NoCompression },
+        { "Fastest", CompressionLevel.Fastest },
+        { "Optimal", CompressionLevel.Optimal },
+        { "Smallest size", CompressionLevel.SmallestSize }
+    };
+
+    public CompressionLevel CompressionLevel { get; set; } = CompressionLevel.Optimal;
 
     public bool CreateNewFolder { get; set; } = true;
 
     public void RemoveSelectedEntries()
     {
-        foreach (var entry in SelectedEntries) ArchiveEntries.Remove(entry);
-
-        SelectedEntries.Clear();
+        foreach (var entry in _selectedEntries) ArchiveEntries.Remove(entry);
+        _selectedEntries.Clear();
     }
 
-    public void AddFiles(IEnumerable<string> files)
+    public void AddFiles(IEnumerable<StorageFile> files)
     {
         foreach (var file in files)
             ArchiveEntries.Add(new ArchiveEntry
             {
-                Name = Path.GetFileName(file),
-                Path = file
+                Name = file.Name,
+                Path = file.Path
             });
     }
 
@@ -75,5 +77,9 @@ public class ZipViewModel : ViewModelBase
         archive.ExtractToDirectory(directory);
     }
 
-    public readonly record struct ArchiveEntry(string Name, string Path, bool IsDirectory);
+    public void UpdateSelectedEntries(IEnumerable<ArchiveEntry> added, IEnumerable<ArchiveEntry> removed)
+    {
+        foreach (var entry in removed) _selectedEntries.Remove(entry);
+        foreach (var entry in added) _selectedEntries.Add(entry);
+    }
 }

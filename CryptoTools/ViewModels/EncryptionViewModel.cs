@@ -1,10 +1,12 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Windows.Media;
+using Windows.UI;
 using CryptoLib.Models;
 using CryptoTools.Utils;
+using Microsoft.UI;
 
 namespace CryptoTools.ViewModels;
 
@@ -14,7 +16,7 @@ public class EncryptionViewModel : ViewModelBase
 
     private readonly RSA _rsa = RSA.Create();
 
-    public DisplayMessageDelegate? DisplayMessage;
+    public DisplayMessageDelegate DisplayMessage;
 
     public EncryptionViewModel()
     {
@@ -31,6 +33,8 @@ public class EncryptionViewModel : ViewModelBase
             File.WriteAllBytes(rsaBin, Encoding.UTF8.GetBytes(xmlString));
         }
     }
+
+    public List<EncryptionAlgorithm> Algorithms => Model.EncryptionAlgorithms;
 
     public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 
