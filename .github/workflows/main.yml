@@ -5,9 +5,9 @@ name: WinUI 3 MSIX app
 
 on:
   push:
-    branches: [ winui-3 ]
+    branches: [ main ]
   pull_request:
-    branches: [ winui-3 ]
+    branches: [ main ]
 
 jobs:
 
