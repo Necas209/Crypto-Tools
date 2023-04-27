@@ -1,8 +1,10 @@
 using System;
 using Windows.Graphics;
+using Windows.System;
 using Windows.UI.Popups;
 using CryptoTools.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
 using WinRT.Interop;
 
 namespace CryptoTools.Views;
@@ -37,15 +39,22 @@ public partial class LoginWindow
         await dialog.ShowAsync();
     }
 
-    private async void LoginButton_Click(object sender, RoutedEventArgs e)
+    private async void LoginBt_Click(object sender, RoutedEventArgs e)
     {
         await ViewModel.Login();
     }
 
-    private void RegisterButton_Click(object sender, RoutedEventArgs e)
+    private void RegisterBt_Click(object sender, RoutedEventArgs e)
     {
         var registerWindow = new RegisterWindow();
         registerWindow.Activate();
         Close();
+    }
+
+    private void Pb_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key != VirtualKey.Enter) return;
+        LoginBt_Click(sender, e);
+        e.Handled = true;
     }
 }

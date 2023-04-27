@@ -14,24 +14,24 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <ComboBox Grid.Row="0" Grid.Column="0" Margin="10 10 0 0" Width="200" HorizontalAlignment="Left"
+        <ComboBox Grid.Row="0" Grid.Column="0" Margin="10" Width="200" HorizontalAlignment="Left"
                   SelectionChanged="Selector_OnSelectionChanged" DisplayMemberPath="Name" SelectedIndex="1"
                   ItemsSource="{x:Bind ViewModel.Algorithms, Mode=OneWay}" SelectedValuePath="Id"
                   SelectedItem="{x:Bind ViewModel.SelectedAlgorithm, Mode=TwoWay}" />
-        <TextBlock Grid.Row="0" Grid.Column="1" Name="Message" Margin="0 10 10 0" HorizontalAlignment="Right"
+        <TextBlock Grid.Row="0" Grid.Column="1" Name="Message" Margin="10" HorizontalAlignment="Right"
                    VerticalAlignment="Center" />
-        <TextBox Grid.Row="1" Grid.Column="0" Margin="10,10,0,0" BorderBrush="LightSlateGray"
+        <TextBox Grid.Row="1" Grid.Column="0" Margin="10" BorderBrush="LightSlateGray"
                  PlaceholderText="Enter your text here" TextChanged="TextToHash_OnTextChanged" TextWrapping="Wrap"
                  Text="{x:Bind ViewModel.PlainText, Mode=TwoWay}" VerticalAlignment="Stretch"
                  HorizontalAlignment="Stretch" />
-        <TextBox Grid.Row="2" Grid.Column="0" Margin="10, 10, 0, 0" Background="Transparent" TextWrapping="Wrap"
+        <TextBox Grid.Row="2" Grid.Column="0" Margin="10" Background="Transparent" TextWrapping="Wrap"
                  BorderBrush="LightSlateGray" IsReadOnly="True" Text="{x:Bind ViewModel.HashedText, Mode=TwoWay}"
                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-        <Button Grid.Row="1" Grid.Column="1" Margin="10,10,10,0" AllowDrop="True" Foreground="DimGray"
+        <Button Grid.Row="1" Grid.Column="1" Margin="10" AllowDrop="True" Foreground="DimGray"
                 Content="Drop File to Get Hash" Click="File_OnClick" Drop="File_OnDrop" DragEnter="File_OnDragEnter"
                 DragLeave="File_OnDragLeave" DragOver="File_OnDragOver" BorderBrush="LightSlateGray"
                 Background="Transparent" BorderThickness="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-        <TextBox Grid.Row="2" Grid.Column="1" Margin="10,10,10,0" Background="Transparent" TextWrapping="Wrap"
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="10" Background="Transparent" TextWrapping="Wrap"
                  BorderBrush="LightSlateGray" Text="{x:Bind ViewModel.HashedFile, Mode=TwoWay}" IsReadOnly="True"
                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
     </Grid>

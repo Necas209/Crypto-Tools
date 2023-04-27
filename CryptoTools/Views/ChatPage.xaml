@@ -4,33 +4,31 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       mc:Ignorable="d">
-    <Grid>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
-        <Border BorderBrush="Gray" Margin="20" BorderThickness="1" Grid.Column="0">
-            <StackPanel Orientation="Vertical">
-                <TextBlock Text="Enter your message:" Height="25" Margin="20 0 20 10" />
-                <TextBox x:Name="MessageTextBox" TextWrapping="Wrap" Height="280" Margin="20 0 20 10" IsEnabled="True" />
-                <Button Content="Send message" Margin="50 5 50 10" Height="30" IsEnabled="True"
-                        Click="SendButton_Click" />
-            </StackPanel>
-        </Border>
-        <Border BorderBrush="Gray" Margin="20" BorderThickness="1" Grid.Column="1">
-            <StackPanel Orientation="Vertical">
-                <TextBlock Text="Chat:" Height="25" Margin="20" />
-                <ListBox x:Name="ChatListBox" Margin="20 0 20 20" Height="300"
-                         ItemsSource="{x:Bind ViewModel.ChatMessages}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Height="Auto" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </Border>
+        <Grid Grid.Column="0" Margin="10" BorderBrush="Gray" BorderThickness="1"
+              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Enter your message:" Margin="10" TextAlignment="Center" />
+            <TextBox Grid.Row="1" Name="MessageTb" TextWrapping="Wrap" Margin="10" IsEnabled="True" KeyDown="MessageTb_KeyDown" />
+            <Button Grid.Row="2" Content="Send Message" Margin="10" HorizontalAlignment="Center" IsEnabled="True"
+                    Click="BtSendMessage_Click" />
+        </Grid>
+        <Grid Grid.Column="1" Margin="10" BorderBrush="Gray" BorderThickness="1"
+              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Chat:" Margin="10" TextAlignment="Center" />
+            <ListBox Grid.Row="1" Name="ChatListBox" Margin="10" ItemsSource="{x:Bind ViewModel.ChatMessages}" />
+        </Grid>
     </Grid>
 </Page>

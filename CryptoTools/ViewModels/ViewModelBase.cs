@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using CryptoTools.Models;
 using Microsoft.UI.Xaml;
 
 namespace CryptoTools.ViewModels;

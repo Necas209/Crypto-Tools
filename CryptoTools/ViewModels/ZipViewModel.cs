@@ -2,16 +2,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.Storage;
 using CryptoTools.Extensions;
-using CryptoTools.Models;
+using FileAttributes = Windows.Storage.FileAttributes;
 
 namespace CryptoTools.ViewModels;
 
 public class ZipViewModel : ViewModelBase
 {
-    private readonly List<ArchiveEntry> _selectedEntries = new();
-    public ObservableCollection<ArchiveEntry> ArchiveEntries { get; } = new();
+    public ObservableCollection<IStorageItem> SelectedItems { get; } = new();
+    public ObservableCollection<IStorageItem> Items { get; } = new();
 
     public Dictionary<string, CompressionLevel> CompressionLevels { get; } = new()
     {
@@ -27,59 +29,44 @@ public class ZipViewModel : ViewModelBase
 
     public void RemoveSelectedEntries()
     {
-        foreach (var entry in _selectedEntries) ArchiveEntries.Remove(entry);
-        _selectedEntries.Clear();
+        var entries = SelectedItems.ToList();
+        foreach (var entry in entries)
+            Items.Remove(entry);
     }
 
     public void AddFiles(IEnumerable<StorageFile> files)
     {
         foreach (var file in files)
-            ArchiveEntries.Add(new ArchiveEntry
-            {
-                Name = file.Name,
-                Path = file.Path
-            });
+            Items.Add(file);
     }
 
-    public void AddDirectory(string directory)
+    public void AddDirectory(StorageFolder folder)
     {
-        ArchiveEntries.Add(new ArchiveEntry
-        {
-            Name = Path.GetFileName(directory),
-            Path = directory,
-            IsDirectory = true
-        });
+        Items.Add(folder);
     }
 
-    public void CompressArchive(string path)
+    public async Task CompressArchive(StorageFile file)
     {
-        using var fileStream = File.Create(path);
-        using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create);
-        foreach (var entry in ArchiveEntries)
-            if (entry.IsDirectory)
-                archive.CreateEntryFromDirectory(entry.Path, entry.Name, CompressionLevel);
+        await using var fs = await file.OpenStreamForWriteAsync();
+        using var archive = new ZipArchive(fs, ZipArchiveMode.Create);
+        foreach (var item in Items)
+            if (item.Attributes.HasFlag(FileAttributes.Directory))
+                archive.CreateEntryFromDirectory(item.Path, item.Name, CompressionLevel);
             else
-                archive.CreateEntryFromFile(entry.Path, entry.Name, CompressionLevel);
-        ArchiveEntries.Clear();
+                archive.CreateEntryFromFile(item.Path, item.Name, CompressionLevel);
+        Items.Clear();
     }
 
-    public void DecompressArchive(string path)
+    public static async Task DecompressArchive(StorageFile file, StorageFolder folder)
     {
-        using var fileStream = File.OpenRead(path);
-        using var archive = new ZipArchive(fileStream, ZipArchiveMode.Read);
-        var directory = Path.GetDirectoryName(path) ?? string.Empty;
-        if (CreateNewFolder)
-        {
-            var name = Path.GetFileNameWithoutExtension(path);
-            directory = Path.Combine(directory, name);
-        }
-
-        archive.ExtractToDirectory(directory);
+        await using var fs = await file.OpenStreamForReadAsync();
+        using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+        archive.ExtractToDirectory(folder.Path);
     }
 
-    public void UpdateSelectedEntries(IEnumerable<ArchiveEntry> added, IEnumerable<ArchiveEntry> removed)
+    public void UpdateSelectedEntries(IEnumerable<IStorageItem> added, IEnumerable<IStorageItem> removed)
     {
-        foreach (var entry in removed) _selectedEntries.Remove(entry);
-        foreach (var entry in added) _selectedEntries.Add(entry);
+        foreach (var entry in added) SelectedItems.Add(entry);
+        foreach (var entry in removed) SelectedItems.Remove(entry);
     }
 }

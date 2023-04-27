@@ -1,5 +1,4 @@
 ﻿using System;
-using CryptoTools.Models;
 using CryptoTools.Views;
 using Microsoft.UI.Xaml;
 using WinRT.Interop;
@@ -21,7 +20,7 @@ public partial class App
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
-        if (!await Model.LoadToken())
+        if (!await Model.IsTokenValid())
         {
             var loginWindow = new LoginWindow();
             loginWindow.Activate();

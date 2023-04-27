@@ -1,7 +1,9 @@
 using System;
+using Windows.System;
 using Windows.UI.Popups;
 using CryptoTools.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
 using WinRT.Interop;
 
 namespace CryptoTools.Views;
@@ -38,10 +40,18 @@ public partial class ChatPage
         await ViewModel.ReceiveMessages();
     }
 
-    private void SendButton_Click(object sender, RoutedEventArgs e)
+    private void BtSendMessage_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(MessageTextBox.Text)) return;
-        ViewModel.SendMessage(MessageTextBox.Text);
-        MessageTextBox.Text = string.Empty;
+        var message = MessageTb.Text;
+        if (string.IsNullOrWhiteSpace(message)) return;
+        ViewModel.SendMessage(message);
+        MessageTb.Text = string.Empty;
+    }
+
+    private void MessageTb_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key != VirtualKey.Enter) return;
+        BtSendMessage_Click(sender, e);
+        e.Handled = true;
     }
 }

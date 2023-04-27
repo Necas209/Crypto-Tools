@@ -148,4 +148,9 @@ public partial class EncryptionPage
         btn.Background = new SolidColorBrush(Colors.Transparent);
         btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
+
+    private void OnDragOver(object sender, DragEventArgs e)
+    {
+        e.AcceptedOperation = DataPackageOperation.Copy;
+    }
 }
