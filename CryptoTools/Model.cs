@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 using CryptoLib.Models;
 using CryptoTools.Utils;
 
-namespace CryptoTools.Models;
+namespace CryptoTools;
 
 public class Model
 {
     public const string ServerUrl = "https://cryptotools.azurewebsites.net";
-    private static readonly Uri ChatUri = new("wss://cryptotools.azurewebsites.net/chat");
+    private readonly Uri _chatUri = new("wss://cryptotools.azurewebsites.net/chat");
     private readonly RSA _clientRsa = RSA.Create();
     private readonly RSA _serverRsa = RSA.Create();
 
@@ -120,7 +120,7 @@ public class Model
         _serverRsa.ImportRSAPublicKey(serverKey, out _);
         // Connect to the server using a secure WebSocket
         _socket.Options.SetRequestHeader("X-Access-Token", AccessToken);
-        await _socket.ConnectAsync(ChatUri, CancellationToken.None);
+        await _socket.ConnectAsync(_chatUri, CancellationToken.None);
     }
 
     public async Task CloseConnection()
@@ -147,11 +147,14 @@ public class Model
         await File.WriteAllTextAsync(Path.Combine(AppFolder, "token.txt"), AccessToken);
     }
 
-    public async Task<bool> LoadToken()
+    public async Task<bool> IsTokenValid()
     {
         var tokenPath = Path.Combine(AppFolder, "token.txt");
         if (!File.Exists(tokenPath)) return false;
         AccessToken = await File.ReadAllTextAsync(tokenPath);
-        return true;
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-Access-Token", AccessToken);
+        var response = await client.GetAsync($"{ServerUrl}/is-logged-in");
+        return response.IsSuccessStatusCode;
     }
 }

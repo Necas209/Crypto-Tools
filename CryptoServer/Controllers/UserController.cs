@@ -54,4 +54,14 @@ public class UserController : Controller
         await _context.SaveChangesAsync();
         return Ok();
     }
+
+    [HttpGet]
+    [Route("/is-logged-in")]
+    public IActionResult IsLoggedIn()
+    {
+        var accessToken = Request.Headers["X-Access-Token"].ToString();
+        var userName = TokenUtils.ValidateAccessToken(accessToken);
+        if (userName == null) return Unauthorized();
+        return Ok();
+    }
 }

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI;
 using CryptoLib.Models;
-using CryptoTools.Models;
 using CryptoTools.Utils;
 using Microsoft.UI;
 

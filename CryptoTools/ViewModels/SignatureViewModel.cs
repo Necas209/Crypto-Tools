@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.UI;
 using CryptoLib.Models;
-using CryptoTools.Models;
 using Microsoft.UI;
 
 namespace CryptoTools.ViewModels;
