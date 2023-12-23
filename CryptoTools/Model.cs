@@ -34,35 +34,39 @@ public class Model
         Directory.CreateDirectory(AppFolder);
     }
 
+    public string UserName { get; set; } = string.Empty;
+
     public string AccessToken { get; set; } = string.Empty;
 
-    public List<EncryptionAlgorithm> EncryptionAlgorithms { get; private set; } = new();
+    public List<EncryptionAlgorithm> EncryptionAlgorithms { get; private set; } = [];
 
-    public List<HashingAlgorithm> HashingAlgorithms { get; private set; } = new();
+    public List<HashingAlgorithm> HashingAlgorithms { get; private set; } = [];
 
     public bool IsConnected => _socket.State == WebSocketState.Open;
 
-    public async Task<string> ReceiveMessage()
+    public async Task<string?> ReceiveMessage()
     {
         var buffer = new byte[4096];
         var result = await _socket.ReceiveAsync(buffer, CancellationToken.None);
         if (result.CloseStatus.HasValue)
             return result.CloseStatus is not WebSocketCloseStatus.NormalClosure ? null : "Logged out";
+
         var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-        // Deserialize the message
         var chatMessage = JsonSerializer.Deserialize<ChatMessage>(message);
-        if (chatMessage == null) return null;
-        // If the message is from the server, it is not encrypted
-        if (chatMessage.UserName == "Server") return Encoding.UTF8.GetString(chatMessage.Message);
-        // Decrypt the message with the symmetric key
+        if (chatMessage == null)
+            return null;
+
+        if (chatMessage.UserName == "Server")
+            return Encoding.UTF8.GetString(chatMessage.Message);
+
         var decryptedKey = _clientRsa.Decrypt(chatMessage.SymmetricKey, RSAEncryptionPadding.OaepSHA256);
         var hmacKey = _clientRsa.Decrypt(chatMessage.HmacKey, RSAEncryptionPadding.OaepSHA256);
-        // Decrypt the message with the symmetric key
         var decryptedMessage = AesUtils.Decrypt(chatMessage.Message, decryptedKey);
-        // Verify the HMAC of the decrypted message
+
         var hmac = HMACSHA256.HashData(hmacKey, decryptedMessage);
-        if (!hmac.SequenceEqual(chatMessage.Hmac)) throw new Exception("HMAC verification failed");
-        // Convert the decrypted message to a string and attach the sender's username
+        if (!hmac.SequenceEqual(chatMessage.Hmac))
+            throw new Exception("HMAC verification failed");
+
         var decryptedMessageString = Encoding.UTF8.GetString(decryptedMessage);
         return $"{chatMessage.UserName}: {decryptedMessageString}";
     }
@@ -70,27 +74,24 @@ public class Model
     public async Task SendMessage(string message)
     {
         var messageBytes = Encoding.UTF8.GetBytes(message);
-        // Compute the HMAC of the message
         var hmacKey = RandomNumberGenerator.GetBytes(32);
         var hmac = HMACSHA256.HashData(hmacKey, messageBytes);
-        // Generate an AES symmetric key
+
         using var aes = Aes.Create();
         aes.GenerateKey();
-        var symmetricKey = aes.Key;
-        // Encrypt the message with the symmetric key
-        var encryptedMessage = AesUtils.Encrypt(messageBytes, symmetricKey);
-        // Encrypt the symmetric key and HMAC key with the server's public key
-        var encryptedSymmetricKey = _serverRsa.Encrypt(symmetricKey, RSAEncryptionPadding.OaepSHA256);
+
+        var encryptedMessage = AesUtils.Encrypt(messageBytes, aes.Key);
+        var encryptedSymmetricKey = _serverRsa.Encrypt(aes.Key, RSAEncryptionPadding.OaepSHA256);
         var encryptedHmacKey = _serverRsa.Encrypt(hmacKey, RSAEncryptionPadding.OaepSHA256);
-        // Create an ChatMessage instance
         var chatMessage = new ChatMessage
         {
+            UserName = UserName,
             Message = encryptedMessage,
             Hmac = hmac,
             SymmetricKey = encryptedSymmetricKey,
             HmacKey = encryptedHmacKey
         };
-        // Serialize the ChatMessage instance and send it to the server
+
         var json = JsonSerializer.Serialize(chatMessage);
         var buffer = Encoding.UTF8.GetBytes(json);
         await _socket.SendAsync(
@@ -103,22 +104,19 @@ public class Model
 
     public async Task OpenConnection()
     {
-        // Retrieve the server's public key
         using var client = new HttpClient();
-        // Add the token to the request header
         client.DefaultRequestHeaders.Add("X-Access-Token", AccessToken);
-        // Send the request to the server
+
         var response = await client.PostAsJsonAsync($"{ServerUrl}/exchange", new ExchangeRequest
         {
             PublicKey = _clientRsa.ExportRSAPublicKey()
         });
         var content = await response.Content.ReadAsStringAsync();
-        if (content == null) throw new InvalidOperationException("Unable to retrieve server key");
-        // Convert the server's public key from Base64 to a byte array
+        if (content is null) 
+            throw new InvalidOperationException("Unable to retrieve server key");
+
         var serverKey = Convert.FromBase64String(content);
-        // Import the server's public key
         _serverRsa.ImportRSAPublicKey(serverKey, out _);
-        // Connect to the server using a secure WebSocket
         _socket.Options.SetRequestHeader("X-Access-Token", AccessToken);
         await _socket.ConnectAsync(_chatUri, CancellationToken.None);
     }
@@ -150,10 +148,13 @@ public class Model
     public async Task<bool> IsTokenValid()
     {
         var tokenPath = Path.Combine(AppFolder, "token.txt");
-        if (!File.Exists(tokenPath)) return false;
+        if (!File.Exists(tokenPath))
+            return false;
+
         AccessToken = await File.ReadAllTextAsync(tokenPath);
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Access-Token", AccessToken);
+
         var response = await client.GetAsync($"{ServerUrl}/is-logged-in");
         return response.IsSuccessStatusCode;
     }

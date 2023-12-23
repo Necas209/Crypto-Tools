@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -35,23 +36,23 @@ public partial class HashPage
 
     private void ShowMessage(string message, Color color)
     {
-        if (_timer.IsRunning) _timer.Stop();
+        if (_timer.IsRunning)
+            _timer.Stop();
         Message.Text = message;
-        // Change the color of the text
         Message.Foreground = new SolidColorBrush(color);
-        // Timer to change the visibility of the text
         Message.Visibility = Visibility.Visible;
         _timer.Start();
     }
 
     private void TextToHash_OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        ViewModel.PlainText = ((TextBox)sender).Text;
+        ViewModel.PlainText = TbTextToHash.Text;
         ViewModel.HashText();
     }
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         ViewModel?.HashText();
     }
 
@@ -63,25 +64,24 @@ public partial class HashPage
             FileTypeFilter = { "*" }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var file = await picker.PickSingleFileAsync();
-        if (file == null) return;
+        if (file is null)
+            return;
+
         ViewModel.HashFile(file.Path);
     }
 
     private void File_OnDragEnter(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.LightSlateGray);
-        btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
+        BtHash.Background = new SolidColorBrush(Colors.LightSlateGray);
+        BtHash.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
     private void File_OnDragLeave(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        BtHash.Background = new SolidColorBrush(Colors.Transparent);
+        BtHash.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
     private void File_OnDragOver(object sender, DragEventArgs e)
@@ -91,25 +91,18 @@ public partial class HashPage
 
     private async void File_OnDrop(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
+        BtHash.Background = new SolidColorBrush(Colors.Transparent);
+        BtHash.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
 
-        var deferral = e.GetDeferral();
-        var dataPackageView = e.DataView;
-        if (!dataPackageView.Contains(StandardDataFormats.StorageItems)) return;
-
-        var items = await dataPackageView.GetStorageItemsAsync();
-        if (items.Count == 1)
-        {
-            if (items[0] is StorageFile file) ViewModel.HashFile(file.Path);
-        }
-        else
+        var items = await e.DataView.GetStorageItemsAsync();
+        if (items.FirstOrDefault() is not StorageFile file)
         {
             ShowMessage("Please drop only one file!", Colors.Red);
+            return;
         }
 
-        deferral.Complete();
+        ViewModel.HashFile(file.Path);
     }
 }

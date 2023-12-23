@@ -12,8 +12,9 @@ namespace CryptoTools.ViewModels;
 
 public class ZipViewModel : ViewModelBase
 {
-    public ObservableCollection<IStorageItem> SelectedItems { get; } = new();
-    public ObservableCollection<IStorageItem> Items { get; } = new();
+    public ObservableCollection<IStorageItem> SelectedItems { get; } = [];
+
+    public ObservableCollection<IStorageItem> Items { get; } = [];
 
     public Dictionary<string, CompressionLevel> CompressionLevels { get; } = new()
     {
@@ -66,7 +67,9 @@ public class ZipViewModel : ViewModelBase
 
     public void UpdateSelectedEntries(IEnumerable<IStorageItem> added, IEnumerable<IStorageItem> removed)
     {
-        foreach (var entry in added) SelectedItems.Add(entry);
-        foreach (var entry in removed) SelectedItems.Remove(entry);
+        foreach (var entry in added)
+            SelectedItems.Add(entry);
+        foreach (var entry in removed)
+            SelectedItems.Remove(entry);
     }
 }

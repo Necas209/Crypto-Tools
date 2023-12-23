@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,11 +18,11 @@ public class FileIntegrityViewModel : ViewModelBase
 {
     public delegate void DisplayMessageDelegate(string message, Color color);
 
-    public DisplayMessageDelegate DisplayMessage;
+    public DisplayMessageDelegate? DisplayMessage;
 
     public FileIntegrityViewModel()
     {
-        SelectedAlgorithm = Model.HashingAlgorithms.First();
+        SelectedAlgorithm = Algorithms[0];
     }
 
     public List<HashingAlgorithm> Algorithms => Model.HashingAlgorithms;
@@ -30,7 +31,9 @@ public class FileIntegrityViewModel : ViewModelBase
 
     private async Task<bool> RegisterFile(string file)
     {
-        if (!File.Exists(file)) return false;
+        if (!File.Exists(file))
+            return false;
+
         var fileName = Path.GetFileName(file);
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
@@ -48,7 +51,7 @@ public class FileIntegrityViewModel : ViewModelBase
     public async void RegisterFiles(IEnumerable<StorageFile> files)
     {
         var registered = await Task.WhenAll(files.Select(f => RegisterFile(f.Path)));
-        if (registered.All(r => r))
+        if (Array.TrueForAll(registered, x => x))
             DisplayMessage?.Invoke("File(s) registered successfully.", Colors.Green);
         else
             DisplayMessage?.Invoke("Some files could not be registered!", Colors.Coral);

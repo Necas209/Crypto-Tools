@@ -42,12 +42,17 @@ app.MapPost("hash", async (HttpContext context, CryptoDbContext dbContext, HashE
 {
     var token = context.Request.Headers["X-Access-Token"].ToString();
     var userName = TokenUtils.ValidateAccessToken(token);
-    if (userName == null) return Results.Unauthorized();
+    if (userName is null)
+        return Results.Unauthorized();
+
     var user = await dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-    if (user == null) return Results.Unauthorized();
+    if (user is null)
+        return Results.Unauthorized();
+
     entry.UserId = user.Id;
     var existing = await dbContext.HashEntries.FindAsync(entry.UserId, entry.FileName);
-    if (existing != null) dbContext.HashEntries.Remove(existing);
+    if (existing != null)
+        dbContext.HashEntries.Remove(existing);
     dbContext.HashEntries.Add(entry);
     await dbContext.SaveChangesAsync();
     return Results.Ok();

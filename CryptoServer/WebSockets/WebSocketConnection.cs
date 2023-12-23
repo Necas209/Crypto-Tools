@@ -4,9 +4,9 @@ namespace CryptoServer.WebSockets;
 
 public class WebSocketConnection
 {
-    public WebSocket WebSocket { get; init; } = null!;
+    public required WebSocket WebSocket { get; init; }
 
-    public string UserName { get; init; } = string.Empty;
+    public required string UserName { get; init; }
 
-    public string Token { get; init; } = string.Empty;
+    public required string Token { get; init; }
 }

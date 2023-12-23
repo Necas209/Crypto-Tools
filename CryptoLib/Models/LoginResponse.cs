@@ -2,5 +2,5 @@ namespace CryptoLib.Models;
 
 public class LoginResponse
 {
-    public string AccessToken { get; init; } = string.Empty;
+    public required string AccessToken { get; init; }
 }

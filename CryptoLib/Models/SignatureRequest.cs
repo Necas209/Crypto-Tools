@@ -2,5 +2,5 @@ namespace CryptoLib.Models;
 
 public class SignatureRequest
 {
-    public string Hash { get; init; } = string.Empty;
+    public required string Hash { get; init; }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Windows.UI;
@@ -16,11 +15,11 @@ public class EncryptionViewModel : ViewModelBase
 
     private readonly RSA _rsa = RSA.Create();
 
-    public DisplayMessageDelegate DisplayMessage;
+    public DisplayMessageDelegate? DisplayMessage;
 
     public EncryptionViewModel()
     {
-        SelectedAlgorithm = Model.EncryptionAlgorithms.First();
+        SelectedAlgorithm = Algorithms[0];
         var rsaBin = Path.Combine(Model.AppFolder, "rsa.bin");
         if (File.Exists(rsaBin))
         {

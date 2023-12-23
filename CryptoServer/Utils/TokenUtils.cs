@@ -8,9 +8,9 @@ namespace CryptoServer.Utils;
 public static class TokenUtils
 {
     private static readonly byte[] Key = RandomNumberGenerator.GetBytes(32);
+
     public static string GenerateAccessToken(string userName)
     {
-        // Set up the JWT security settings
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -23,7 +23,7 @@ public static class TokenUtils
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Key),
                 SecurityAlgorithms.HmacSha256Signature)
         };
-        // Generate the JWT token
+
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var accessToken = tokenHandler.WriteToken(token);
         return accessToken;

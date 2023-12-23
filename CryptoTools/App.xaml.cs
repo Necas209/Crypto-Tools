@@ -14,7 +14,7 @@ public partial class App
         InitializeComponent();
     }
 
-    public MainWindow MainWindow { get; set; }
+    public MainWindow? MainWindow { get; set; }
 
     public IntPtr Hwnd => WindowNative.GetWindowHandle(MainWindow);
 
@@ -27,10 +27,9 @@ public partial class App
             return;
         }
 
-        // Open connection to the chat server
         await Model.OpenConnection();
-        // Get the encryption and hashing algorithms
         await Model.GetAlgorithms();
+
         MainWindow = new MainWindow();
         MainWindow.Activate();
     }

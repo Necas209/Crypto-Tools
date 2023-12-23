@@ -53,7 +53,9 @@ public partial class LoginWindow
 
     private void Pb_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key != VirtualKey.Enter) return;
+        if (e.Key != VirtualKey.Enter)
+            return;
+
         LoginBt_Click(sender, e);
         e.Handled = true;
     }
