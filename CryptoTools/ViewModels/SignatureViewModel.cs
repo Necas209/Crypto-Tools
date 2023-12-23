@@ -16,7 +16,7 @@ public class SignatureViewModel : ViewModelBase
 
     private readonly SHA256 _sha256 = SHA256.Create();
 
-    public DisplayMessageDelegate DisplayMessage;
+    public DisplayMessageDelegate? DisplayMessage;
 
     public async Task SignFile(string fileName)
     {

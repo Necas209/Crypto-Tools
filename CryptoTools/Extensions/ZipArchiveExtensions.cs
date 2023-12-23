@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace CryptoTools.Extensions;
 
-public static class ZipArchiveExtension
+public static class ZipArchiveExtensions
 {
     private static void CreateEntryFromAny(this ZipArchive archive, string sourceName, string entryName = "",
         CompressionLevel compressionLevel = CompressionLevel.Optimal)

@@ -8,9 +8,12 @@ namespace CryptoTools.ViewModels;
 
 public class LoginViewModel : ViewModelBase
 {
-    public Action<string> OnError;
-    public Action ShowApp;
+    public Action<string>? OnError;
+
+    public Action? ShowApp;
+
     public string UserName { get; set; } = string.Empty;
+
     public string Password { get; set; } = string.Empty;
 
     public async Task Login()
@@ -30,24 +33,21 @@ public class LoginViewModel : ViewModelBase
         }
 
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        if (loginResponse == null)
+        if (loginResponse is null)
         {
             OnError?.Invoke("Login failed. Server responded with: " + response.StatusCode);
             return;
         }
 
+        Model.UserName = UserName;
         Model.AccessToken = loginResponse.AccessToken;
-        // Save the token to the local storage
         await Model.SaveToken();
-        // Open the app
         await OpenApp();
     }
 
     private async Task OpenApp()
     {
-        // Open connection to the chat server
         await Model.OpenConnection();
-        // Get the encryption and hashing algorithms
         await Model.GetAlgorithms();
         ShowApp?.Invoke();
     }

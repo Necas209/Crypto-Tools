@@ -1,16 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CryptoLib.Models;
 
 public class HashEntry
 {
     public int UserId { get; set; }
 
-    public string Hash { get; set; } = string.Empty;
+    public required int HashingAlgorithmId { get; init; }
 
-    public string FileName { get; set; } = string.Empty;
+    [Required] public required string Hash { get; init; }
 
-    public int HashingAlgorithmId { get; set; }
-
-    public User? User { get; set; }
-
-    public HashingAlgorithm? HashingAlgorithm { get; set; }
+    [Required] public required string FileName { get; init; }
 }

@@ -34,8 +34,11 @@ public partial class ZipPage
             }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var file = await picker.PickSaveFileAsync();
-        if (file == null) return;
+        if (file is null)
+            return;
+
         await ViewModel.CompressArchive(file);
     }
 
@@ -47,19 +50,22 @@ public partial class ZipPage
             FileTypeFilter = { ".zip" }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var file = await picker.PickSingleFileAsync();
         StorageFolder folder;
         if (ViewModel.CreateNewFolder)
         {
-            var picker2 = new FolderPicker
+            var folderPicker = new FolderPicker
             {
                 SuggestedStartLocation = PickerLocationId.Desktop,
                 ViewMode = PickerViewMode.List,
                 FileTypeFilter = { "*" }
             };
-            InitializeWithWindow.Initialize(picker2, _app.Hwnd);
-            folder = await picker2.PickSingleFolderAsync();
-            if (folder == null) return;
+            InitializeWithWindow.Initialize(folderPicker, _app.Hwnd);
+
+            folder = await folderPicker.PickSingleFolderAsync();
+            if (folder is null)
+                return;
         }
         else
         {
@@ -83,8 +89,11 @@ public partial class ZipPage
             FileTypeFilter = { "*" }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var folder = await picker.PickSingleFolderAsync();
-        if (folder == null) return;
+        if (folder is null)
+            return;
+
         ViewModel.AddDirectory(folder);
     }
 
@@ -96,14 +105,19 @@ public partial class ZipPage
             FileTypeFilter = { "*" }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var files = await picker.PickMultipleFilesAsync();
-        if (files.Count == 0) return;
+        if (files.Count == 0)
+            return;
+
         ViewModel.AddFiles(files);
     }
 
     private void ListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0) return;
+        if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0)
+            return;
+
         var added = e.AddedItems.Cast<IStorageItem>();
         var removed = e.RemovedItems.Cast<IStorageItem>();
         ViewModel.UpdateSelectedEntries(added, removed);

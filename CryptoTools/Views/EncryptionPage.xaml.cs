@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -6,7 +7,6 @@ using Windows.UI;
 using CryptoTools.ViewModels;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using WinRT.Interop;
 
@@ -36,11 +36,10 @@ public partial class EncryptionPage
 
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
+        if (_dispatcherTimer.IsEnabled)
+            _dispatcherTimer.Stop();
         Message.Text = message;
-        // Change the color of the text
         Message.Foreground = new SolidColorBrush(color);
-        // Timer to change the visibility of the text
         Message.Visibility = Visibility.Visible;
         _dispatcherTimer.Start();
     }
@@ -53,46 +52,43 @@ public partial class EncryptionPage
             FileTypeFilter = { "*" }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var file = await picker.PickSingleFileAsync();
-        if (file is null) return;
+        if (file is null)
+            return;
+
         ViewModel.EncryptFile(file.Path);
     }
 
     private async void BtEncrypt_OnDrop(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        BtEncrypt.Background = new SolidColorBrush(Colors.Transparent);
+        BtEncrypt.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
-        if (e.DataView.Contains(StandardDataFormats.StorageItems))
-        {
-            var items = await e.DataView.GetStorageItemsAsync();
-            if (items.Count != 1) return;
-            if (items[0] is not StorageFile file) return;
-            // Register the file
-            ViewModel.EncryptFile(file.Path);
-        }
-        else
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems))
         {
             if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
             ShowMessage("This is not a file", Colors.Red);
+            return;
         }
+
+        var items = await e.DataView.GetStorageItemsAsync();
+        if (items.FirstOrDefault() is not StorageFile file)
+            return;
+
+        ViewModel.EncryptFile(file.Path);
     }
 
     private void BtEncrypt_OnDragEnter(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.LightSlateGray);
-        btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
+        BtEncrypt.Background = new SolidColorBrush(Colors.LightSlateGray);
+        BtEncrypt.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
     private void BtEncrypt_OnDragLeave(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        BtEncrypt.Background = new SolidColorBrush(Colors.Transparent);
+        BtEncrypt.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
     private async void BtDecrypt_OnClick(object sender, RoutedEventArgs e)
@@ -103,16 +99,18 @@ public partial class EncryptionPage
             FileTypeFilter = { ".enc" }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var file = await picker.PickSingleFileAsync();
-        if (file is null) return;
+        if (file is null)
+            return;
+
         ViewModel.DecryptFile(file.Path);
     }
 
     private async void BtDecrypt_OnDrop(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        BtDecrypt.Background = new SolidColorBrush(Colors.Transparent);
+        BtDecrypt.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
         if (!e.DataView.Contains(StandardDataFormats.StorageItems))
         {
@@ -121,32 +119,28 @@ public partial class EncryptionPage
         }
 
         var items = await e.DataView.GetStorageItemsAsync();
-        if (items.Count != 1) return;
-        if (items[0] is not StorageFile file) return;
+        if (items.FirstOrDefault() is not StorageFile file)
+            return;
+
         if (file.FileType != ".enc")
         {
             ShowMessage("This is not an encrypted file!", Colors.Red);
             return;
         }
 
-        // Decrypt the file
         ViewModel.DecryptFile(file.Path);
     }
 
     private void BtDecrypt_OnDragEnter(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.LightSlateGray);
-        btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
+        BtDecrypt.Background = new SolidColorBrush(Colors.LightSlateGray);
+        BtDecrypt.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
     private void BtDecrypt_OnDragLeave(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        BtDecrypt.Background = new SolidColorBrush(Colors.Transparent);
+        BtDecrypt.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
     private void OnDragOver(object sender, DragEventArgs e)

@@ -12,7 +12,7 @@ namespace CryptoTools.ViewModels;
 
 public class ImageEncryptionViewModel : ViewModelBase
 {
-    private BitmapImage _encryptedImage;
+    private BitmapImage? _encryptedImage;
 
     public ImageEncryptionViewModel()
     {
@@ -21,6 +21,7 @@ public class ImageEncryptionViewModel : ViewModelBase
     }
 
     public List<EncryptionAlgorithm> Algorithms => Model.EncryptionAlgorithms;
+
     public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 
     public Dictionary<string, CipherMode> CipherModes { get; } = new()
@@ -34,7 +35,7 @@ public class ImageEncryptionViewModel : ViewModelBase
 
     public CipherMode SelectedCipherMode { get; set; }
 
-    public BitmapImage EncryptedImage
+    public BitmapImage? EncryptedImage
     {
         get => _encryptedImage;
         set => SetField(ref _encryptedImage, value);

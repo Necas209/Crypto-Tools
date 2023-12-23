@@ -15,7 +15,6 @@ public partial class ChatPage
         InitializeComponent();
         ViewModel.OnMessageReceived = UpdateChat;
         ViewModel.OnConnectionClosed = OnConnectionClosed;
-        // start a new thread to receive messages from the server
         StartReceivingMessages();
     }
 
@@ -31,8 +30,10 @@ public partial class ChatPage
 
     private void UpdateChat()
     {
-        if (ChatListBox.Items.Count > 0)
-            DispatcherQueue.TryEnqueue(() => { ChatListBox.ScrollIntoView(ChatListBox.Items[^1]); });
+        if (ChatListBox.Items.Count == 0)
+            return;
+
+        DispatcherQueue.TryEnqueue(() => { ChatListBox.ScrollIntoView(ChatListBox.Items[^1]); });
     }
 
     private async void StartReceivingMessages()
@@ -43,14 +44,18 @@ public partial class ChatPage
     private void BtSendMessage_Click(object sender, RoutedEventArgs e)
     {
         var message = MessageTb.Text;
-        if (string.IsNullOrWhiteSpace(message)) return;
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
         ViewModel.SendMessage(message);
         MessageTb.Text = string.Empty;
     }
 
     private void MessageTb_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key != VirtualKey.Enter) return;
+        if (e.Key != VirtualKey.Enter)
+            return;
+
         BtSendMessage_Click(sender, e);
         e.Handled = true;
     }

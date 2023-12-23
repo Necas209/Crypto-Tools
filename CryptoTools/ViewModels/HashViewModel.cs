@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using CryptoLib.Models;
 using CryptoTools.Utils;
 
@@ -12,7 +11,7 @@ public class HashViewModel : ViewModelBase
 
     public HashViewModel()
     {
-        SelectedAlgorithm = Model.HashingAlgorithms.First();
+        SelectedAlgorithm = Algorithms[0];
     }
 
     public string PlainText { get; set; } = string.Empty;

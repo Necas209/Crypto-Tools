@@ -3,20 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CryptoServer.Data;
 
-public class CryptoDbContext : DbContext
+public class CryptoDbContext(DbContextOptions<CryptoDbContext> options) : DbContext(options)
 {
-    public CryptoDbContext(DbContextOptions<CryptoDbContext> options)
-        : base(options)
-    {
-    }
+    public DbSet<User> Users { get; init; } = null!;
 
-    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<HashEntry> HashEntries { get; init; } = null!;
 
-    public DbSet<HashEntry> HashEntries { get; set; } = null!;
+    public DbSet<HashingAlgorithm> HashingAlgorithms { get; init; } = null!;
 
-    public DbSet<HashingAlgorithm> HashingAlgorithms { get; set; } = null!;
-
-    public DbSet<EncryptionAlgorithm> EncryptionAlgorithms { get; set; } = null!;
+    public DbSet<EncryptionAlgorithm> EncryptionAlgorithms { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

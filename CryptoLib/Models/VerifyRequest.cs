@@ -2,7 +2,7 @@ namespace CryptoLib.Models;
 
 public class VerifyRequest
 {
-    public string Hash { get; init; } = string.Empty;
+    public required string Hash { get; init; }
 
-    public string Signature { get; init; } = string.Empty;
+    public required string Signature { get; init; }
 }

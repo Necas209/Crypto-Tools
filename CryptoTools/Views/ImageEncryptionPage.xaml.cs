@@ -7,7 +7,6 @@ using CryptoTools.Utils;
 using CryptoTools.ViewModels;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using WinRT.Interop;
 
@@ -36,11 +35,10 @@ public partial class ImageEncryptionPage
 
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
+        if (_dispatcherTimer.IsEnabled)
+            _dispatcherTimer.Stop();
         Message.Text = message;
-        // Change the color of the text
         Message.Foreground = new SolidColorBrush(color);
-        // Timer to change the visibility of the text
         Message.Visibility = Visibility.Visible;
         _dispatcherTimer.Start();
     }
@@ -54,30 +52,28 @@ public partial class ImageEncryptionPage
             FileTypeFilter = { ".png", ".jpeg", ".jpg", ".bmp" }
         };
         InitializeWithWindow.Initialize(picker, _app.Hwnd);
+
         var file = await picker.PickSingleFileAsync();
-        if (file is null) return;
-        // Get the image format
+        if (file is null)
+            return;
+
         OriginalImage.Source = await BitmapUtils.ToBitmapImage(file);
         await ViewModel.EncryptImage(file.Path);
     }
 
     private async void BtImage_OnDrop(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        BtImage.Background = new SolidColorBrush(Colors.Transparent);
+        BtImage.BorderBrush = new SolidColorBrush(Colors.DimGray);
+
         var items = await e.DataView.GetStorageItemsAsync();
-        switch (items.Count)
+        if (items.Count is 0 or > 1)
         {
-            case 0:
-                return;
-            case > 1:
-                ShowMessage("You can only encrypt one image at a time.", Colors.Red);
-                return;
+            ShowMessage("You can only encrypt one image at a time.", Colors.Red);
+            return;
         }
 
-        if (items[0] is not StorageFile file) return;
-        if (file.FileType is not (".png" or ".jpeg" or ".jpg" or ".bmp"))
+        if (items[0] is not StorageFile { FileType: (".png" or ".jpeg" or ".jpg" or ".bmp") } file)
         {
             ShowMessage("This is not an image!", Colors.Red);
             return;
@@ -89,18 +85,14 @@ public partial class ImageEncryptionPage
 
     private void BtImage_OnDragEnter(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.LightSlateGray);
-        btn.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
+        BtImage.Background = new SolidColorBrush(Colors.LightSlateGray);
+        BtImage.BorderBrush = new SolidColorBrush(Colors.DarkCyan);
     }
 
     private void BtImage_OnDragLeave(object sender, DragEventArgs e)
     {
-        if (sender is not Button btn) return;
-
-        btn.Background = new SolidColorBrush(Colors.Transparent);
-        btn.BorderBrush = new SolidColorBrush(Colors.DimGray);
+        BtImage.Background = new SolidColorBrush(Colors.Transparent);
+        BtImage.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
     private void BtImage_OnDragOver(object sender, DragEventArgs e)

@@ -8,9 +8,11 @@ namespace CryptoTools.ViewModels;
 
 public class RegisterViewModel : ViewModelBase
 {
-    public Action<string> OnError;
-    public Action RegisterSuccess;
-    public Action ShowLogin;
+    public Action<string>? OnError;
+
+    public Action? RegisterSuccess;
+
+    public Action? ShowLogin;
 
     public string UserName { get; set; } = string.Empty;
 
@@ -50,7 +52,7 @@ public class RegisterViewModel : ViewModelBase
 
         if (!response.IsSuccessStatusCode)
         {
-            OnError?.Invoke("Registration failed. Server responded with: " + response.StatusCode);
+            OnError?.Invoke($"Registration failed. Server responded with: {response.StatusCode}");
             return;
         }
 

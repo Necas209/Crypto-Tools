@@ -12,7 +12,7 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
-        AppWindow.ResizeClient(new SizeInt32(1100, 750));
+        AppWindow.ResizeClient(WindowSize);
         ViewModel.ShowLogin += ShowLogin;
     }
 
@@ -29,4 +29,6 @@ public partial class MainWindow
     {
         ViewModel.Logout();
     }
+
+    private static readonly SizeInt32 WindowSize = new(1100, 750);
 }

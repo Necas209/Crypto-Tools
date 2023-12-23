@@ -12,7 +12,7 @@ public partial class RegisterWindow
     public RegisterWindow()
     {
         InitializeComponent();
-        AppWindow.ResizeClient(new SizeInt32(300, 400));
+        AppWindow.ResizeClient(WindowSize);
         ViewModel.OnError = ShowError;
         ViewModel.ShowLogin = ShowLogin;
         ViewModel.RegisterSuccess = RegisterSuccess;
@@ -47,4 +47,6 @@ public partial class RegisterWindow
         loginWindow.Activate();
         Close();
     }
+
+    private static readonly SizeInt32 WindowSize = new(300, 400);
 }

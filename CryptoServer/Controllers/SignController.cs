@@ -13,7 +13,6 @@ public class SignController : Controller
 
     public SignController()
     {
-        // Check if keys exist
         if (System.IO.File.Exists(RsaKeys))
         {
             using var sr = new StreamReader(RsaKeys);
@@ -32,7 +31,9 @@ public class SignController : Controller
     public IActionResult Sign([FromBody] SignatureRequest request)
     {
         var token = Request.Headers["X-Access-Token"].ToString();
-        if (TokenUtils.ValidateAccessToken(token) == null) return Unauthorized();
+        if (TokenUtils.ValidateAccessToken(token) is null)
+            return Unauthorized();
+
         var hash = Convert.FromBase64String(request.Hash);
         var signature = _rsa.SignHash(hash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         var base64Signature = Convert.ToBase64String(signature);
@@ -44,11 +45,12 @@ public class SignController : Controller
     public IActionResult Verify([FromBody] VerifyRequest request)
     {
         var token = Request.Headers["X-Access-Token"].ToString();
-        if (TokenUtils.ValidateAccessToken(token) == null) return Unauthorized();
+        if (TokenUtils.ValidateAccessToken(token) is null)
+            return Unauthorized();
+
         var hash = Convert.FromBase64String(request.Hash);
         var signature = Convert.FromBase64String(request.Signature);
         var verified = _rsa.VerifyHash(hash, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-        if (verified) return Ok();
-        return BadRequest("Signature is invalid.");
+        return verified ? Ok() : BadRequest("Signature is invalid.");
     }
 }
