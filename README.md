@@ -1,6 +1,6 @@
 # CryptoTools
 
-CryptoTools is a WinUI 3 application that offers a variety of tools for cryptography. It is written in C# and uses .NET 7.0.
+CryptoTools is a WinUI 3 application that offers a variety of tools for cryptography. It is written in C# and uses .NET 8.0.
 
 The application is divided into 6 tabs:
 
