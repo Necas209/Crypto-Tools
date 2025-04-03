@@ -1,0 +1,34 @@
+﻿<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="CryptoLib\CryptoLib.csproj" Type="Classic C#">
+    <Configuration Solution="Debug|ARM64" Project="Debug|Any CPU" />
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Debug|x86" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|ARM64" Project="Release|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+    <Configuration Solution="Release|x86" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="CryptoServer\CryptoServer.csproj">
+    <Configuration Solution="Debug|ARM64" Project="Debug|Any CPU" />
+    <Configuration Solution="Debug|x64" Project="Debug|Any CPU" />
+    <Configuration Solution="Debug|x86" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|ARM64" Project="Release|Any CPU" />
+    <Configuration Solution="Release|x64" Project="Release|Any CPU" />
+    <Configuration Solution="Release|x86" Project="Release|Any CPU" />
+  </Project>
+  <Project Path="CryptoTools\CryptoTools.csproj">
+    <Configuration Solution="Debug|Any CPU" Project="Debug|x64|Deploy" />
+    <Configuration Solution="Debug|ARM64" Project="Debug|ARM64|Deploy" />
+    <Configuration Solution="Debug|x64" Project="Debug|x64|Deploy" />
+    <Configuration Solution="Debug|x86" Project="Debug|x86|Deploy" />
+    <Configuration Solution="Release|Any CPU" Project="Release|x64|Deploy" />
+    <Configuration Solution="Release|ARM64" Project="Release|ARM64|Deploy" />
+    <Configuration Solution="Release|x64" Project="Release|x64|Deploy" />
+    <Configuration Solution="Release|x86" Project="Release|x86|Deploy" />
+  </Project>
+</Solution>
