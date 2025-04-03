@@ -5,7 +5,7 @@ namespace CryptoServer.Utils;
 
 public static class PasswordUtils
 {
-    public static (string hash, string salt) HashPassword(string password)
+    public static (string Hash, string Salt) HashPassword(string password)
     {
         var salt = GenerateSalt();
         var hash = GenerateHash(password, salt);
