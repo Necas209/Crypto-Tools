@@ -22,7 +22,7 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: CryptoTools.sln  # Replace with your solution name, i.e. App1.sln.
+      Solution_Name: CryptoTools.slnx  # Replace with your solution name, i.e. App1.sln.
       Solution_Dir: CryptoTools  # Replace with your solution directory, i.e. App1.
 
     steps:
@@ -35,7 +35,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -70,7 +70,7 @@ jobs:
 
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
     - name: Upload MSIX package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: MSIX Package
         path: $env:Appx_Package_Dir\*.msixbundle
