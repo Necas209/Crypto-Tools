@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -14,26 +16,15 @@ public class ImageEncryptionViewModel : ViewModelBase
 {
     private BitmapImage? _encryptedImage;
 
-    public ImageEncryptionViewModel()
-    {
-        SelectedAlgorithm = Algorithms[0];
-        SelectedCipherMode = CipherMode.CBC;
-    }
+    public ImageEncryptionViewModel() => SelectedAlgorithm = Algorithms[0];
 
     public List<EncryptionAlgorithm> Algorithms => Model.EncryptionAlgorithms;
 
     public EncryptionAlgorithm SelectedAlgorithm { get; set; }
 
-    public Dictionary<string, CipherMode> CipherModes { get; } = new()
-    {
-        { "CBC", CipherMode.CBC },
-        { "CFB", CipherMode.CFB },
-        { "CTS", CipherMode.CTS },
-        { "ECB", CipherMode.ECB },
-        { "OFB", CipherMode.OFB }
-    };
+    public ImmutableArray<CipherMode> CipherModes { get; } = [..Enum.GetValues<CipherMode>()];
 
-    public CipherMode SelectedCipherMode { get; set; }
+    public CipherMode SelectedCipherMode { get; set; } = CipherMode.CBC;
 
     public BitmapImage? EncryptedImage
     {
@@ -49,7 +40,7 @@ public class ImageEncryptionViewModel : ViewModelBase
         algorithm.Mode = SelectedCipherMode;
         using var bmp = new Bitmap(imagePath);
         // Extract the pixel data from the bitmap
-        var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+        var rect = new Rectangle(Point.Empty, bmp.Size);
         var bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
         // Calculate the number of bytes needed for the pixelData array
         var bytesPerPixel = Image.GetPixelFormatSize(bmp.PixelFormat) / 8;

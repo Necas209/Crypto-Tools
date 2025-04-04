@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -15,24 +14,19 @@ namespace CryptoTools.Views;
 public partial class SignaturePage
 {
     private readonly App _app = (App)Application.Current;
-
-    private readonly DispatcherTimer _dispatcherTimer = new()
-    {
-        Interval = new TimeSpan(0, 0, 5)
-    };
+    private readonly DispatcherTimer _dispatcherTimer = new() { Interval = new TimeSpan(0, 0, 5) };
 
     public SignaturePage()
     {
+        ViewModel = new SignatureViewModel { DisplayMessage = ShowMessage };
         InitializeComponent();
-        ViewModel.DisplayMessage = ShowMessage;
     }
 
-    private SignatureViewModel ViewModel { get; } = new();
+    private SignatureViewModel ViewModel { get; }
 
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled)
-            _dispatcherTimer.Stop();
+        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
         Message.Text = message;
         Message.Foreground = new SolidColorBrush(color);
         Message.Visibility = Visibility.Visible;
@@ -46,12 +40,10 @@ public partial class SignaturePage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
-        if (file is null)
-            return;
-
+        if (file is null) return;
         await ViewModel.SignFile(file.Path);
     }
 
@@ -64,7 +56,7 @@ public partial class SignaturePage
             return;
 
         var items = await e.DataView.GetStorageItemsAsync();
-        if (items.Count > 1 || items.SingleOrDefault() is not StorageFile file)
+        if (items is not [StorageFile file])
         {
             ShowMessage("You can only sign one file at a time.", Colors.Red);
             return;
@@ -92,12 +84,10 @@ public partial class SignaturePage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
-        if (file is null)
-            return;
-
+        if (file is null) return;
         await ViewModel.VerifySignature(file.Path);
     }
 
@@ -110,7 +100,7 @@ public partial class SignaturePage
             return;
 
         var items = await e.DataView.GetStorageItemsAsync();
-        if (items.Count > 1 || items.SingleOrDefault() is not StorageFile file)
+        if (items is not [StorageFile file])
         {
             ShowMessage("You can only validate one file at a time.", Colors.Red);
             return;
@@ -131,8 +121,5 @@ public partial class SignaturePage
         BtVerify.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void OnDragOver(object sender, DragEventArgs e)
-    {
-        e.AcceptedOperation = DataPackageOperation.Copy;
-    }
+    private void OnDragOver(object sender, DragEventArgs e) => e.AcceptedOperation = DataPackageOperation.Copy;
 }

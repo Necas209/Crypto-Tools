@@ -32,19 +32,20 @@ public class ZipViewModel : ViewModelBase
     {
         var entries = SelectedItems.ToList();
         foreach (var entry in entries)
+        {
             Items.Remove(entry);
+        }
     }
 
     public void AddFiles(IEnumerable<StorageFile> files)
     {
         foreach (var file in files)
+        {
             Items.Add(file);
+        }
     }
 
-    public void AddDirectory(StorageFolder folder)
-    {
-        Items.Add(folder);
-    }
+    public void AddDirectory(StorageFolder folder) => Items.Add(folder);
 
     public async Task CompressArchive(StorageFile file)
     {

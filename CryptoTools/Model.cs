@@ -10,12 +10,14 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using CryptoLib;
+using CryptoLib.Exceptions;
 using CryptoLib.Models;
 using CryptoTools.Utils;
 
 namespace CryptoTools;
 
-public class Model
+public sealed class Model : IDisposable
 {
     public const string ServerUrl = "https://cryptotools.azurewebsites.net";
     private readonly Uri _chatUri = new("wss://cryptotools.azurewebsites.net/chat");
@@ -29,9 +31,13 @@ public class Model
 
     private ClientWebSocket _socket = new();
 
-    public Model()
+    public Model() => Directory.CreateDirectory(AppFolder);
+
+    public void Dispose()
     {
-        Directory.CreateDirectory(AppFolder);
+        _clientRsa.Dispose();
+        _serverRsa.Dispose();
+        _socket.Dispose();
     }
 
     public string UserName { get; set; } = string.Empty;
@@ -53,7 +59,7 @@ public class Model
 
         var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
         var chatMessage = JsonSerializer.Deserialize<ChatMessage>(message);
-        if (chatMessage == null)
+        if (chatMessage is null)
             return null;
 
         if (chatMessage.UserName == "Server")
@@ -65,7 +71,7 @@ public class Model
 
         var hmac = HMACSHA256.HashData(hmacKey, decryptedMessage);
         if (!hmac.SequenceEqual(chatMessage.Hmac))
-            throw new Exception("HMAC verification failed");
+            throw new ChatException("HMAC verification failed");
 
         var decryptedMessageString = Encoding.UTF8.GetString(decryptedMessage);
         return $"{chatMessage.UserName}: {decryptedMessageString}";
@@ -83,14 +89,8 @@ public class Model
         var encryptedMessage = AesUtils.Encrypt(messageBytes, aes.Key);
         var encryptedSymmetricKey = _serverRsa.Encrypt(aes.Key, RSAEncryptionPadding.OaepSHA256);
         var encryptedHmacKey = _serverRsa.Encrypt(hmacKey, RSAEncryptionPadding.OaepSHA256);
-        var chatMessage = new ChatMessage
-        {
-            UserName = UserName,
-            Message = encryptedMessage,
-            Hmac = hmac,
-            SymmetricKey = encryptedSymmetricKey,
-            HmacKey = encryptedHmacKey
-        };
+        var chatMessage = new ChatMessage(UserName, encryptedMessage, hmac,
+            encryptedSymmetricKey, encryptedHmacKey);
 
         var json = JsonSerializer.Serialize(chatMessage);
         var buffer = Encoding.UTF8.GetBytes(json);
@@ -104,15 +104,11 @@ public class Model
 
     public async Task OpenConnection()
     {
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("X-Access-Token", AccessToken);
-
-        var response = await client.PostAsJsonAsync($"{ServerUrl}/exchange", new ExchangeRequest
-        {
-            PublicKey = _clientRsa.ExportRSAPublicKey()
-        });
+        using var client = GetHttpClient();
+        var response = await client.PostAsJsonAsync($"{ServerUrl}/exchange",
+            new ExchangeRequest(_clientRsa.ExportRSAPublicKey()));
         var content = await response.Content.ReadAsStringAsync();
-        if (content is null) 
+        if (content is null)
             throw new InvalidOperationException("Unable to retrieve server key");
 
         var serverKey = Convert.FromBase64String(content);
@@ -131,31 +127,17 @@ public class Model
 
     public async Task GetAlgorithms()
     {
-        using var client = new HttpClient();
-        EncryptionAlgorithms =
-            await client.GetFromJsonAsync<List<EncryptionAlgorithm>>($"{ServerUrl}/encrypt")
-            ?? throw new InvalidOperationException("Unable to retrieve encryption algorithms");
-        HashingAlgorithms =
-            await client.GetFromJsonAsync<List<HashingAlgorithm>>($"{ServerUrl}/hash")
-            ?? throw new InvalidOperationException("Unable to retrieve hashing algorithms");
+        using var client = GetHttpClient();
+        EncryptionAlgorithms = await client.GetFromJsonAsync<List<EncryptionAlgorithm>>($"{ServerUrl}/encrypt")
+                               ?? throw new InvalidOperationException("Unable to retrieve encryption algorithms");
+        HashingAlgorithms = await client.GetFromJsonAsync<List<HashingAlgorithm>>($"{ServerUrl}/hash")
+                            ?? throw new InvalidOperationException("Unable to retrieve hashing algorithms");
     }
 
-    public async Task SaveToken()
+    public HttpClient GetHttpClient()
     {
-        await File.WriteAllTextAsync(Path.Combine(AppFolder, "token.txt"), AccessToken);
-    }
-
-    public async Task<bool> IsTokenValid()
-    {
-        var tokenPath = Path.Combine(AppFolder, "token.txt");
-        if (!File.Exists(tokenPath))
-            return false;
-
-        AccessToken = await File.ReadAllTextAsync(tokenPath);
-        using var client = new HttpClient();
+        var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Access-Token", AccessToken);
-
-        var response = await client.GetAsync($"{ServerUrl}/is-logged-in");
-        return response.IsSuccessStatusCode;
+        return client;
     }
 }

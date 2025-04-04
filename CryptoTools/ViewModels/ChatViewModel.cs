@@ -35,8 +35,5 @@ public class ChatViewModel : ViewModelBase
         await Model.CloseConnection();
     }
 
-    public async void SendMessage(string message)
-    {
-        await Model.SendMessage(message);
-    }
+    public async Task SendMessage(string message) => await Model.SendMessage(message);
 }

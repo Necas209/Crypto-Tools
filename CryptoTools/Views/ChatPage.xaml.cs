@@ -1,6 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Popups;
+using CommunityToolkit.WinUI;
 using CryptoTools.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
@@ -12,20 +14,26 @@ public partial class ChatPage
 {
     public ChatPage()
     {
+        ViewModel = new ChatViewModel { OnMessageReceived = UpdateChat, OnConnectionClosed = OnConnectionClosed };
         InitializeComponent();
-        ViewModel.OnMessageReceived = UpdateChat;
-        ViewModel.OnConnectionClosed = OnConnectionClosed;
-        StartReceivingMessages();
+        DispatcherQueue.EnqueueAsync(async Task () => await ViewModel.ReceiveMessages());
     }
 
-    public ChatViewModel ViewModel { get; } = new();
+    public ChatViewModel ViewModel { get; }
 
     private async void OnConnectionClosed()
     {
-        var dialog = new MessageDialog("The connection to the chat server was closed.", "Connection closed");
-        var hwnd = WindowNative.GetWindowHandle(this);
-        InitializeWithWindow.Initialize(dialog, hwnd);
-        await dialog.ShowAsync();
+        try
+        {
+            var dialog = new MessageDialog("The connection to the chat server was closed.", "Connection closed");
+            var handle = WindowNative.GetWindowHandle(this);
+            InitializeWithWindow.Initialize(dialog, handle);
+            await dialog.ShowAsync();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+        }
     }
 
     private void UpdateChat()
@@ -36,22 +44,24 @@ public partial class ChatPage
         DispatcherQueue.TryEnqueue(() => { ChatListBox.ScrollIntoView(ChatListBox.Items[^1]); });
     }
 
-    private async void StartReceivingMessages()
+    private async void BtSendMessage_Click(object sender, RoutedEventArgs e)
     {
-        await ViewModel.ReceiveMessages();
+        try
+        {
+            var message = TbMessage.Text;
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+
+            await ViewModel.SendMessage(message);
+            TbMessage.Text = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+        }
     }
 
-    private void BtSendMessage_Click(object sender, RoutedEventArgs e)
-    {
-        var message = MessageTb.Text;
-        if (string.IsNullOrWhiteSpace(message))
-            return;
-
-        ViewModel.SendMessage(message);
-        MessageTb.Text = string.Empty;
-    }
-
-    private void MessageTb_KeyDown(object sender, KeyRoutedEventArgs e)
+    private void TbMessage_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key != VirtualKey.Enter)
             return;

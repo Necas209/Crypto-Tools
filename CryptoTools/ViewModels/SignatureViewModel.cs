@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.UI;
-using CryptoLib.Models;
+using CryptoLib;
 using Microsoft.UI;
 
 namespace CryptoTools.ViewModels;
@@ -22,13 +21,9 @@ public class SignatureViewModel : ViewModelBase
     {
         await using var fs = new FileStream(fileName, FileMode.Open);
         var hash = await _sha256.ComputeHashAsync(fs);
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
+        using var client = Model.GetHttpClient();
         var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/sign",
-            new SignatureRequest
-            {
-                Hash = Convert.ToBase64String(hash)
-            });
+            new SignatureRequest(Convert.ToBase64String(hash)));
         var signature = await response.Content.ReadAsStringAsync();
         var signatureBytes = Convert.FromBase64String(signature);
         await using var outFs = new FileStream(fileName + ".sign", FileMode.Create);
@@ -40,14 +35,9 @@ public class SignatureViewModel : ViewModelBase
         await using var fs = new FileStream(fileName, FileMode.Open);
         var hash = await _sha256.ComputeHashAsync(fs);
         var signature = await File.ReadAllBytesAsync(fileName + ".sign");
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
+        using var client = Model.GetHttpClient();
         var response = await client.PostAsJsonAsync($"{Model.ServerUrl}/verify",
-            new VerifyRequest
-            {
-                Hash = Convert.ToBase64String(hash),
-                Signature = Convert.ToBase64String(signature)
-            });
+            new VerifyRequest(Convert.ToBase64String(hash), Convert.ToBase64String(signature)));
         if (!response.IsSuccessStatusCode)
         {
             var message = await response.Content.ReadAsStringAsync();

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -17,11 +16,11 @@ namespace CryptoTools.Views;
 public partial class HashPage
 {
     private readonly App _app = (App)Application.Current;
-
     private readonly DispatcherQueueTimer _timer;
 
     public HashPage()
     {
+        ViewModel = new HashViewModel();
         InitializeComponent();
         _timer = DispatcherQueue.CreateTimer();
         _timer.Interval = TimeSpan.FromSeconds(5);
@@ -32,12 +31,11 @@ public partial class HashPage
         };
     }
 
-    public HashViewModel ViewModel { get; } = new();
+    public HashViewModel ViewModel { get; }
 
     private void ShowMessage(string message, Color color)
     {
-        if (_timer.IsRunning)
-            _timer.Stop();
+        if (_timer.IsRunning) _timer.Stop();
         Message.Text = message;
         Message.Foreground = new SolidColorBrush(color);
         Message.Visibility = Visibility.Visible;
@@ -50,11 +48,7 @@ public partial class HashPage
         ViewModel.HashText();
     }
 
-    private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        ViewModel?.HashText();
-    }
+    private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e) => ViewModel.HashText();
 
     private async void File_OnClick(object sender, RoutedEventArgs e)
     {
@@ -63,12 +57,10 @@ public partial class HashPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
-        if (file is null)
-            return;
-
+        if (file is null) return;
         ViewModel.HashFile(file.Path);
     }
 
@@ -84,10 +76,7 @@ public partial class HashPage
         BtHash.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void File_OnDragOver(object sender, DragEventArgs e)
-    {
-        e.AcceptedOperation = DataPackageOperation.Copy;
-    }
+    private void File_OnDragOver(object sender, DragEventArgs e) => e.AcceptedOperation = DataPackageOperation.Copy;
 
     private async void File_OnDrop(object sender, DragEventArgs e)
     {
@@ -97,7 +86,7 @@ public partial class HashPage
         if (!e.DataView.Contains(StandardDataFormats.StorageItems)) return;
 
         var items = await e.DataView.GetStorageItemsAsync();
-        if (items.FirstOrDefault() is not StorageFile file)
+        if (items is not [StorageFile file])
         {
             ShowMessage("Please drop only one file!", Colors.Red);
             return;

@@ -12,10 +12,9 @@ public static class AesUtils
         aes.Mode = CipherMode.CBC;
         aes.Padding = PaddingMode.PKCS7;
         aes.GenerateIV();
-        var iv = aes.IV;
         using var encryptor = aes.CreateEncryptor();
         var encryptedData = encryptor.TransformFinalBlock(data, 0, data.Length);
-        return iv.Concat(encryptedData).ToArray();
+        return aes.IV.Concat(encryptedData).ToArray();
     }
 
     public static byte[] Decrypt(byte[] data, byte[] key)
@@ -24,8 +23,8 @@ public static class AesUtils
         aes.Key = key;
         aes.Mode = CipherMode.CBC;
         aes.Padding = PaddingMode.PKCS7;
-        var iv = data.Take(16).ToArray();
-        var encryptedData = data.Skip(16).ToArray();
+        var iv = data[..16];
+        var encryptedData = data[16..];
         using var decrypt = aes.CreateDecryptor(key, iv);
         return decrypt.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
     }

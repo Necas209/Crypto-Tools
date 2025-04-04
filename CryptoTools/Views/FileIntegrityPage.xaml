@@ -16,7 +16,7 @@
         <ComboBox Grid.Row="0" Grid.Column="0" Width="200" Margin="10" DisplayMemberPath="Name" SelectedValuePath="Id"
                   SelectedValue="1" ItemsSource="{x:Bind ViewModel.Algorithms, Mode=OneWay}"
                   SelectedItem="{x:Bind ViewModel.SelectedAlgorithm, Mode=TwoWay}" />
-        <TextBlock Grid.Row="0" Grid.Column="1" Name="Message" Margin="10" HorizontalAlignment="Right"
+        <TextBlock Grid.Row="0" Grid.Column="1" Name="TbMessage" Margin="10" HorizontalAlignment="Right"
                    VerticalAlignment="Center" />
         <Button Name="BtRegister" Grid.Row="1" Grid.Column="0" Margin="10" AllowDrop="True" Foreground="DimGray"
                 Content="Drop File to Register" Background="Transparent" DragOver="OnDragOver" Drop="Register_OnDrop"

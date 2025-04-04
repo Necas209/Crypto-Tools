@@ -36,7 +36,7 @@ public static class EncryptionUtils
         var lExt = extension.Length;
         // Change the extension of the encrypted file to the original file extension.
         var outFile = Path.ChangeExtension(fileName, ".enc");
-        using var outFs = new FileStream(outFile, FileMode.Create);
+        using var outFs = File.OpenWrite(outFile);
         using var bw = new BinaryWriter(outFs);
         // Write the key, IV and file extension length to the (outFs) FileStream.
         bw.Write(lKey);
@@ -51,7 +51,7 @@ public static class EncryptionUtils
         // blockSizeBytes can be any arbitrary size.
         var blockSizeBytes = symAlg.BlockSize / 8;
         var data = new byte[blockSizeBytes];
-        using var inFs = new FileStream(fileName, FileMode.Open);
+        using var inFs = File.OpenRead(fileName);
         int count;
         do
         {
@@ -68,7 +68,7 @@ public static class EncryptionUtils
         using var rsa = RSA.Create(parameters);
         // Create instance of the specified algorithm for symmetric decryption of the file.
         using var symAlg = GetAlgorithm(algorithmName);
-        using var inFs = new FileStream(fileName, FileMode.Open);
+        using var inFs = File.OpenRead(fileName);
         using var br = new BinaryReader(inFs);
         // Read the key, IV and file extension length from the (inFs) FileStream.
         var lKey = br.ReadInt32();
@@ -82,7 +82,7 @@ public static class EncryptionUtils
         var key = rsa.Decrypt(encryptedKey, RSAEncryptionPadding.Pkcs1);
         // Change the file's extension to the original extension.
         var outFile = Path.ChangeExtension(fileName, Encoding.UTF8.GetString(extension));
-        using var outFs = new FileStream(outFile, FileMode.Create);
+        using var outFs = File.OpenWrite(outFile);
         inFs.Position = lKey + lIv + lExt + 12; // 12 is the sum of the lengths of the 3 integers.
         using var cs = new CryptoStream(outFs, symAlg.CreateDecryptor(key, iv), CryptoStreamMode.Write);
         // By decrypting a chunk a time, you can save memory and accommodate large files.

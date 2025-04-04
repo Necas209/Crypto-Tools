@@ -39,8 +39,15 @@ public class EncryptionViewModel : ViewModelBase
 
     public void EncryptFile(string path)
     {
-        EncryptionUtils.EncryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(false));
-        DisplayMessage?.Invoke("File encrypted successfully.", Colors.Green);
+        try
+        {
+            EncryptionUtils.EncryptFile(path, SelectedAlgorithm.Name, _rsa.ExportParameters(false));
+            DisplayMessage?.Invoke("File encrypted successfully.", Colors.Green);
+        }
+        catch (CryptographicException)
+        {
+            DisplayMessage?.Invoke("File encryption failed.", Colors.Red);
+        }
     }
 
     public void DecryptFile(string path)
