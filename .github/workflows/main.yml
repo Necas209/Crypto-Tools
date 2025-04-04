@@ -61,4 +61,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MSIX Package
-          path: $env:Appx_Package_Dir\*.msixbundle
+          path: Packages\**\*.msix
