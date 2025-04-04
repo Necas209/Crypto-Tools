@@ -18,21 +18,21 @@ jobs:
     env:
       Solution_Name: CryptoTools.slnx
       Solution_Dir: CryptoTools
-      Project_Name: CryptoTools\CryptoTools.csproj # Add this line
+      Project_Name: CryptoTools\CryptoTools.csproj
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Install .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
       - name: Setup MSBuild.exe
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v2
 
       - name: Restore the application
         run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
