@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -15,16 +14,12 @@ namespace CryptoTools.Views;
 public partial class EncryptionPage
 {
     private readonly App _app = (App)Application.Current;
-
-    private readonly DispatcherTimer _dispatcherTimer = new()
-    {
-        Interval = new TimeSpan(0, 0, 5)
-    };
+    private readonly DispatcherTimer _dispatcherTimer = new() { Interval = new TimeSpan(0, 0, 5) };
 
     public EncryptionPage()
     {
+        ViewModel = new EncryptionViewModel { DisplayMessage = ShowMessage };
         InitializeComponent();
-        ViewModel.DisplayMessage = ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {
             Message.Visibility = Visibility.Collapsed;
@@ -32,12 +27,11 @@ public partial class EncryptionPage
         };
     }
 
-    public EncryptionViewModel ViewModel { get; } = new();
+    public EncryptionViewModel ViewModel { get; }
 
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled)
-            _dispatcherTimer.Stop();
+        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
         Message.Text = message;
         Message.Foreground = new SolidColorBrush(color);
         Message.Visibility = Visibility.Visible;
@@ -51,12 +45,10 @@ public partial class EncryptionPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
-        if (file is null)
-            return;
-
+        if (file is null) return;
         ViewModel.EncryptFile(file.Path);
     }
 
@@ -73,9 +65,7 @@ public partial class EncryptionPage
         }
 
         var items = await e.DataView.GetStorageItemsAsync();
-        if (items.FirstOrDefault() is not StorageFile file)
-            return;
-
+        if (items is not [StorageFile file]) return;
         ViewModel.EncryptFile(file.Path);
     }
 
@@ -98,12 +88,10 @@ public partial class EncryptionPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { ".enc" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
-        if (file is null)
-            return;
-
+        if (file is null) return;
         ViewModel.DecryptFile(file.Path);
     }
 
@@ -119,10 +107,7 @@ public partial class EncryptionPage
         }
 
         var items = await e.DataView.GetStorageItemsAsync();
-        if (items.FirstOrDefault() is not StorageFile file)
-            return;
-
-        if (file.FileType != ".enc")
+        if (items is not [StorageFile { FileType: ".enc" } file])
         {
             ShowMessage("This is not an encrypted file!", Colors.Red);
             return;
@@ -143,8 +128,5 @@ public partial class EncryptionPage
         BtDecrypt.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void OnDragOver(object sender, DragEventArgs e)
-    {
-        e.AcceptedOperation = DataPackageOperation.Copy;
-    }
+    private void OnDragOver(object sender, DragEventArgs e) => e.AcceptedOperation = DataPackageOperation.Copy;
 }

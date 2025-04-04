@@ -1,14 +1,18 @@
 namespace CryptoLib.Models;
 
-public class ChatMessage
+public sealed record ChatMessage(string UserName, byte[] Message)
 {
-    public required string UserName { get; set; }
+    public ChatMessage(string userName, byte[] message, byte[] hmac, byte[] symmetricKey, byte[] hmacKey)
+        : this(userName, message)
+    {
+        Hmac = hmac;
+        SymmetricKey = symmetricKey;
+        HmacKey = hmacKey;
+    }
 
-    public required byte[] Message { get; init; }
+    public byte[] Hmac { get; init; } = [];
 
-    public byte[] Hmac { get; init; } = Array.Empty<byte>();
+    public byte[] SymmetricKey { get; init; } = [];
 
-    public byte[] SymmetricKey { get; set; } = Array.Empty<byte>();
-
-    public byte[] HmacKey { get; set; } = Array.Empty<byte>();
+    public byte[] HmacKey { get; init; } = [];
 }

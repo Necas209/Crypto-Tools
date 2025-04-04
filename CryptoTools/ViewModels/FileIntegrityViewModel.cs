@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -18,12 +16,9 @@ public class FileIntegrityViewModel : ViewModelBase
 {
     public delegate void DisplayMessageDelegate(string message, Color color);
 
-    public DisplayMessageDelegate? DisplayMessage;
+    public FileIntegrityViewModel() => SelectedAlgorithm = Algorithms[0];
 
-    public FileIntegrityViewModel()
-    {
-        SelectedAlgorithm = Algorithms[0];
-    }
+    public DisplayMessageDelegate? DisplayMessage { get; init; }
 
     public List<HashingAlgorithm> Algorithms => Model.HashingAlgorithms;
 
@@ -35,8 +30,7 @@ public class FileIntegrityViewModel : ViewModelBase
             return false;
 
         var fileName = Path.GetFileName(file);
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
+        using var client = Model.GetHttpClient();
         var hash = HashingUtils.HashFile(file, SelectedAlgorithm.Name);
         var hashEntry = new HashEntry
         {
@@ -48,36 +42,41 @@ public class FileIntegrityViewModel : ViewModelBase
         return response.IsSuccessStatusCode;
     }
 
-    public async void RegisterFiles(IEnumerable<StorageFile> files)
+    public async Task RegisterFiles(IEnumerable<StorageFile> files)
     {
         var registered = await Task.WhenAll(files.Select(f => RegisterFile(f.Path)));
-        if (Array.TrueForAll(registered, x => x))
+        if (registered.All(r => r))
+        {
             DisplayMessage?.Invoke("File(s) registered successfully.", Colors.Green);
+        }
         else
-            DisplayMessage?.Invoke("Some files could not be registered!", Colors.Coral);
+        {
+            DisplayMessage?.Invoke("Some files could not be registered.", Colors.Coral);
+        }
     }
 
-    public async void ValidateFile(string file)
+    public async Task ValidateFile(string file)
     {
         var fileName = Path.GetFileName(file);
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("X-Access-Token", Model.AccessToken);
+        using var client = Model.GetHttpClient();
         var encodedFileName = WebUtility.UrlEncode(fileName);
-        var hashEntry = await client.GetFromJsonAsync<HashEntry>(
-            $"{Model.ServerUrl}/hash/{encodedFileName}");
+        var hashEntry = await client.GetFromJsonAsync<HashEntry>($"{Model.ServerUrl}/hash/{encodedFileName}");
         if (hashEntry is null)
         {
-            DisplayMessage?.Invoke("File could not be found!", Colors.Coral);
+            DisplayMessage?.Invoke("File could not be found.", Colors.Coral);
             return;
         }
 
-        var algorithmName = Model.HashingAlgorithms
-            .SingleOrDefault(a => a.Id == hashEntry.HashingAlgorithmId)?.Name;
-        var hash = HashingUtils.HashFile(file, algorithmName ?? "SHA256");
+        var algorithm = Model.HashingAlgorithms.FirstOrDefault(a => a.Id == hashEntry.HashingAlgorithmId);
+        var hash = HashingUtils.HashFile(file, algorithm?.Name ?? "SHA256");
         var hexHash = HashingUtils.ToHexString(hash);
         if (hashEntry.Hash == hexHash)
+        {
             DisplayMessage?.Invoke("File is valid.", Colors.Green);
+        }
         else
-            DisplayMessage?.Invoke("File is invalid!", Colors.Red);
+        {
+            DisplayMessage?.Invoke("File is invalid.", Colors.Red);
+        }
     }
 }

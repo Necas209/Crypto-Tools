@@ -17,7 +17,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="Enter your message:" Margin="10" TextAlignment="Center" />
-            <TextBox Grid.Row="1" Name="MessageTb" TextWrapping="Wrap" Margin="10" IsEnabled="True" KeyDown="MessageTb_KeyDown" />
+            <TextBox Grid.Row="1" Name="TbMessage" TextWrapping="Wrap" Margin="10" IsEnabled="True" KeyDown="TbMessage_KeyDown" />
             <Button Grid.Row="2" Content="Send Message" Margin="10" HorizontalAlignment="Center" IsEnabled="True"
                     Click="BtSendMessage_Click" />
         </Grid>

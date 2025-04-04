@@ -11,42 +11,57 @@ public partial class RegisterWindow
 {
     public RegisterWindow()
     {
+        ViewModel = new RegisterViewModel { OnError = ShowError, RegisterSuccess = RegisterSuccess };
         InitializeComponent();
-        AppWindow.ResizeClient(WindowSize);
-        ViewModel.OnError = ShowError;
-        ViewModel.ShowLogin = ShowLogin;
-        ViewModel.RegisterSuccess = RegisterSuccess;
+        AppWindow.ResizeClient(new SizeInt32(300, 400));
     }
 
-    public RegisterViewModel ViewModel { get; } = new();
+    public RegisterViewModel ViewModel { get; }
 
     private async void RegisterSuccess()
     {
-        var dialog = new MessageDialog("You can now log in with your new account.", "Registration successful");
-        var hwnd = WindowNative.GetWindowHandle(this);
-        InitializeWithWindow.Initialize(dialog, hwnd);
-        await dialog.ShowAsync();
+        try
+        {
+            var dialog = new MessageDialog("You can now log in with your new account.", "Registration successful");
+            var handle = WindowNative.GetWindowHandle(this);
+            InitializeWithWindow.Initialize(dialog, handle);
+            await dialog.ShowAsync();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+        }
     }
 
-    private async void RegisterButton_Click(object sender, RoutedEventArgs e)
+    private async void BtnRegister_Click(object sender, RoutedEventArgs e)
     {
-        await ViewModel.Register();
+        try
+        {
+            var registered = await ViewModel.Register();
+            if (!registered) return;
+
+            var loginWindow = new LoginWindow();
+            loginWindow.Activate();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+        }
     }
 
     private async void ShowError(string message)
     {
-        var dialog = new MessageDialog(message, "Registration failed");
-        var hwnd = WindowNative.GetWindowHandle(this);
-        InitializeWithWindow.Initialize(dialog, hwnd);
-        await dialog.ShowAsync();
+        try
+        {
+            var dialog = new MessageDialog(message, "Registration failed");
+            var handle = WindowNative.GetWindowHandle(this);
+            InitializeWithWindow.Initialize(dialog, handle);
+            await dialog.ShowAsync();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+        }
     }
-
-    private void ShowLogin()
-    {
-        var loginWindow = new LoginWindow();
-        loginWindow.Activate();
-        Close();
-    }
-
-    private static readonly SizeInt32 WindowSize = new(300, 400);
 }

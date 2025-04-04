@@ -20,16 +20,13 @@ public static class HashingUtils
         };
     }
 
-    public static string ToHexString(byte[] bytes)
-    {
-        return Convert.ToHexString(bytes).ToLower();
-    }
+    public static string ToHexString(byte[] bytes) => Convert.ToHexString(bytes).ToLower();
 
     public static byte[] HashFile(string file, string algorithm)
     {
         using var hashAlgorithm = GetHashAlgorithm(algorithm);
-        using var stream = File.OpenRead(file);
-        return hashAlgorithm.ComputeHash(stream);
+        using var fs = File.OpenRead(file);
+        return hashAlgorithm.ComputeHash(fs);
     }
 
     public static byte[] Hash(string text, string algorithm)

@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Margin="10 10 10 0" HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" />
         <Button Grid.Row="0" Margin="10 10 10 0" HorizontalAlignment="Right" Content="Logout" Width="100"
-                Click="LogoutButton_Click" />
+                Click="BtnLogout_Click" />
         <TabView Grid.Row="1" Margin="10 10 10 10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabViewItem IsSelected="True" Header="Compression">
                 <Frame SourcePageType="views:ZipPage" />

@@ -26,6 +26,6 @@
         <PasswordBox Grid.Row="2" Grid.Column="1" Width="200" Margin="20"
                      Password="{x:Bind ViewModel.ConfirmPassword, Mode=TwoWay}" />
         <Button Content="Register" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="150 20 150 20"
-                Height="30" Click="RegisterButton_Click" />
+                Height="30" Click="BtnRegister_Click" />
     </Grid>
 </Window>

@@ -9,10 +9,7 @@ public class HashViewModel : ViewModelBase
     private string _hashedFile = string.Empty;
     private string _hashedText = string.Empty;
 
-    public HashViewModel()
-    {
-        SelectedAlgorithm = Algorithms[0];
-    }
+    public HashViewModel() => SelectedAlgorithm = Algorithms[0];
 
     public string PlainText { get; set; } = string.Empty;
 

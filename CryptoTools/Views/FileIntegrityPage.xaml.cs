@@ -16,31 +16,27 @@ public partial class FileIntegrityPage
 {
     private readonly App _app = (App)Application.Current;
 
-    private readonly DispatcherTimer _dispatcherTimer = new()
-    {
-        Interval = new TimeSpan(0, 0, 5)
-    };
+    private readonly DispatcherTimer _dispatcherTimer = new() { Interval = new TimeSpan(0, 0, 5) };
 
     public FileIntegrityPage()
     {
+        ViewModel = new FileIntegrityViewModel { DisplayMessage = ShowMessage };
         InitializeComponent();
-        ViewModel.DisplayMessage = ShowMessage;
         _dispatcherTimer.Tick += (_, _) =>
         {
-            Message.Visibility = Visibility.Collapsed;
+            TbMessage.Visibility = Visibility.Collapsed;
             _dispatcherTimer.Stop();
         };
     }
 
-    public FileIntegrityViewModel ViewModel { get; } = new();
+    public FileIntegrityViewModel ViewModel { get; }
 
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled)
-            _dispatcherTimer.Stop();
-        Message.Text = message;
-        Message.Foreground = new SolidColorBrush(color);
-        Message.Visibility = Visibility.Visible;
+        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
+        TbMessage.Text = message;
+        TbMessage.Foreground = new SolidColorBrush(color);
+        TbMessage.Visibility = Visibility.Visible;
         _dispatcherTimer.Start();
     }
 
@@ -51,13 +47,11 @@ public partial class FileIntegrityPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var files = await picker.PickMultipleFilesAsync();
-        if (files.Count == 0)
-            return;
-
-        ViewModel.RegisterFiles(files);
+        if (files.Count == 0) return;
+        await ViewModel.RegisterFiles(files);
     }
 
     private async void Register_OnDrop(object sender, DragEventArgs e)
@@ -75,10 +69,8 @@ public partial class FileIntegrityPage
         var items = await e.DataView.GetStorageItemsAsync();
         if (items.Count == 0) return;
 
-        var files = items
-            .Where(item => item.IsOfType(StorageItemTypes.File))
-            .Cast<StorageFile>();
-        ViewModel.RegisterFiles(files);
+        var files = items.OfType<StorageFile>();
+        await ViewModel.RegisterFiles(files);
     }
 
     private void Register_OnDragEnter(object sender, DragEventArgs e)
@@ -100,13 +92,13 @@ public partial class FileIntegrityPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
         if (file is null)
             return;
 
-        ViewModel.ValidateFile(file.Path);
+        await ViewModel.ValidateFile(file.Path);
     }
 
     private async void Validation_OnDrop(object sender, DragEventArgs e)
@@ -121,13 +113,13 @@ public partial class FileIntegrityPage
         }
 
         var files = await e.DataView.GetStorageItemsAsync();
-        if (files.FirstOrDefault() is not StorageFile file)
+        if (files is not [StorageFile file])
         {
             ShowMessage("You can only validate one file at a time.", Colors.Red);
             return;
         }
 
-        ViewModel.ValidateFile(file.Path);
+        await ViewModel.ValidateFile(file.Path);
     }
 
     private void Validation_OnDragEnter(object sender, DragEventArgs e)
@@ -142,8 +134,5 @@ public partial class FileIntegrityPage
         BtValidate.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void OnDragOver(object sender, DragEventArgs e)
-    {
-        e.AcceptedOperation = DataPackageOperation.Copy;
-    }
+    private void OnDragOver(object sender, DragEventArgs e) => e.AcceptedOperation = DataPackageOperation.Copy;
 }

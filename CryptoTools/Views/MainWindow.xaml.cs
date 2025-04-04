@@ -1,34 +1,33 @@
-﻿using Windows.Graphics;
+﻿using System;
+using Windows.Graphics;
 using CryptoTools.ViewModels;
 using Microsoft.UI.Xaml;
 
 namespace CryptoTools.Views;
 
-/// <summary>
-///     Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow
 {
+    private readonly MainViewModel _viewModel;
+
     public MainWindow()
     {
+        _viewModel = new MainViewModel();
         InitializeComponent();
-        AppWindow.ResizeClient(WindowSize);
-        ViewModel.ShowLogin += ShowLogin;
+        AppWindow.ResizeClient(new SizeInt32(1100, 750));
     }
 
-    private MainViewModel ViewModel { get; } = new();
-
-    private void ShowLogin()
+    private async void BtnLogout_Click(object sender, RoutedEventArgs e)
     {
-        var loginWindow = new LoginWindow();
-        loginWindow.Activate();
-        Close();
+        try
+        {
+            await _viewModel.Logout();
+            var loginWindow = new LoginWindow();
+            loginWindow.Activate();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+        }
     }
-
-    private void LogoutButton_Click(object sender, RoutedEventArgs e)
-    {
-        ViewModel.Logout();
-    }
-
-    private static readonly SizeInt32 WindowSize = new(1100, 750);
 }

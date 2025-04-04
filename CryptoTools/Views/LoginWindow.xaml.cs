@@ -15,36 +15,46 @@ public partial class LoginWindow
 
     public LoginWindow()
     {
+        ViewModel = new LoginViewModel { OnError = ShowError };
         InitializeComponent();
         AppWindow.ResizeClient(new SizeInt32(300, 400));
-        ViewModel.ShowApp = ShowApp;
-        ViewModel.OnError = ShowError;
     }
 
-    public LoginViewModel ViewModel { get; } = new();
-
-    private void ShowApp()
-    {
-        var mainWindow = new MainWindow();
-        _app.MainWindow = mainWindow;
-        mainWindow.Activate();
-        Close();
-    }
+    public LoginViewModel ViewModel { get; }
 
     private async void ShowError(string message)
     {
-        var dialog = new MessageDialog(message, "Error");
-        var hwnd = WindowNative.GetWindowHandle(this);
-        InitializeWithWindow.Initialize(dialog, hwnd);
-        await dialog.ShowAsync();
+        try
+        {
+            var dialog = new MessageDialog(message, "Error");
+            var handle = WindowNative.GetWindowHandle(this);
+            InitializeWithWindow.Initialize(dialog, handle);
+            await dialog.ShowAsync();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e);
+        }
     }
 
-    private async void LoginBt_Click(object sender, RoutedEventArgs e)
+    private async void BtnLogin_Click(object sender, RoutedEventArgs e)
     {
-        await ViewModel.Login();
+        try
+        {
+            var loggedIn = await ViewModel.Login();
+            if (!loggedIn) return;
+
+            _app.LaunchMainWindow();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+        }
     }
 
-    private void RegisterBt_Click(object sender, RoutedEventArgs e)
+
+    private void BtnRegister_Click(object sender, RoutedEventArgs e)
     {
         var registerWindow = new RegisterWindow();
         registerWindow.Activate();
@@ -56,7 +66,7 @@ public partial class LoginWindow
         if (e.Key != VirtualKey.Enter)
             return;
 
-        LoginBt_Click(sender, e);
+        BtnLogin_Click(sender, e);
         e.Handled = true;
     }
 }

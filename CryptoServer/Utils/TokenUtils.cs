@@ -14,11 +14,10 @@ public static class TokenUtils
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-                new(ClaimTypes.Name, userName),
-                new(ClaimTypes.Role, "User")
-            }),
+            Subject = new ClaimsIdentity([
+                new Claim(ClaimTypes.Name, userName),
+                new Claim(ClaimTypes.Role, "User")
+            ]),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Key),
                 SecurityAlgorithms.HmacSha256Signature)
@@ -31,9 +30,9 @@ public static class TokenUtils
 
     public static bool ValidateAccessToken(string accessToken, string username)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
         try
         {
+            var tokenHandler = new JwtSecurityTokenHandler();
             var principal = tokenHandler.ValidateToken(accessToken,
                 new TokenValidationParameters
                 {
@@ -43,19 +42,14 @@ public static class TokenUtils
                     ValidateAudience = false
                 }, out _);
 
-            if (principal.Identity is ClaimsIdentity { IsAuthenticated: true } identity && identity.Name == username)
-            {
-                return true;
-            }
+            return principal.Identity is ClaimsIdentity { IsAuthenticated: true } identity && identity.Name == username;
         }
         catch
         {
             return false;
         }
-
-        return false;
     }
-    
+
     public static string? ValidateAccessToken(string accessToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();

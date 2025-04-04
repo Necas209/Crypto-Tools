@@ -11,9 +11,13 @@ public static class ZipArchiveExtensions
     {
         var fileName = Path.GetFileName(sourceName);
         if (File.GetAttributes(sourceName).HasFlag(FileAttributes.Directory))
+        {
             archive.CreateEntryFromDirectory(sourceName, Path.Combine(entryName, fileName));
+        }
         else
+        {
             archive.CreateEntryFromFile(sourceName, Path.Combine(entryName, fileName), compressionLevel);
+        }
     }
 
     public static void CreateEntryFromDirectory(this ZipArchive archive, string sourceDirName, string entryName = "",
@@ -22,6 +26,9 @@ public static class ZipArchiveExtensions
         var files = Directory.GetFiles(sourceDirName);
         var directories = Directory.GetDirectories(sourceDirName);
         var allFiles = files.Concat(directories);
-        foreach (var file in allFiles) archive.CreateEntryFromAny(file, entryName, compressionLevel);
+        foreach (var file in allFiles)
+        {
+            archive.CreateEntryFromAny(file, entryName, compressionLevel);
+        }
     }
 }

@@ -1,14 +1,8 @@
-using System;
+using System.Threading.Tasks;
 
 namespace CryptoTools.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public Action? ShowLogin { get; set; }
-
-    public async void Logout()
-    {
-        await Model.CloseConnection();
-        ShowLogin?.Invoke();
-    }
+    public async Task Logout() => await Model.CloseConnection();
 }

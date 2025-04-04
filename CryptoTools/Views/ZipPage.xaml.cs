@@ -16,10 +16,11 @@ public partial class ZipPage
 
     public ZipPage()
     {
+        ViewModel = new ZipViewModel();
         InitializeComponent();
     }
 
-    public ZipViewModel ViewModel { get; } = new();
+    public ZipViewModel ViewModel { get; }
 
     private async void BtnZip_OnClick(object sender, RoutedEventArgs e)
     {
@@ -33,12 +34,10 @@ public partial class ZipPage
                 { "Zip files", new List<string> { ".zip" } }
             }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSaveFileAsync();
-        if (file is null)
-            return;
-
+        if (file is null) return;
         await ViewModel.CompressArchive(file);
     }
 
@@ -49,7 +48,7 @@ public partial class ZipPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { ".zip" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
         StorageFolder folder;
@@ -61,11 +60,10 @@ public partial class ZipPage
                 ViewMode = PickerViewMode.List,
                 FileTypeFilter = { "*" }
             };
-            InitializeWithWindow.Initialize(folderPicker, _app.Hwnd);
+            InitializeWithWindow.Initialize(folderPicker, _app.Handle);
 
             folder = await folderPicker.PickSingleFolderAsync();
-            if (folder is null)
-                return;
+            if (folder is null) return;
         }
         else
         {
@@ -75,10 +73,7 @@ public partial class ZipPage
         await ZipViewModel.DecompressArchive(file, folder);
     }
 
-    private void BtRemove_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.RemoveSelectedEntries();
-    }
+    private void BtRemove_OnClick(object sender, RoutedEventArgs e) => ViewModel.RemoveSelectedEntries();
 
     private async void BtAddDir_OnClick(object sender, RoutedEventArgs e)
     {
@@ -88,12 +83,10 @@ public partial class ZipPage
             ViewMode = PickerViewMode.List,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var folder = await picker.PickSingleFolderAsync();
-        if (folder is null)
-            return;
-
+        if (folder is null) return;
         ViewModel.AddDirectory(folder);
     }
 
@@ -104,20 +97,16 @@ public partial class ZipPage
             SuggestedStartLocation = PickerLocationId.Desktop,
             FileTypeFilter = { "*" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var files = await picker.PickMultipleFilesAsync();
-        if (files.Count == 0)
-            return;
-
+        if (files.Count == 0) return;
         ViewModel.AddFiles(files);
     }
 
     private void ListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0)
-            return;
-
+        if (e.AddedItems.Count == 0 && e.RemovedItems.Count == 0) return;
         var added = e.AddedItems.Cast<IStorageItem>();
         var removed = e.RemovedItems.Cast<IStorageItem>();
         ViewModel.UpdateSelectedEntries(added, removed);

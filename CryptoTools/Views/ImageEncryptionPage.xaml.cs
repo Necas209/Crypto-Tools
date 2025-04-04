@@ -2,27 +2,24 @@ using System;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.UI;
 using CryptoTools.Utils;
 using CryptoTools.ViewModels;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using WinRT.Interop;
+using Color = Windows.UI.Color;
 
 namespace CryptoTools.Views;
 
 public partial class ImageEncryptionPage
 {
     private readonly App _app = (App)Application.Current;
-
-    private readonly DispatcherTimer _dispatcherTimer = new()
-    {
-        Interval = new TimeSpan(0, 0, 5)
-    };
+    private readonly DispatcherTimer _dispatcherTimer = new() { Interval = new TimeSpan(0, 0, 5) };
 
     public ImageEncryptionPage()
     {
+        ViewModel = new ImageEncryptionViewModel();
         InitializeComponent();
         _dispatcherTimer.Tick += (_, _) =>
         {
@@ -31,12 +28,11 @@ public partial class ImageEncryptionPage
         };
     }
 
-    public ImageEncryptionViewModel ViewModel { get; } = new();
+    public ImageEncryptionViewModel ViewModel { get; }
 
     private void ShowMessage(string message, Color color)
     {
-        if (_dispatcherTimer.IsEnabled)
-            _dispatcherTimer.Stop();
+        if (_dispatcherTimer.IsEnabled) _dispatcherTimer.Stop();
         Message.Text = message;
         Message.Foreground = new SolidColorBrush(color);
         Message.Visibility = Visibility.Visible;
@@ -51,11 +47,10 @@ public partial class ImageEncryptionPage
             SuggestedStartLocation = PickerLocationId.PicturesLibrary,
             FileTypeFilter = { ".png", ".jpeg", ".jpg", ".bmp" }
         };
-        InitializeWithWindow.Initialize(picker, _app.Hwnd);
+        InitializeWithWindow.Initialize(picker, _app.Handle);
 
         var file = await picker.PickSingleFileAsync();
-        if (file is null)
-            return;
+        if (file is null) return;
 
         OriginalImage.Source = await BitmapUtils.ToBitmapImage(file);
         await ViewModel.EncryptImage(file.Path);
@@ -67,13 +62,13 @@ public partial class ImageEncryptionPage
         BtImage.BorderBrush = new SolidColorBrush(Colors.DimGray);
 
         var items = await e.DataView.GetStorageItemsAsync();
-        if (items.Count is 0 or > 1)
+        if (items is not [StorageFile file])
         {
             ShowMessage("You can only encrypt one image at a time.", Colors.Red);
             return;
         }
 
-        if (items[0] is not StorageFile { FileType: (".png" or ".jpeg" or ".jpg" or ".bmp") } file)
+        if (file is not { FileType: ".png" or ".jpeg" or ".jpg" or ".bmp" })
         {
             ShowMessage("This is not an image!", Colors.Red);
             return;
@@ -95,8 +90,5 @@ public partial class ImageEncryptionPage
         BtImage.BorderBrush = new SolidColorBrush(Colors.DimGray);
     }
 
-    private void BtImage_OnDragOver(object sender, DragEventArgs e)
-    {
-        e.AcceptedOperation = DataPackageOperation.Copy;
-    }
+    private void BtImage_OnDragOver(object sender, DragEventArgs e) => e.AcceptedOperation = DataPackageOperation.Copy;
 }
